@@ -27,6 +27,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: Stoops-ML/czml3
           verbose: true
+          commit_parent: ${{ github.sha }}
 
   tox-checks:
     runs-on: ubuntu-latest
