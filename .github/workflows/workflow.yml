@@ -4,7 +4,7 @@ on: [pull_request]
 
 jobs:
   codecov-of-main:
-    name: codecov_of_main
+    name: codecov of main
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -47,7 +47,9 @@ jobs:
       run: tox
         
   codecov-of-PR:
-    name: codecov_of_PR
+    name: codecov of PR
+    needs:
+      - codecov-of-main
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
