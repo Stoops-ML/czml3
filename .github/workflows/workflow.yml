@@ -13,7 +13,9 @@ jobs:
           fetch-depth: 0
       - name: Get commit hash of main branch
         id: get-main-commit
-        run: echo "::set-output name=commit_hash::$(git rev-parse HEAD)"
+        run: |
+          echo "commit_hash=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          echo "The commit hash of the main branch is ${{ env.commit_hash }}"
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -31,7 +33,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: Stoops-ML/czml3
           verbose: true
-          commit_parent: ${{ steps.get-main-commit.outputs.commit_hash }}
+          override_commit: ${{ env.commit_hash }}
           override_branch: main
 
   tox-checks:
