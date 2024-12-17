@@ -34,6 +34,7 @@ jobs:
           slug: Stoops-ML/czml3
           verbose: true
           override_commit: ${{ env.commit_hash }}
+          commit_parent: ${{ env.commit_hash }}
           override_branch: main
 
   tox-checks:
