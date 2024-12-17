@@ -2,13 +2,14 @@ name: Upload codecov from main
 
 on:
   pull_request:
-    types:
-      - closed
+    branches: 
+      - main
+    types: [closed]
   
 jobs:
   codecov-of-main:
     name: codecov of main
-    if: github.event.pull_request.merged == true
+    if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
