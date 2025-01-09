@@ -1,8 +1,21 @@
 coverage:
+  precision: 2 # sets the precision to two decimal places
+  round: down # rounds down coverage to avoid false positives
+  range: "99...100" # sets the acceptable coverage range
+
+notification:
   status:
-    project:
+    project: # Project-level status
       default:
-        target: 99.5%
-        threshold: 0%
-        if_ci_failed: error
+        target: 99.58% # target coverage to not fail the build
+        threshold: 0% # tolerance margin
+      changes: # Changes-level status
+        default:
+          target: 99.58% # ensures the target coverage for changes
+          threshold: 0%
+
+comment:
+  layout: "reach, diff, flags, files"
+  behaviors: # Controls comment behavior
+    changes: "fail" # Fail the status if coverage doesn't meet target and changes are detected
 # https://docs.codecov.com/docs/commit-status
