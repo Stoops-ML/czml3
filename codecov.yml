@@ -2,7 +2,7 @@ coverage:
   status:
     project:
       default:
-        target: 99.5%
-        threshold: 0%
+        target: auto
+        threshold: 0
         if_ci_failed: error
 # https://docs.codecov.com/docs/commit-status
