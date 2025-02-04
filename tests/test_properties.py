@@ -752,35 +752,21 @@ def test_position_cartographic_degrees():
 
 def test_position_reference():
     expected_result = """{
-    "cartesian": [
-        0.0,
-        0.0,
-        0.0
-    ],
     "reference": "this#satellite"
 }"""
-    pos = Position(cartesian=[0, 0, 0], reference="this#satellite")
+    pos = Position(reference="this#satellite")
     assert str(pos) == expected_result
-    pos = Position(
-        cartesian=[0, 0, 0], reference=ReferenceValue(value="this#satellite")
-    )
+    pos = Position(reference=ReferenceValue(value="this#satellite"))
     assert str(pos) == expected_result
 
 
 def test_viewfrom_reference():
     expected_result = """{
-    "cartesian": [
-        1.0,
-        1.0,
-        1.0
-    ],
     "reference": "this#satellite"
 }"""
-    v = ViewFrom(reference="this#satellite", cartesian=[1.0, 1.0, 1.0])
+    v = ViewFrom(reference="this#satellite")
     assert str(v) == expected_result
-    v = ViewFrom(
-        reference=ReferenceValue(value="this#satellite"), cartesian=[1.0, 1.0, 1.0]
-    )
+    v = ViewFrom(reference=ReferenceValue(value="this#satellite"))
     assert str(v) == expected_result
 
 
@@ -808,7 +794,7 @@ def test_viewfrom_has_delete():
 
 def test_viewfrom_no_values_raises_error():
     with pytest.raises(ValidationError) as _:
-        ViewFrom()  # type: ignore
+        ViewFrom()
 
 
 def test_single_interval_value():
@@ -1156,13 +1142,14 @@ def test_tileset():
 
 def test_check_classes_with_references_ViewFrom():
     assert (
-        str(ViewFrom(cartesian=[0, 0, 0], reference="this#that"))
+        str(ViewFrom(reference="this#that"))
         == """{
-    "cartesian": [
-        0.0,
-        0.0,
-        0.0
-    ],
+    "reference": "this#that"
+}"""
+    )
+    assert (
+        str(ViewFrom(reference=ReferenceValue(value="this#that")))
+        == """{
     "reference": "this#that"
 }"""
     )
@@ -1204,13 +1191,8 @@ def test_check_classes_with_references_ArcType():
 
 def test_check_classes_with_references_Position():
     assert (
-        str(Position(cartesian=[0, 0, 0], reference="this#that"))
+        str(Position(reference="this#that"))
         == """{
-    "cartesian": [
-        0.0,
-        0.0,
-        0.0
-    ],
     "reference": "this#that"
 }"""
     )
@@ -1513,6 +1495,26 @@ def test_position_bad_cartesianVelocity():
         Position(cartesianVelocity=[0])
     with pytest.raises(ValueError):
         Position(cartesianVelocity=[])
+
+
+def test_position_bad_multipleTypes():
+    with pytest.raises(TypeError):
+        Position(cartesian=[0], reference=ReferenceValue(value="1#this"))
+    with pytest.raises(TypeError):
+        Position(cartographicRadians=[0], reference=ReferenceValue(value="1#this"))
+    with pytest.raises(TypeError):
+        Position(cartographicDegrees=[0], reference=ReferenceValue(value="1#this"))
+    with pytest.raises(TypeError):
+        Position(cartesianVelocity=[0], reference=ReferenceValue(value="1#this"))
+
+    with pytest.raises(TypeError):
+        Position(cartesian=[0], reference="1#this")
+    with pytest.raises(TypeError):
+        Position(cartographicRadians=[0], reference="1#this")
+    with pytest.raises(TypeError):
+        Position(cartographicDegrees=[0], reference="1#this")
+    with pytest.raises(TypeError):
+        Position(cartesianVelocity=[0], reference="1#this")
 
 
 def test_no_values():
