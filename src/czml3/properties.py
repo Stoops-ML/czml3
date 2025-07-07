@@ -1093,6 +1093,7 @@ class PositionList(BaseCZMLObject, Deletable):
                     self.cartesian,
                     self.cartographicDegrees,
                     self.cartographicRadians,
+                    self.references,
                 )
             )
             != 1
