@@ -1,6 +1,10 @@
+# v2.3.5
+
+* Fix `references` input for `PositionList` and `PositionListOfLists`
+
 # v2.3.3
 
-* Fix `check_values()` for `num_points` less than or greater than 3.
+* Fix `check_values()` for `num_points` less than or greater than 3
 
 # v2.3.2
 
