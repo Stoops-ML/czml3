@@ -993,33 +993,14 @@ class PositionListOfLists(BaseCZMLObject, Deletable):
                     self.cartesian,
                     self.cartographicDegrees,
                     self.cartographicRadians,
+                    self.references,
                 )
             )
             != 1
         ):
             raise TypeError(
-                "One of cartesian, cartographicDegrees, cartographicRadians or reference must be given"
+                "One of cartesian, cartographicDegrees, cartographicRadians or references must be given"
             )
-        if isinstance(self.references, ReferenceListOfListsValue):
-            if isinstance(self.cartesian, Cartesian3ListOfListsValue):
-                v = self.cartesian.values
-            elif isinstance(
-                self.cartographicDegrees, CartographicDegreesListOfListsValue
-            ):
-                v = self.cartographicDegrees.values
-            elif isinstance(
-                self.cartographicRadians, CartographicRadiansListOfListsValue
-            ):
-                v = self.cartographicRadians.values
-            else:
-                raise TypeError
-            if len(self.references.values) != len(v):
-                raise TypeError("Number of references must equal number of coordinates")
-            for r, v1 in zip(self.references.values, v, strict=False):
-                if len(r) != len(v1) // 3:
-                    raise TypeError(
-                        "Number of references must equal number of coordinates in each list"
-                    )
 
         return self
 
@@ -1086,6 +1067,7 @@ class PositionList(BaseCZMLObject, Deletable):
     def checks(self):
         if self.delete:
             return self
+
         if (
             sum(
                 val is not None
@@ -1099,19 +1081,9 @@ class PositionList(BaseCZMLObject, Deletable):
             != 1
         ):
             raise TypeError(
-                "One of cartesian, cartographicDegrees, cartographicRadians or reference must be given"
+                "One of cartesian, cartographicDegrees, cartographicRadians or references must be given"
             )
-        if isinstance(self.references, ReferenceListValue):
-            if isinstance(self.cartesian, Cartesian3ListValue):
-                v = self.cartesian.values
-            elif isinstance(self.cartographicDegrees, CartographicDegreesListValue):
-                v = self.cartographicDegrees.values
-            elif isinstance(self.cartographicRadians, CartographicRadiansListValue):
-                v = self.cartographicRadians.values
-            else:
-                raise TypeError
-            if len(self.references.values) != len(v) // 3:
-                raise TypeError("Number of references must equal number of coordinates")
+
         return self
 
     @field_validator("references")
