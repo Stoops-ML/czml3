@@ -1490,12 +1490,14 @@ def test_position_list_with_references():
     ]
 }"""
 
+
 def test_position_list_with_references_extra_arguments():
     with pytest.raises(TypeError):
         PositionList(
             references=ReferenceListValue(values=["1#this"]),
             cartesian=[0, 0, 0],
         )
+
 
 def test_position_list_of_lists_with_references():
     expected_result = """{
