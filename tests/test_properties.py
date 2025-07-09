@@ -18,6 +18,7 @@ from czml3.properties import (
     BoxDimensions,
     CheckerboardMaterial,
     ClassificationType,
+    Clock,
     Color,
     ColorBlendMode,
     CornerType,
@@ -110,6 +111,20 @@ def test_eyeOffset():
 
     eyeOffset = EyeOffset(cartesian=Cartesian3Value(values=[1, 2, 3]))
     assert str(eyeOffset) == expected_result
+
+
+def test_clock():
+    expected_result = """{
+    "interval": "2019-06-11T12:26:58.000000Z/2019-06-11T12:26:58.000000Z"
+}"""
+    clock = Clock(
+        interval=TimeInterval(
+            start="2019-06-11T12:26:58.000000Z",
+            end="2019-06-11T12:26:58.000000Z",
+        )
+    )
+
+    assert str(clock) == expected_result
 
 
 def test_point():
