@@ -56,7 +56,8 @@ from .types import (
 class Material(BaseCZMLObject):
     """A definition of how a surface is colored or shaded.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Material>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Material>`__ for it's definition.
+    """
 
     solidColor: None | SolidColorMaterial | str | TimeIntervalCollection = Field(
         default=None
@@ -83,7 +84,8 @@ class Material(BaseCZMLObject):
 class PolylineOutline(BaseCZMLObject):
     """A definition of how a surface is colored or shaded.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineOutlineMaterial>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineOutlineMaterial>`__ for it's definition.
+    """
 
     color: None | Color | str | TimeIntervalCollection = Field(default=None)
     """The color of the surface. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Color>`__ for it's definition."""
@@ -96,7 +98,8 @@ class PolylineOutline(BaseCZMLObject):
 class PolylineOutlineMaterial(BaseCZMLObject):
     """A definition of the material wrapper for a polyline outline.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineOutlineMaterial>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineOutlineMaterial>`__ for it's definition.
+    """
 
     polylineOutline: None | PolylineOutline | TimeIntervalCollection = Field(
         default=None
@@ -107,7 +110,8 @@ class PolylineOutlineMaterial(BaseCZMLObject):
 class PolylineGlow(BaseCZMLObject):
     """A definition of how a glowing polyline appears.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineGlowMaterial>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineGlowMaterial>`__ for it's definition.
+    """
 
     color: None | Color | str | TimeIntervalCollection = Field(default=None)
     """The color of the surface. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Color>`__ for it's definition."""
@@ -120,7 +124,8 @@ class PolylineGlow(BaseCZMLObject):
 class PolylineGlowMaterial(BaseCZMLObject):
     """A material that fills the surface of a line with a glowing color.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineGlowMaterial>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineGlowMaterial>`__ for it's definition.
+    """
 
     polylineGlow: None | PolylineGlow | TimeIntervalCollection = Field(default=None)
     """See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineGlow>`__ for it's definition."""
@@ -129,7 +134,8 @@ class PolylineGlowMaterial(BaseCZMLObject):
 class PolylineArrow(BaseCZMLObject):
     """A definition of how a polyline arrow appears.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineArrowMaterial>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineArrowMaterial>`__ for it's definition.
+    """
 
     color: None | Color | str | TimeIntervalCollection = Field(default=None)
     """The color of the surface. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Color>`__ for it's definition."""
@@ -138,7 +144,8 @@ class PolylineArrow(BaseCZMLObject):
 class PolylineArrowMaterial(BaseCZMLObject):
     """A material that fills the surface of a line with an arrow.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineArrowMaterial>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineArrowMaterial>`__ for it's definition.
+    """
 
     polylineArrow: None | PolylineArrow | TimeIntervalCollection = Field(default=None)
     """See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineArrow>`__ for it's definition."""
@@ -147,7 +154,8 @@ class PolylineArrowMaterial(BaseCZMLObject):
 class PolylineDash(BaseCZMLObject):
     """A definition of how a polyline should be dashed with two colors.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineDashMaterial>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineDashMaterial>`__ for it's definition.
+    """
 
     color: None | Color | str | TimeIntervalCollection = Field(default=None)
     """The color of the dashes on the line. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Color>`__ for it's definition."""
@@ -162,7 +170,8 @@ class PolylineDash(BaseCZMLObject):
 class PolylineDashMaterial(BaseCZMLObject):
     """A material that provides a how a polyline should be dashed.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineDashMaterial>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineDashMaterial>`__ for it's definition.
+    """
 
     polylineDash: None | PolylineDash | TimeIntervalCollection = Field(default=None)
     """See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineDash>`__ for it's definition."""
@@ -171,7 +180,8 @@ class PolylineDashMaterial(BaseCZMLObject):
 class PolylineMaterial(BaseCZMLObject):
     """A definition of how a surface is colored or shaded.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineMaterial>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineMaterial>`__ for it's definition.
+    """
 
     solidColor: None | SolidColorMaterial | str | TimeIntervalCollection = Field(
         default=None
@@ -210,7 +220,8 @@ class PolylineMaterial(BaseCZMLObject):
 class SolidColorMaterial(BaseCZMLObject):
     """A material that fills the surface with a solid color.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/SolidColorMaterial>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/SolidColorMaterial>`__ for it's definition.
+    """
 
     color: None | Color | str | TimeIntervalCollection = Field(default=None)
     """The color of the surface. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Color>`__ for it's definition."""
@@ -219,7 +230,8 @@ class SolidColorMaterial(BaseCZMLObject):
 class GridMaterial(BaseCZMLObject):
     """A material that fills the surface with a two-dimensional grid.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/GridMaterial>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/GridMaterial>`__ for it's definition.
+    """
 
     color: None | Color | str | TimeIntervalCollection = Field(default=None)
     """The color of the surface. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Color>`__ for it's definition."""
@@ -236,7 +248,8 @@ class GridMaterial(BaseCZMLObject):
 class StripeMaterial(BaseCZMLObject):
     """A material that fills the surface with alternating colors.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/StripeMaterial>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/StripeMaterial>`__ for it's definition.
+    """
 
     orientation: None | StripeOrientations | str | TimeIntervalCollection = Field(
         default=None
@@ -255,7 +268,8 @@ class StripeMaterial(BaseCZMLObject):
 class CheckerboardMaterial(BaseCZMLObject):
     """A material that fills the surface with alternating colors.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/CheckerboardMaterial>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/CheckerboardMaterial>`__ for it's definition.
+    """
 
     evenColor: None | Color | str | TimeIntervalCollection = Field(default=None)
     """The even color. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Color>`__ for it's definition."""
@@ -268,7 +282,8 @@ class CheckerboardMaterial(BaseCZMLObject):
 class ImageMaterial(BaseCZMLObject):
     """A material that fills the surface with an image.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ImageMaterial>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ImageMaterial>`__ for it's definition.
+    """
 
     image: None | Uri | TimeIntervalCollection = Field(default=None)
     """The image to display on the surface. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ImageMaterial>`__ for it's definition."""
@@ -283,7 +298,8 @@ class ImageMaterial(BaseCZMLObject):
 class Color(BaseCZMLObject, Interpolatable, Deletable):
     """A color. The color can optionally vary over time.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Color>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Color>`__ for it's definition.
+    """
 
     rgba: None | RgbaValue | str | list[float] | TimeIntervalCollection = Field(
         default=None
@@ -331,7 +347,8 @@ class Color(BaseCZMLObject, Interpolatable, Deletable):
 class Position(BaseCZMLObject, Interpolatable, Deletable):
     """Defines a position. The position can optionally vary over time.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Position>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Position>`__ for it's definition.
+    """
 
     referenceFrame: None | str | TimeIntervalCollection = Field(default=None)
     """The reference frame in which cartesian positions are specified. Possible values are `FIXED` and `INERTIAL`."""
@@ -428,7 +445,8 @@ class Position(BaseCZMLObject, Interpolatable, Deletable):
 class ViewFrom(BaseCZMLObject, Interpolatable, Deletable):
     """A suggested initial camera position offset when tracking this object, specified as a Cartesian position. Typically defined in the East (x), North (y), Up (z) reference frame relative to the object's position, but may use another frame depending on the object's velocity.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ViewFrom>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ViewFrom>`__ for it's definition.
+    """
 
     cartesian: None | Cartesian3Value | list[float] | TimeIntervalCollection = Field(
         default=None
@@ -467,7 +485,8 @@ class ViewFrom(BaseCZMLObject, Interpolatable, Deletable):
 class Billboard(BaseCZMLObject):
     """A billboard, or viewport-aligned image. The billboard is positioned in the scene by the position property. A billboard is sometimes called a marker.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Billboard>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Billboard>`__ for it's definition.
+    """
 
     show: None | bool | TimeIntervalCollection = Field(default=None)
     """Whether or not the billboard is shown."""
@@ -533,7 +552,8 @@ class Billboard(BaseCZMLObject):
 class EllipsoidRadii(BaseCZMLObject, Interpolatable, Deletable):
     """The radii of an ellipsoid.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/EllipsoidRadii>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/EllipsoidRadii>`__ for it's definition.
+    """
 
     cartesian: Cartesian3Value | list[float] | TimeIntervalCollection | None = Field(
         default=None
@@ -570,7 +590,8 @@ class EllipsoidRadii(BaseCZMLObject, Interpolatable, Deletable):
 class Corridor(BaseCZMLObject):
     """A corridor , which is a shape defined by a centerline and width that conforms to the curvature of the body shape. It can can optionally be extruded into a volume.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Corridor>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Corridor>`__ for it's definition.
+    """
 
     positions: PositionList | TimeIntervalCollection = Field()
     """The array of positions defining the centerline of the corridor. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PositionList>`__ for it's definition."""
@@ -621,7 +642,8 @@ class Corridor(BaseCZMLObject):
 class Cylinder(BaseCZMLObject):
     """A cylinder, which is a special cone defined by length, top and bottom radius.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Cylinder>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Cylinder>`__ for it's definition.
+    """
 
     length: float | TimeIntervalCollection = Field()
     """The length of the cylinder."""
@@ -660,7 +682,8 @@ class Cylinder(BaseCZMLObject):
 class Ellipse(BaseCZMLObject):
     """An ellipse, which is a close curve, on or above Earth's surface.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Ellipse>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Ellipse>`__ for it's definition.
+    """
 
     semiMajorAxis: float | TimeIntervalCollection = Field()
     """The length of the ellipse's semi-major axis in meters."""
@@ -715,7 +738,8 @@ class Ellipse(BaseCZMLObject):
 class Polygon(BaseCZMLObject):
     """A polygon, which is a closed figure on the surface of the Earth.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Polygon>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Polygon>`__ for it's definition.
+    """
 
     positions: PositionList | TimeIntervalCollection = Field()
     """The array of positions defining a simple polygon. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PositionList>`__ for it's definition."""
@@ -772,7 +796,8 @@ class Polygon(BaseCZMLObject):
 class Polyline(BaseCZMLObject):
     """A polyline, which is a line in the scene composed of multiple segments.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Polyline>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Polyline>`__ for it's definition.
+    """
 
     show: None | bool | TimeIntervalCollection = Field(default=None)
     """Whether or not the polyline is shown."""
@@ -827,7 +852,8 @@ class Polyline(BaseCZMLObject):
 class ArcType(BaseCZMLObject, Deletable):
     """The type of an arc.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ArcType>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ArcType>`__ for it's definition.
+    """
 
     arcType: None | ArcTypes | str | TimeIntervalCollection = Field(default=None)
     """The arc type. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ArcType>`__ for it's definition."""
@@ -855,7 +881,8 @@ class ArcType(BaseCZMLObject, Deletable):
 class ShadowMode(BaseCZMLObject, Deletable):
     """Whether or not an object casts or receives shadows from each light source when shadows are enabled.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ShadowMode>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ShadowMode>`__ for it's definition.
+    """
 
     shadowMode: None | ShadowModes | TimeIntervalCollection = Field(default=None)
     """The shadow mode. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ShadowMode>`__ for it's definition."""
@@ -883,7 +910,8 @@ class ShadowMode(BaseCZMLObject, Deletable):
 class ClassificationType(BaseCZMLObject, Deletable):
     """Whether a classification affects terrain, 3D Tiles, or both.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ClassificationType>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ClassificationType>`__ for it's definition.
+    """
 
     classificationType: None | ClassificationTypes | TimeIntervalCollection = Field(
         default=None
@@ -916,7 +944,8 @@ class ClassificationType(BaseCZMLObject, Deletable):
 class DistanceDisplayCondition(BaseCZMLObject, Interpolatable, Deletable):
     """Indicates the visibility of an object based on the distance to the camera.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/DistanceDisplayCondition>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/DistanceDisplayCondition>`__ for it's definition.
+    """
 
     distanceDisplayCondition: (
         None | DistanceDisplayConditionValue | TimeIntervalCollection
@@ -954,7 +983,8 @@ class DistanceDisplayCondition(BaseCZMLObject, Interpolatable, Deletable):
 class PositionListOfLists(BaseCZMLObject, Deletable):
     """A list of positions.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PositionListOfLists>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PositionListOfLists>`__ for it's definition.
+    """
 
     referenceFrame: None | str | TimeIntervalCollection = Field(
         default=None
@@ -1036,7 +1066,8 @@ class PositionListOfLists(BaseCZMLObject, Deletable):
 class PositionList(BaseCZMLObject, Deletable):
     """A list of positions.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PositionList>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PositionList>`__ for it's definition.
+    """
 
     referenceFrame: None | str | TimeIntervalCollection = Field(default=None)
     """The reference frame in which cartesian positions are specified. Possible values are `FIXED` and `INERTIAL`."""
@@ -1123,7 +1154,8 @@ class PositionList(BaseCZMLObject, Deletable):
 class Ellipsoid(BaseCZMLObject):
     """A closed quadric surface that is a three-dimensional analogue of an ellipse.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Ellipsoid>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Ellipsoid>`__ for it's definition.
+    """
 
     radii: EllipsoidRadii | TimeIntervalCollection = Field()
     """The radii of the ellipsoid. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/EllipsoidRadii>`__ for it's definition."""
@@ -1170,7 +1202,8 @@ class Ellipsoid(BaseCZMLObject):
 class Box(BaseCZMLObject):
     """A box, which is a closed rectangular cuboid.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Box>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Box>`__ for it's definition.
+    """
 
     show: None | bool | TimeIntervalCollection = Field(default=None)
     """Whether or not the box is shown."""
@@ -1201,7 +1234,8 @@ class Box(BaseCZMLObject):
 class BoxDimensions(BaseCZMLObject, Interpolatable, Deletable):
     """The width, depth, and height of a box.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/BoxDimensions>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/BoxDimensions>`__ for it's definition.
+    """
 
     cartesian: None | Cartesian3Value | list[float] | TimeIntervalCollection = Field(
         default=None
@@ -1238,7 +1272,8 @@ class BoxDimensions(BaseCZMLObject, Interpolatable, Deletable):
 class Rectangle(BaseCZMLObject):
     """A cartographic rectangle, which conforms to the curvature of the globe and can be placed on the surface or at altitude and can optionally be extruded into a volume.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Rectangle>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Rectangle>`__ for it's definition.
+    """
 
     show: None | bool | TimeIntervalCollection = Field(default=None)
     """Whether or not the rectangle is shown."""
@@ -1253,7 +1288,8 @@ class Rectangle(BaseCZMLObject):
 class RectangleCoordinates(BaseCZMLObject, Interpolatable, Deletable):
     """A set of coordinates describing a cartographic rectangle on the surface of the ellipsoid.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/RectangleCoordinates>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/RectangleCoordinates>`__ for it's definition.
+    """
 
     wsen: None | list[float] | TimeIntervalCollection = Field(default=None)
     """The set of coordinates specified as Cartographic values `[WestLongitude, SouthLatitude, EastLongitude, NorthLatitude]`, with values in radians.The list of heights to be used for the bottom of the wall, instead of the surface."""
@@ -1288,7 +1324,8 @@ class RectangleCoordinates(BaseCZMLObject, Interpolatable, Deletable):
 class EyeOffset(BaseCZMLObject, Deletable):
     """An offset in eye coordinates which can optionally vary over time. Eye coordinates are a left-handed coordinate system where the X-axis points toward the viewer's right, the Y-axis poitns up, and the Z-axis points into the screen.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/EyeOffset>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/EyeOffset>`__ for it's definition.
+    """
 
     cartesian: None | Cartesian3Value | list[float] | TimeIntervalCollection = Field(
         default=None
@@ -1325,7 +1362,8 @@ class EyeOffset(BaseCZMLObject, Deletable):
 class HeightReference(BaseCZMLObject, Deletable):
     """The height reference of an object, which indicates if the object's position is relative to terrain or not.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/HeightReference>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/HeightReference>`__ for it's definition.
+    """
 
     heightReference: None | HeightReferences | TimeIntervalCollection = Field(
         default=None
@@ -1355,7 +1393,8 @@ class HeightReference(BaseCZMLObject, Deletable):
 class ColorBlendMode(BaseCZMLObject, Deletable):
     """The height reference of an object, which indicates if the object's position is relative to terrain or not.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ColorBlendMode>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ColorBlendMode>`__ for it's definition.
+    """
 
     colorBlendMode: None | ColorBlendModes | TimeIntervalCollection = Field(
         default=None
@@ -1385,7 +1424,8 @@ class ColorBlendMode(BaseCZMLObject, Deletable):
 class CornerType(BaseCZMLObject, Deletable):
     """The height reference of an object, which indicates if the object's position is relative to terrain or not.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/CornerType>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/CornerType>`__ for it's definition.
+    """
 
     cornerType: None | CornerTypes | TimeIntervalCollection = Field(default=None)
     """The corner style. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/CornerType>`__ for it's definition."""
@@ -1413,7 +1453,8 @@ class CornerType(BaseCZMLObject, Deletable):
 class Clock(BaseCZMLObject):
     """Initial settings for a simulated clock when a document is loaded. The start and stop time are configured using the interval property.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Clock>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Clock>`__ for it's definition.
+    """
 
     currentTime: None | str | dt.datetime | TimeIntervalCollection = Field(default=None)
     """The current time, specified in ISO8601 format."""
@@ -1423,6 +1464,8 @@ class Clock(BaseCZMLObject):
     """The behavior when the current time reaches its start or end times. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ClockRange>`__ for it's definition."""
     step: None | ClockSteps | TimeIntervalCollection = Field(default=None)
     """How the current time advances each tick. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ClockStep>`__ for it's definition."""
+    interval: None | TimeInterval = Field(default=None)
+    """The interval of the clock."""
 
     @field_validator("currentTime")
     @classmethod
@@ -1433,7 +1476,8 @@ class Clock(BaseCZMLObject):
 class Path(BaseCZMLObject):
     """A path, which is a polyline defined by the motion of an object over time. The possible vertices of the path are specified by the `position` property. Note that because clients cannot render a truly infinite path, the path must be limited, either by defining availability for this object, or by using the `leadTime` and `trailTime` properties.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Path>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Path>`__ for it's definition.
+    """
 
     show: None | bool | TimeIntervalCollection = Field(default=None)
     """Whether or not the path is shown."""
@@ -1458,7 +1502,8 @@ class Path(BaseCZMLObject):
 class Point(BaseCZMLObject):
     """A point, or viewport-aligned circle.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Point>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Point>`__ for it's definition.
+    """
 
     show: None | bool | TimeIntervalCollection = Field(default=None)
     """Whether or not the point is shown."""
@@ -1493,7 +1538,8 @@ class Point(BaseCZMLObject):
 class Tileset(BaseCZMLObject):
     """A 3D Tiles tileset.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Tileset>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Tileset>`__ for it's definition.
+    """
 
     uri: Uri | str | TimeIntervalCollection = Field()
     """The URI of a 3D tiles tileset. For broadest client compatibility, the URI should be accessible via Cross-Origin Resource Sharing (CORS). See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Uri>`__ for it's definition."""
@@ -1513,7 +1559,8 @@ class Tileset(BaseCZMLObject):
 class Wall(BaseCZMLObject):
     """A two-dimensional wall defined as a line strip and optional maximum and minimum heights. It conforms to the curvature of the globe and can be placed along the surface or at altitude.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Wall>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Wall>`__ for it's definition.
+    """
 
     show: None | bool | TimeIntervalCollection = Field(default=None)
     """Whether or not the wall is shown."""
@@ -1546,7 +1593,8 @@ class Wall(BaseCZMLObject):
 class NearFarScalar(BaseCZMLObject, Interpolatable, Deletable):
     """A numeric value which will be linearly interpolated between two values based on an object's distance from the camera, in eye coordinates. The computed value will interpolate between the near value and the far value while the camera distance falls between the near distance and the far distance, and will be clamped to the near or far value while the distance is less than the near distance or greater than the far distance, respectively.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/NearFarScalar>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/NearFarScalar>`__ for it's definition.
+    """
 
     nearFarScalar: None | NearFarScalarValue | list[float] | TimeIntervalCollection = (
         Field(default=None)
@@ -1583,7 +1631,8 @@ class NearFarScalar(BaseCZMLObject, Interpolatable, Deletable):
 class Label(BaseCZMLObject):
     """A string of text.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Label>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Label>`__ for it's definition.
+    """
 
     show: None | bool | TimeIntervalCollection = Field(default=None)
     """Whether or not the label is shown."""
@@ -1624,7 +1673,8 @@ class Label(BaseCZMLObject):
 class Orientation(BaseCZMLObject, Interpolatable, Deletable):
     """Defines an orientation.  An orientation is a rotation that takes a vector expressed in the "body" axes of the object and transforms it to the Earth fixed axes.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Orientation>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Orientation>`__ for it's definition.
+    """
 
     unitQuaternion: (
         None | list[float] | UnitQuaternionValue | TimeIntervalCollection
@@ -1656,7 +1706,8 @@ class Orientation(BaseCZMLObject, Interpolatable, Deletable):
 class Model(BaseCZMLObject):
     """A 3D model.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Model>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Model>`__ for it's definition.
+    """
 
     show: None | bool | TimeIntervalCollection = Field(default=None)
     """Whether or not the model is shown."""
@@ -1710,7 +1761,8 @@ class Model(BaseCZMLObject):
 class Uri(BaseCZMLObject, Deletable):
     """A URI value. The URI can optionally vary with time.
 
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Uri>`__ for it's definition."""
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Uri>`__ for it's definition.
+    """
 
     uri: None | str | TimeIntervalCollection = Field(default=None)
     """The URI value."""
