@@ -1,3 +1,7 @@
+# v2.3.6
+
+* Add `interval` property to `Clock`
+
 # v2.3.5
 
 * Fix `references` input for `PositionList` and `PositionListOfLists`
