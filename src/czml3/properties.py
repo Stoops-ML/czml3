@@ -763,23 +763,17 @@ class Polyline(BaseCZMLObject):
     """The width of the polyline."""
     granularity: None | float | TimeIntervalCollection = Field(default=None)
     """The sampling distance, in radians."""
-    material: (
-        None
-        | PolylineMaterial
-        | str
-        | TimeIntervalCollection
-    ) = Field(default=None)
+    material: None | PolylineMaterial | str | TimeIntervalCollection = Field(
+        default=None
+    )
     """The material to use to draw the polyline. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Field>`__ for it's definition."""
     followSurface: None | bool | TimeIntervalCollection = Field(default=None)
     """Whether or not the positions are connected as great arcs (the default) or as straight lines. This property has been superseded by `arcType`, which should be used instead."""
     shadows: None | ShadowMode | TimeIntervalCollection = Field(default=None)
     """Whether or not the polyline casts or receives shadows. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ShadowMode>`__ for it's definition."""
-    depthFailMaterial: (
-        None
-        | PolylineMaterial
-        | str
-        | TimeIntervalCollection
-    ) = Field(default=None)
+    depthFailMaterial: None | PolylineMaterial | str | TimeIntervalCollection = Field(
+        default=None
+    )
     """The material to use to draw the polyline when it is below the terrain. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Field>`__ for it's definition."""
     distanceDisplayCondition: (
         None | DistanceDisplayCondition | TimeIntervalCollection
