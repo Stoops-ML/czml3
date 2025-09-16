@@ -42,7 +42,6 @@ from czml3.properties import (
     PolylineGlow,
     PolylineGlowMaterial,
     PolylineMaterial,
-    PolylineOutline,
     PolylineOutlineMaterial,
     Position,
     PositionList,
@@ -351,8 +350,8 @@ def test_outline_material_colors():
         "outlineWidth": 3.0
     }
 }"""
-    omat = PolylineOutlineMaterial(
-        polylineOutline=PolylineOutline(
+    omat = PolylineMaterial(
+        polylineOutline=PolylineOutlineMaterial(
             color=Color(rgba=[200, 100, 30, 255]),
             outlineColor=Color(rgba=[100, 200, 0, 255]),
             outlineWidth=3,

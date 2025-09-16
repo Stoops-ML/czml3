@@ -75,14 +75,10 @@ class Material(BaseCZMLObject):
         default=None
     )
     """A material that fills the surface with a checkerboard pattern. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/CheckerboardMaterial>`__ for it's definition."""
-    polylineOutline: (
-        None | PolylineMaterial | PolylineOutline | TimeIntervalCollection
-    ) = Field(default=None)  # NOTE: Not in documentation
-    """See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineOutline>`__ for it's definition."""
 
 
-class PolylineOutline(BaseCZMLObject):
-    """A definition of how a surface is colored or shaded.
+class PolylineOutlineMaterial(BaseCZMLObject):
+    """A material that fills the surface of a line with an outlined color.
 
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineOutlineMaterial>`__ for it's definition.
     """
@@ -93,18 +89,6 @@ class PolylineOutline(BaseCZMLObject):
     """The color of the surface outline. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Color>`__ for it's definition."""
     outlineWidth: None | float | TimeIntervalCollection = Field(default=None)
     """The width of the outline."""
-
-
-class PolylineOutlineMaterial(BaseCZMLObject):
-    """A definition of the material wrapper for a polyline outline.
-
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineOutlineMaterial>`__ for it's definition.
-    """
-
-    polylineOutline: None | PolylineOutline | TimeIntervalCollection = Field(
-        default=None
-    )
-    """See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineOutline>`__ for it's definition."""
 
 
 class PolylineGlow(BaseCZMLObject):

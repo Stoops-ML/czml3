@@ -29,7 +29,6 @@ from czml3.properties import (
     PolylineGlow,
     PolylineGlowMaterial,
     PolylineMaterial,
-    PolylineOutline,
     PolylineOutlineMaterial,
     Position,
     PositionList,
@@ -404,8 +403,8 @@ def test_packet_polyline_outline():
             positions=PositionList(
                 cartographicDegrees=[-75, 43, 500000, -125, 43, 500000]
             ),
-            material=PolylineOutlineMaterial(
-                polylineOutline=PolylineOutline(
+            material=PolylineMaterial(
+                polylineOutline=PolylineOutlineMaterial(
                     color=Color(rgba=[255, 0, 0, 255]),
                     outlineColor=Color(rgba=[255, 0, 0, 255]),
                     outlineWidth=2,
