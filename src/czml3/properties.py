@@ -91,8 +91,8 @@ class PolylineOutlineMaterial(BaseCZMLObject):
     """The width of the outline."""
 
 
-class PolylineGlow(BaseCZMLObject):
-    """A definition of how a glowing polyline appears.
+class PolylineGlowMaterial(BaseCZMLObject):
+    """A material that fills the surface of a line with a glowing color.
 
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineGlowMaterial>`__ for it's definition.
     """
@@ -103,16 +103,6 @@ class PolylineGlow(BaseCZMLObject):
     """The strength of the glow."""
     taperPower: None | float | TimeIntervalCollection = Field(default=None)
     """The strength of the tapering effect. 1.0 and higher means no tapering."""
-
-
-class PolylineGlowMaterial(BaseCZMLObject):
-    """A material that fills the surface of a line with a glowing color.
-
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineGlowMaterial>`__ for it's definition.
-    """
-
-    polylineGlow: None | PolylineGlow | TimeIntervalCollection = Field(default=None)
-    """See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineGlow>`__ for it's definition."""
 
 
 class PolylineArrowMaterial(BaseCZMLObject):

@@ -26,7 +26,6 @@ from czml3.properties import (
     Polyline,
     PolylineArrowMaterial,
     PolylineDashMaterial,
-    PolylineGlow,
     PolylineGlowMaterial,
     PolylineMaterial,
     PolylineOutlineMaterial,
@@ -453,8 +452,8 @@ def test_packet_polyline_glow():
             positions=PositionList(
                 cartographicDegrees=[-75, 43, 500000, -125, 43, 500000]
             ),
-            material=PolylineGlowMaterial(
-                polylineGlow=PolylineGlow(
+            material=PolylineMaterial(
+                polylineGlow=PolylineGlowMaterial(
                     color=Color(rgba=[255, 0, 0, 255]),
                     glowPower=0.2,
                     taperPower=0.5,

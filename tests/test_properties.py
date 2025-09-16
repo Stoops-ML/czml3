@@ -39,7 +39,6 @@ from czml3.properties import (
     Polyline,
     PolylineArrowMaterial,
     PolylineDashMaterial,
-    PolylineGlow,
     PolylineGlowMaterial,
     PolylineMaterial,
     PolylineOutlineMaterial,
@@ -320,8 +319,8 @@ def test_glowmaterial_color():
         "taperPower": 0.3
     }
 }"""
-    glowmat = PolylineGlowMaterial(
-        polylineGlow=PolylineGlow(
+    glowmat = PolylineMaterial(
+        polylineGlow=PolylineGlowMaterial(
             color=Color(rgba=[200, 100, 30, 255]), glowPower=0.7, taperPower=0.3
         )
     )
