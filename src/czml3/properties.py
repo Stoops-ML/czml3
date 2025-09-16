@@ -766,10 +766,6 @@ class Polyline(BaseCZMLObject):
     material: (
         None
         | PolylineMaterial
-        | PolylineDashMaterial
-        | PolylineArrowMaterial
-        | PolylineGlowMaterial
-        | PolylineOutlineMaterial
         | str
         | TimeIntervalCollection
     ) = Field(default=None)
@@ -781,10 +777,6 @@ class Polyline(BaseCZMLObject):
     depthFailMaterial: (
         None
         | PolylineMaterial
-        | PolylineDashMaterial
-        | PolylineArrowMaterial
-        | PolylineGlowMaterial
-        | PolylineOutlineMaterial
         | str
         | TimeIntervalCollection
     ) = Field(default=None)
