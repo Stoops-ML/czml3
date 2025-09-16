@@ -24,7 +24,6 @@ from czml3.properties import (
     Point,
     Polygon,
     Polyline,
-    PolylineArrow,
     PolylineArrowMaterial,
     PolylineDash,
     PolylineDashMaterial,
@@ -503,8 +502,8 @@ def test_packet_polyline_arrow():
             positions=PositionList(
                 cartographicDegrees=[-75, 43, 500000, -125, 43, 500000]
             ),
-            material=PolylineArrowMaterial(
-                polylineArrow=PolylineArrow(color=Color(rgba=[255, 0, 0, 255]))
+            material=PolylineMaterial(
+                polylineArrow=PolylineArrowMaterial(color=Color(rgba=[255, 0, 0, 255]))
             ),
         ),
     )

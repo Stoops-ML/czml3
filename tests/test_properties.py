@@ -37,7 +37,6 @@ from czml3.properties import (
     Point,
     Polygon,
     Polyline,
-    PolylineArrow,
     PolylineArrowMaterial,
     PolylineDash,
     PolylineDashMaterial,
@@ -266,8 +265,8 @@ def test_arrowmaterial_color():
         }
     }
 }"""
-    pamat = PolylineArrowMaterial(
-        polylineArrow=PolylineArrow(color=Color(rgba=[200, 100, 30, 255])),
+    pamat = PolylineMaterial(
+        polylineArrow=PolylineArrowMaterial(color=Color(rgba=[200, 100, 30, 255])),
     )
 
     assert str(pamat) == expected_result

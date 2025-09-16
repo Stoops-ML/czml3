@@ -131,24 +131,14 @@ class PolylineGlowMaterial(BaseCZMLObject):
     """See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineGlow>`__ for it's definition."""
 
 
-class PolylineArrow(BaseCZMLObject):
-    """A definition of how a polyline arrow appears.
-
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineArrowMaterial>`__ for it's definition.
-    """
-
-    color: None | Color | str | TimeIntervalCollection = Field(default=None)
-    """The color of the surface. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Color>`__ for it's definition."""
-
-
 class PolylineArrowMaterial(BaseCZMLObject):
     """A material that fills the surface of a line with an arrow.
 
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineArrowMaterial>`__ for it's definition.
     """
 
-    polylineArrow: None | PolylineArrow | TimeIntervalCollection = Field(default=None)
-    """See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineArrow>`__ for it's definition."""
+    color: None | Color | str | TimeIntervalCollection = Field(default=None)
+    """The color of the surface. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Color>`__ for it's definition."""
 
 
 class PolylineDash(BaseCZMLObject):
