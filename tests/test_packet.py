@@ -25,7 +25,6 @@ from czml3.properties import (
     Polygon,
     Polyline,
     PolylineArrowMaterial,
-    PolylineDash,
     PolylineDashMaterial,
     PolylineGlow,
     PolylineGlowMaterial,
@@ -545,8 +544,8 @@ def test_packet_polyline_dashed():
             positions=PositionList(
                 cartographicDegrees=[-75, 43, 500000, -125, 43, 500000]
             ),
-            material=PolylineDashMaterial(
-                polylineDash=PolylineDash(color=Color(rgba=[255, 0, 0, 255]))
+            material=PolylineMaterial(
+                polylineDash=PolylineDashMaterial(color=Color(rgba=[255, 0, 0, 255]))
             ),
         ),
     )

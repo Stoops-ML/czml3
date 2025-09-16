@@ -38,7 +38,6 @@ from czml3.properties import (
     Polygon,
     Polyline,
     PolylineArrowMaterial,
-    PolylineDash,
     PolylineDashMaterial,
     PolylineGlow,
     PolylineGlowMaterial,
@@ -295,8 +294,8 @@ def test_dashmaterial_colors():
         "dashPattern": 255
     }
 }"""
-    dashmat = PolylineDashMaterial(
-        polylineDash=PolylineDash(
+    dashmat = PolylineMaterial(
+        polylineDash=PolylineDashMaterial(
             color=Color(rgba=[200, 100, 30, 255]),
             gapColor=Color(rgba=[100, 200, 0, 255]),
             dashLength=16,

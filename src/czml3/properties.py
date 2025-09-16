@@ -141,8 +141,8 @@ class PolylineArrowMaterial(BaseCZMLObject):
     """The color of the surface. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Color>`__ for it's definition."""
 
 
-class PolylineDash(BaseCZMLObject):
-    """A definition of how a polyline should be dashed with two colors.
+class PolylineDashMaterial(BaseCZMLObject):
+    """A material that provides a how a polyline should be dashed.
 
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineDashMaterial>`__ for it's definition.
     """
@@ -155,16 +155,6 @@ class PolylineDash(BaseCZMLObject):
     """The length in screen-space pixels of a single dash and gap pattern. """
     dashPattern: None | int | TimeIntervalCollection = Field(default=None)
     """A 16-bit bitfield representing which portions along a single dashLength are the dash (1) and which are the gap (0). The default value, 255 (0000000011111111), indicates 50% gap followed by 50% dash."""
-
-
-class PolylineDashMaterial(BaseCZMLObject):
-    """A material that provides a how a polyline should be dashed.
-
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineDashMaterial>`__ for it's definition.
-    """
-
-    polylineDash: None | PolylineDash | TimeIntervalCollection = Field(default=None)
-    """See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineDash>`__ for it's definition."""
 
 
 class PolylineMaterial(BaseCZMLObject):
