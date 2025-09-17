@@ -37,14 +37,10 @@ from czml3.properties import (
     Point,
     Polygon,
     Polyline,
-    PolylineArrow,
     PolylineArrowMaterial,
-    PolylineDash,
     PolylineDashMaterial,
-    PolylineGlow,
     PolylineGlowMaterial,
     PolylineMaterial,
-    PolylineOutline,
     PolylineOutlineMaterial,
     Position,
     PositionList,
@@ -266,8 +262,8 @@ def test_arrowmaterial_color():
         }
     }
 }"""
-    pamat = PolylineArrowMaterial(
-        polylineArrow=PolylineArrow(color=Color(rgba=[200, 100, 30, 255])),
+    pamat = PolylineMaterial(
+        polylineArrow=PolylineArrowMaterial(color=Color(rgba=[200, 100, 30, 255])),
     )
 
     assert str(pamat) == expected_result
@@ -296,8 +292,8 @@ def test_dashmaterial_colors():
         "dashPattern": 255
     }
 }"""
-    dashmat = PolylineDashMaterial(
-        polylineDash=PolylineDash(
+    dashmat = PolylineMaterial(
+        polylineDash=PolylineDashMaterial(
             color=Color(rgba=[200, 100, 30, 255]),
             gapColor=Color(rgba=[100, 200, 0, 255]),
             dashLength=16,
@@ -323,8 +319,8 @@ def test_glowmaterial_color():
         "taperPower": 0.3
     }
 }"""
-    glowmat = PolylineGlowMaterial(
-        polylineGlow=PolylineGlow(
+    glowmat = PolylineMaterial(
+        polylineGlow=PolylineGlowMaterial(
             color=Color(rgba=[200, 100, 30, 255]), glowPower=0.7, taperPower=0.3
         )
     )
@@ -353,8 +349,8 @@ def test_outline_material_colors():
         "outlineWidth": 3.0
     }
 }"""
-    omat = PolylineOutlineMaterial(
-        polylineOutline=PolylineOutline(
+    omat = PolylineMaterial(
+        polylineOutline=PolylineOutlineMaterial(
             color=Color(rgba=[200, 100, 30, 255]),
             outlineColor=Color(rgba=[100, 200, 0, 255]),
             outlineWidth=3,

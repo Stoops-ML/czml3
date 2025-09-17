@@ -24,14 +24,10 @@ from czml3.properties import (
     Point,
     Polygon,
     Polyline,
-    PolylineArrow,
     PolylineArrowMaterial,
-    PolylineDash,
     PolylineDashMaterial,
-    PolylineGlow,
     PolylineGlowMaterial,
     PolylineMaterial,
-    PolylineOutline,
     PolylineOutlineMaterial,
     Position,
     PositionList,
@@ -406,8 +402,8 @@ def test_packet_polyline_outline():
             positions=PositionList(
                 cartographicDegrees=[-75, 43, 500000, -125, 43, 500000]
             ),
-            material=PolylineOutlineMaterial(
-                polylineOutline=PolylineOutline(
+            material=PolylineMaterial(
+                polylineOutline=PolylineOutlineMaterial(
                     color=Color(rgba=[255, 0, 0, 255]),
                     outlineColor=Color(rgba=[255, 0, 0, 255]),
                     outlineWidth=2,
@@ -456,8 +452,8 @@ def test_packet_polyline_glow():
             positions=PositionList(
                 cartographicDegrees=[-75, 43, 500000, -125, 43, 500000]
             ),
-            material=PolylineGlowMaterial(
-                polylineGlow=PolylineGlow(
+            material=PolylineMaterial(
+                polylineGlow=PolylineGlowMaterial(
                     color=Color(rgba=[255, 0, 0, 255]),
                     glowPower=0.2,
                     taperPower=0.5,
@@ -503,8 +499,8 @@ def test_packet_polyline_arrow():
             positions=PositionList(
                 cartographicDegrees=[-75, 43, 500000, -125, 43, 500000]
             ),
-            material=PolylineArrowMaterial(
-                polylineArrow=PolylineArrow(color=Color(rgba=[255, 0, 0, 255]))
+            material=PolylineMaterial(
+                polylineArrow=PolylineArrowMaterial(color=Color(rgba=[255, 0, 0, 255]))
             ),
         ),
     )
@@ -546,8 +542,8 @@ def test_packet_polyline_dashed():
             positions=PositionList(
                 cartographicDegrees=[-75, 43, 500000, -125, 43, 500000]
             ),
-            material=PolylineDashMaterial(
-                polylineDash=PolylineDash(color=Color(rgba=[255, 0, 0, 255]))
+            material=PolylineMaterial(
+                polylineDash=PolylineDashMaterial(color=Color(rgba=[255, 0, 0, 255]))
             ),
         ),
     )

@@ -75,14 +75,10 @@ class Material(BaseCZMLObject):
         default=None
     )
     """A material that fills the surface with a checkerboard pattern. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/CheckerboardMaterial>`__ for it's definition."""
-    polylineOutline: (
-        None | PolylineMaterial | PolylineOutline | TimeIntervalCollection
-    ) = Field(default=None)  # NOTE: Not in documentation
-    """See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineOutline>`__ for it's definition."""
 
 
-class PolylineOutline(BaseCZMLObject):
-    """A definition of how a surface is colored or shaded.
+class PolylineOutlineMaterial(BaseCZMLObject):
+    """A material that fills the surface of a line with an outlined color.
 
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineOutlineMaterial>`__ for it's definition.
     """
@@ -95,20 +91,8 @@ class PolylineOutline(BaseCZMLObject):
     """The width of the outline."""
 
 
-class PolylineOutlineMaterial(BaseCZMLObject):
-    """A definition of the material wrapper for a polyline outline.
-
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineOutlineMaterial>`__ for it's definition.
-    """
-
-    polylineOutline: None | PolylineOutline | TimeIntervalCollection = Field(
-        default=None
-    )
-    """See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineOutline>`__ for it's definition."""
-
-
-class PolylineGlow(BaseCZMLObject):
-    """A definition of how a glowing polyline appears.
+class PolylineGlowMaterial(BaseCZMLObject):
+    """A material that fills the surface of a line with a glowing color.
 
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineGlowMaterial>`__ for it's definition.
     """
@@ -121,18 +105,8 @@ class PolylineGlow(BaseCZMLObject):
     """The strength of the tapering effect. 1.0 and higher means no tapering."""
 
 
-class PolylineGlowMaterial(BaseCZMLObject):
-    """A material that fills the surface of a line with a glowing color.
-
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineGlowMaterial>`__ for it's definition.
-    """
-
-    polylineGlow: None | PolylineGlow | TimeIntervalCollection = Field(default=None)
-    """See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineGlow>`__ for it's definition."""
-
-
-class PolylineArrow(BaseCZMLObject):
-    """A definition of how a polyline arrow appears.
+class PolylineArrowMaterial(BaseCZMLObject):
+    """A material that fills the surface of a line with an arrow.
 
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineArrowMaterial>`__ for it's definition.
     """
@@ -141,18 +115,8 @@ class PolylineArrow(BaseCZMLObject):
     """The color of the surface. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Color>`__ for it's definition."""
 
 
-class PolylineArrowMaterial(BaseCZMLObject):
-    """A material that fills the surface of a line with an arrow.
-
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineArrowMaterial>`__ for it's definition.
-    """
-
-    polylineArrow: None | PolylineArrow | TimeIntervalCollection = Field(default=None)
-    """See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineArrow>`__ for it's definition."""
-
-
-class PolylineDash(BaseCZMLObject):
-    """A definition of how a polyline should be dashed with two colors.
+class PolylineDashMaterial(BaseCZMLObject):
+    """A material that provides a how a polyline should be dashed.
 
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineDashMaterial>`__ for it's definition.
     """
@@ -165,16 +129,6 @@ class PolylineDash(BaseCZMLObject):
     """The length in screen-space pixels of a single dash and gap pattern. """
     dashPattern: None | int | TimeIntervalCollection = Field(default=None)
     """A 16-bit bitfield representing which portions along a single dashLength are the dash (1) and which are the gap (0). The default value, 255 (0000000011111111), indicates 50% gap followed by 50% dash."""
-
-
-class PolylineDashMaterial(BaseCZMLObject):
-    """A material that provides a how a polyline should be dashed.
-
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineDashMaterial>`__ for it's definition.
-    """
-
-    polylineDash: None | PolylineDash | TimeIntervalCollection = Field(default=None)
-    """See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineDash>`__ for it's definition."""
 
 
 class PolylineMaterial(BaseCZMLObject):
@@ -809,31 +763,17 @@ class Polyline(BaseCZMLObject):
     """The width of the polyline."""
     granularity: None | float | TimeIntervalCollection = Field(default=None)
     """The sampling distance, in radians."""
-    material: (
-        None
-        | PolylineMaterial
-        | PolylineDashMaterial
-        | PolylineArrowMaterial
-        | PolylineGlowMaterial
-        | PolylineOutlineMaterial
-        | str
-        | TimeIntervalCollection
-    ) = Field(default=None)
+    material: None | PolylineMaterial | str | TimeIntervalCollection = Field(
+        default=None
+    )
     """The material to use to draw the polyline. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Field>`__ for it's definition."""
     followSurface: None | bool | TimeIntervalCollection = Field(default=None)
     """Whether or not the positions are connected as great arcs (the default) or as straight lines. This property has been superseded by `arcType`, which should be used instead."""
     shadows: None | ShadowMode | TimeIntervalCollection = Field(default=None)
     """Whether or not the polyline casts or receives shadows. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ShadowMode>`__ for it's definition."""
-    depthFailMaterial: (
-        None
-        | PolylineMaterial
-        | PolylineDashMaterial
-        | PolylineArrowMaterial
-        | PolylineGlowMaterial
-        | PolylineOutlineMaterial
-        | str
-        | TimeIntervalCollection
-    ) = Field(default=None)
+    depthFailMaterial: None | PolylineMaterial | str | TimeIntervalCollection = Field(
+        default=None
+    )
     """The material to use to draw the polyline when it is below the terrain. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Field>`__ for it's definition."""
     distanceDisplayCondition: (
         None | DistanceDisplayCondition | TimeIntervalCollection
