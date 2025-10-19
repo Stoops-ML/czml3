@@ -108,6 +108,16 @@ dev = [
     "types-python-dateutil",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "build",
+    "pytest",
+    "pytest-cov",
+    "pytest-mypy",
+    "ruff",
+    "tox",
+    "types-python-dateutil",
+]
 
 [tool.setuptools.dynamic]
 version = {attr = "czml3.__version__"}
