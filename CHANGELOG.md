@@ -1,3 +1,10 @@
+# v3.0.0
+
+* Flattened `PolylineArrowMaterial`, `PolylineDashMaterial`, `PolylineOutlineMaterial`, and `PolylineGlowMaterial`
+* Removed redundant nesting of `material` properties
+* Restricted `Polyline.material` and `Polyline.depthFailMaterial` to accept only `PolylineMaterial`, `str`, or `TimeIntervalCollection`
+* Updated tests accordingly
+
 # v2.3.6
 
 * Add `interval` property to `Clock`
