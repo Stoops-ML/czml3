@@ -1,3 +1,7 @@
+# v3.1.0
+
+* Support Python 3.14
+
 # v3.0.0
 
 * Flattened `PolylineArrowMaterial`, `PolylineDashMaterial`, `PolylineOutlineMaterial`, and `PolylineGlowMaterial`
