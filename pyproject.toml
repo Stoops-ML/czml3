@@ -13,7 +13,7 @@ select = [
 [tool.tox]
 legacy_tox_ini = """
     [tox]
-    envlist = quality, test, pypy, pypy3, py{310,311,312,313}
+    envlist = quality, test, pypy, pypy3, py{310,311,312,313,314}
 
     [gh-actions]
     python =
@@ -21,6 +21,7 @@ legacy_tox_ini = """
         3.11: py311, quality, test, pypy, pypy3
         3.12: py312
         3.13: py313
+        3.14: py314
 
     [testenv]
     basepython =
@@ -30,6 +31,7 @@ legacy_tox_ini = """
         py311: {env:PYTHON:python3.11}
         py312: {env:PYTHON:python3.12}
         py313: {env:PYTHON:python3.13}
+        py314: {env:PYTHON:python3.14}
         {quality,test,coverage}: {env:PYTHON:python3}
     setenv =
         PYTHONUNBUFFERED = yes
@@ -78,6 +80,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: CPython",
     "Intended Audience :: Education",
     "Intended Audience :: Science/Research",
