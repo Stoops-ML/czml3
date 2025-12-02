@@ -475,8 +475,8 @@ class NearFarScalarValue(BaseCZMLObject):
 class TimeInterval(BaseCZMLObject):
     """A time interval, specified in ISO8601 interval format."""
 
-    start: str | dt.datetime = Field(default="0001-01-01T00:00:00Z")
-    end: str | dt.datetime = Field(default="9999-12-31T23:59:59Z")
+    start: str | dt.datetime
+    end: str | dt.datetime
 
     @field_validator("start", "end")
     @classmethod
