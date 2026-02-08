@@ -1568,6 +1568,40 @@ class NearFarScalar(BaseCZMLObject, Interpolatable, Deletable):
         return r
 
 
+class Rotation(BaseCZMLObject, Interpolatable, Deletable):
+    """Defines a rotation that transforms a vector expressed in one axes and transforms it to another.
+
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Rotation>`__ for it's definition.
+    """
+
+    unitQuaternion: None | UnitQuaternionValue | TimeIntervalCollection = Field(
+        default=None
+    )
+    """The value specified as four values `[NearDistance, NearValue, FarDistance, FarValue]`, with distances in eye coordinates in meters. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/NearFarScalarValue>`__ for it's definition."""
+    reference: None | ReferenceValue | str | TimeIntervalCollection = Field(
+        default=None
+    )
+    """The value specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
+    epoch: None | str | dt.datetime | TimeIntervalCollection = Field(
+        default=None
+    )  # NOTE: not found in documentation
+
+    @model_validator(mode="after")
+    def checks(self):
+        if self.delete:
+            return self
+        if sum(val is not None for val in (self.unitQuaternion, self.reference)) != 1:
+            raise TypeError("Only one of nearFarScalar or reference must be given")
+        return self
+
+    @field_validator("reference")
+    @classmethod
+    def validate_reference(cls, r):
+        if isinstance(r, str):
+            return ReferenceValue(value=r)
+        return r
+
+
 class Label(BaseCZMLObject):
     """A string of text.
 
