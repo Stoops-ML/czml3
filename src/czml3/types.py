@@ -562,9 +562,19 @@ class NumberValue(BaseCZMLObject):
     """A single number, or a list of number pairs signifying the time and representative value."""
 
     values: int | float | list[float] | int | list[int]
+    epoch: None | str | dt.datetime = Field(default=None)
+
+    @field_validator("epoch")
+    @classmethod
+    def check(cls, e):
+        return format_datetime_like(e)
 
     @model_serializer
     def custom_serializer(self):
-        if isinstance(self.values, int | float):
-            return {"number": self.values}
-        return {"number": list(self.values)}
+        out = {}
+        out["number"] = (
+            self.values if isinstance(self.values, int | float) else list(self.values)
+        )
+        if self.epoch:
+            out["epoch"] = self.epoch
+        return out
