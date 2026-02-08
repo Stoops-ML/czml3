@@ -1653,9 +1653,9 @@ class Orientation(BaseCZMLObject, Interpolatable, Deletable):
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Orientation>`__ for it's definition.
     """
 
-    unitQuaternion: (
-        None | list[float] | UnitQuaternionValue | TimeIntervalCollection
-    ) = Field(default=None)
+    unitQuaternion: None | UnitQuaternionValue | TimeIntervalCollection = Field(
+        default=None
+    )
     """The orientation specified as a 4-dimensional unit magnitude quaternion, specified as `[X, Y, Z, W]`. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/UnitQuaternionValue>`__ for it's definition."""
     reference: None | ReferenceValue | str | TimeIntervalCollection = Field(
         default=None
