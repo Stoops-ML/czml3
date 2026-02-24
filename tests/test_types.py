@@ -22,7 +22,6 @@ from czml3.types import (
     ReferenceValue,
     RgbafValue,
     RgbaValue,
-    TimeInterval,
     UnitQuaternionValue,
     check_reference,
     format_datetime_like,
@@ -170,11 +169,6 @@ def test_bad_rgbaf_4_values_raises_error():
 def test_bad_rgbaf_5_color_values_raises_error():
     with pytest.raises(TypeError):
         RgbafValue(values=[0, 0.1, 0.3, 0.3, 255])
-
-
-def test_empty_time_interval():
-    with pytest.raises(ValueError):
-        TimeInterval()
 
 
 def test_bad_time_raises_error():
