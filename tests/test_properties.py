@@ -931,6 +931,16 @@ def test_rotation_unit_quaternion_as_list():
     assert str(result) == expected_result
 
 
+def test_rotation_with_reference():
+    expected_result = """{
+    "reference": "this#that"
+}"""
+
+    result = Rotation(reference="this#that")
+
+    assert str(result) == expected_result
+
+
 def test_model():
     expected_result = """{
     "gltf": "https://sandcastle.cesium.com/SampleData/models/CesiumAir/Cesium_Air.glb"
