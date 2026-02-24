@@ -2190,6 +2190,7 @@ def test_rotation():
     )
     assert str(p) == expected_result
 
+
 def test_billboard_rotation():
     expected_result = """{
     "image": "file://image.png",
