@@ -1653,9 +1653,9 @@ class Orientation(BaseCZMLObject, Interpolatable, Deletable):
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Orientation>`__ for it's definition.
     """
 
-    unitQuaternion: None | UnitQuaternionValue | TimeIntervalCollection = Field(
-        default=None
-    )
+    unitQuaternion: (
+        None | list[float] | UnitQuaternionValue | TimeIntervalCollection
+    ) = Field(default=None)
     """The orientation specified as a 4-dimensional unit magnitude quaternion, specified as `[X, Y, Z, W]`. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/UnitQuaternionValue>`__ for it's definition."""
     reference: None | ReferenceValue | str | TimeIntervalCollection = Field(
         default=None
@@ -1671,6 +1671,13 @@ class Orientation(BaseCZMLObject, Interpolatable, Deletable):
         if sum(val is not None for val in (self.unitQuaternion, self.reference)) != 1:
             raise TypeError("Only one of unitQuaternion or reference must be given")
         return self
+
+    @field_validator("unitQuaternion")
+    @classmethod
+    def validate_unitQuaternion(cls, q):
+        if isinstance(q, list):
+            return UnitQuaternionValue(values=q)
+        return q
 
     @field_validator("reference")
     @classmethod
