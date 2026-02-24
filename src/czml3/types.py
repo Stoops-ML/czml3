@@ -571,7 +571,7 @@ class NumberValue(BaseCZMLObject):
 
     @model_serializer
     def custom_serializer(self):
-        out = {}
+        out: dict[str, Any] = {}
         out["number"] = (
             self.values if isinstance(self.values, int | float) else list(self.values)
         )

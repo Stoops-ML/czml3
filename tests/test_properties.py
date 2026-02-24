@@ -633,6 +633,22 @@ def test_position_has_delete():
     assert str(pos) == expected_result
 
 
+def test_rotation_has_delete():
+    expected_result = """{
+    "delete": true
+}"""
+    r = Rotation(delete=True, reference="this#that")
+    assert r.delete
+    assert str(r) == expected_result
+
+
+def test_rotation_has_one_property():
+    with pytest.raises(
+        TypeError, match="Only one of unitQuaternion or reference must be given"
+    ):
+        Rotation(reference="this#that", unitQuaternion=[0, 0, 0, 0])
+
+
 def test_position_list_has_delete():
     expected_result = """{
     "delete": true
@@ -881,6 +897,46 @@ def test_orientation():
 }"""
 
     result = Orientation(unitQuaternion=UnitQuaternionValue(values=[0, 0, 0, 1]))
+
+    assert str(result) == expected_result
+
+
+def test_rotation_unit_quaternion():
+    expected_result = """{
+    "unitQuaternion": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+    ]
+}"""
+
+    result = Rotation(unitQuaternion=UnitQuaternionValue(values=[0, 0, 0, 1]))
+
+    assert str(result) == expected_result
+
+
+def test_rotation_unit_quaternion_as_list():
+    expected_result = """{
+    "unitQuaternion": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+    ]
+}"""
+
+    result = Rotation(unitQuaternion=[0, 0, 0, 1])
+
+    assert str(result) == expected_result
+
+
+def test_rotation_with_reference():
+    expected_result = """{
+    "reference": "this#that"
+}"""
+
+    result = Rotation(reference=ReferenceValue(value="this#that"))
 
     assert str(result) == expected_result
 
@@ -2189,6 +2245,7 @@ def test_rotation():
         ),
     )
     assert str(p) == expected_result
+
 
 def test_billboard_rotation():
     expected_result = """{
