@@ -1577,9 +1577,9 @@ class Rotation(BaseCZMLObject, Interpolatable, Deletable):
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Rotation>`__ for it's definition.
     """
 
-    unitQuaternion: None | UnitQuaternionValue | TimeIntervalCollection = Field(
-        default=None
-    )
+    unitQuaternion: (
+        None | list[float] | UnitQuaternionValue | TimeIntervalCollection
+    ) = Field(default=None)
     """The value specified as four values `[NearDistance, NearValue, FarDistance, FarValue]`, with distances in eye coordinates in meters. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/NearFarScalarValue>`__ for it's definition."""
     reference: None | ReferenceValue | str | TimeIntervalCollection = Field(
         default=None
@@ -1594,8 +1594,15 @@ class Rotation(BaseCZMLObject, Interpolatable, Deletable):
         if self.delete:
             return self
         if sum(val is not None for val in (self.unitQuaternion, self.reference)) != 1:
-            raise TypeError("Only one of nearFarScalar or reference must be given")
+            raise TypeError("Only one of unitQuaternion or reference must be given")
         return self
+
+    @field_validator("unitQuaternion")
+    @classmethod
+    def validate_unitQuaternion(cls, q):
+        if isinstance(q, list):
+            return UnitQuaternionValue(values=q)
+        return q
 
     @field_validator("reference")
     @classmethod
