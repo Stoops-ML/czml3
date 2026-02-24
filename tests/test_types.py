@@ -172,11 +172,9 @@ def test_bad_rgbaf_5_color_values_raises_error():
         RgbafValue(values=[0, 0.1, 0.3, 0.3, 255])
 
 
-def test_default_time_interval():
-    expected_result = '"0001-01-01T00:00:00Z/9999-12-31T23:59:59Z"'
-    time_interval = TimeInterval()
-
-    assert str(time_interval) == expected_result
+def test_empty_time_interval():
+    with pytest.raises(ValueError):
+        TimeInterval()
 
 
 def test_bad_time_raises_error():
