@@ -41,6 +41,7 @@ from .types import (
     CartographicRadiansValue,
     DistanceDisplayConditionValue,
     NearFarScalarValue,
+    NumberValue,
     ReferenceListOfListsValue,
     ReferenceListValue,
     ReferenceValue,
@@ -468,7 +469,9 @@ class Billboard(BaseCZMLObject):
     """The height reference of the billboard, which indicates if height is relative to terrain or not. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/HeightReference>`__ for it's definition."""
     color: None | Color | str | TimeIntervalCollection = Field(default=None)
     """The color of the billboard. This color value is multiplied with the values of the billboard's image to produce the final color. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Color>`__ for it's definition."""
-    rotation: None | float | TimeIntervalCollection = Field(default=None)
+    rotation: None | float | Rotation | NumberValue | TimeIntervalCollection = Field(
+        default=None
+    )
     """The rotation of the billboard, in radians, counter-clockwise from the alignedAxis."""
     sizeInMeters: None | bool | TimeIntervalCollection = Field(default=None)
     """Whether this billboard's size (width and height) should be measured in meters, otherwise size is measured in pixels."""
@@ -1568,6 +1571,47 @@ class NearFarScalar(BaseCZMLObject, Interpolatable, Deletable):
         return r
 
 
+class Rotation(BaseCZMLObject, Interpolatable, Deletable):
+    """Defines a rotation that transforms a vector expressed in one axes and transforms it to another.
+
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Rotation>`__ for it's definition.
+    """
+
+    unitQuaternion: (
+        None | list[float] | UnitQuaternionValue | TimeIntervalCollection
+    ) = Field(default=None)
+    """The value specified as four values `[NearDistance, NearValue, FarDistance, FarValue]`, with distances in eye coordinates in meters. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/NearFarScalarValue>`__ for it's definition."""
+    reference: None | ReferenceValue | str | TimeIntervalCollection = Field(
+        default=None
+    )
+    """The value specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
+    epoch: None | str | dt.datetime | TimeIntervalCollection = Field(
+        default=None
+    )  # NOTE: not found in documentation
+
+    @model_validator(mode="after")
+    def checks(self):
+        if self.delete:
+            return self
+        if sum(val is not None for val in (self.unitQuaternion, self.reference)) != 1:
+            raise TypeError("Only one of unitQuaternion or reference must be given")
+        return self
+
+    @field_validator("unitQuaternion")
+    @classmethod
+    def validate_unitQuaternion(cls, q):
+        if isinstance(q, list):
+            return UnitQuaternionValue(values=q)
+        return q
+
+    @field_validator("reference")
+    @classmethod
+    def validate_reference(cls, r):
+        if isinstance(r, str):
+            return ReferenceValue(value=r)
+        return r
+
+
 class Label(BaseCZMLObject):
     """A string of text.
 
@@ -1634,6 +1678,13 @@ class Orientation(BaseCZMLObject, Interpolatable, Deletable):
         if sum(val is not None for val in (self.unitQuaternion, self.reference)) != 1:
             raise TypeError("Only one of unitQuaternion or reference must be given")
         return self
+
+    @field_validator("unitQuaternion")
+    @classmethod
+    def validate_unitQuaternion(cls, q):
+        if isinstance(q, list):
+            return UnitQuaternionValue(values=q)
+        return q
 
     @field_validator("reference")
     @classmethod
