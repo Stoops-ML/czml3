@@ -936,7 +936,7 @@ def test_rotation_with_reference():
     "reference": "this#that"
 }"""
 
-    result = Rotation(reference="this#that")
+    result = Rotation(reference=ReferenceValue(value="this#that"))
 
     assert str(result) == expected_result
 
