@@ -1,5 +1,5 @@
 from .core import CZML_VERSION, Document, Packet
 
-__version__ = "3.2.0"
+__version__ = "3.3.0.a1"
 
 __all__ = ["Document", "Packet", "CZML_VERSION"]
