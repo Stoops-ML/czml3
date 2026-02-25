@@ -36,7 +36,7 @@ def create_svgs(
     ellipse: Ellipse | None,
     ellipsoid: Ellipsoid | None,
     cylinder: Cylinder | None,
-) -> tuple[str, float, float, float, float]:
+) -> tuple[list[str], float, float, float, float]:
     factor = 100  # svg requires resolution greater than difference between most LLA points, therefore use factor
     start_num = 9999999.0
     x_min, x_max, y_min, y_max = start_num, -start_num, start_num, -start_num
@@ -329,3 +329,40 @@ def position_to_geodetic(
         return [x * factor for i, x in enumerate(v) if (i + 1) % 3 != 0]
     else:
         raise ValueError
+
+
+def create_bounds(
+    x_min: float, x_max: float, y_min: float, y_max: float
+) -> tuple[float, float, float, float, float, float, float, float]:
+    if x_min == x_max and y_min == y_max:
+        x_min *= 0.99
+        y_min *= 0.99
+        x_max *= 1.01
+        y_max *= 1.01
+    else:
+        expand = 0.04
+        widest_part = max([x_max - x_min, y_max - y_min])
+        expand_amount = widest_part * expand
+        x_min -= expand_amount
+        y_min -= expand_amount
+        x_max += expand_amount
+        y_max += expand_amount
+    dx = x_max - x_min
+    dy = y_max - y_min
+    width = min([max([100.0, dx]), 300])
+    height = min([max([100.0, dy]), 300])
+    return x_min, x_max, y_min, y_max, dx, dy, width, height
+
+
+def make_svg(
+    x_min: float,
+    y_min: float,
+    y_max: float,
+    dx: float,
+    dy: float,
+    width: float,
+    height: float,
+    svg_elements: list[str],
+) -> str:
+    svg_start = f'<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" width="{width}" height="{height}" viewBox="{x_min} {y_min} {dx} {dy}"><g transform="matrix(1,0,0,-1,0,{y_min + y_max})">'
+    return "".join((svg_start, "".join(svg_elements), "</g></svg>"))

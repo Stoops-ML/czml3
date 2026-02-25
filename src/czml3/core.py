@@ -6,7 +6,7 @@ from pydantic import Field, field_validator, model_serializer
 from czml3.types import StringValue
 
 from .base import BaseCZMLObject
-from .czml2svg import create_svgs
+from .czml2svg import create_bounds, create_svgs, make_svg
 from .properties import (
     Billboard,
     Box,
@@ -101,7 +101,6 @@ class Packet(BaseCZMLObject):
     """A two-dimensional wall which conforms to the curvature of the globe and can be placed along the surface or at altitude."""
 
     def _repr_svg_(self) -> str:
-        # create SVG elements
         svg_elements, x_min, x_max, y_min, y_max = create_svgs(
             self.position,
             self.point,
@@ -116,29 +115,10 @@ class Packet(BaseCZMLObject):
             self.ellipsoid,
             self.cylinder,
         )
-
-        # bounds
-        if x_min == x_max and y_min == y_max:
-            x_min *= 0.99
-            y_min *= 0.99
-            x_max *= 1.01
-            y_max *= 1.01
-        else:
-            expand = 0.04
-            widest_part = max([x_max - x_min, y_max - y_min])
-            expand_amount = widest_part * expand
-            x_min -= expand_amount
-            y_min -= expand_amount
-            x_max += expand_amount
-            y_max += expand_amount
-        dx = x_max - x_min
-        dy = y_max - y_min
-        width = min([max([100.0, dx]), 300])
-        height = min([max([100.0, dy]), 300])
-
-        # finalise SVG
-        svg_start = f'<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" width="{width}" height="{height}" viewBox="{x_min} {y_min} {dx} {dy}"><g transform="matrix(1,0,0,-1,0,{y_min + y_max})">'
-        return "".join((svg_start, "".join(svg_elements), "</g></svg>"))
+        x_min, _, y_min, y_max, dx, dy, width, height = create_bounds(
+            x_min, x_max, y_min, y_max
+        )
+        return make_svg(x_min, y_min, y_max, dx, dy, width, height, svg_elements)
 
 
 class Document(BaseCZMLObject):
