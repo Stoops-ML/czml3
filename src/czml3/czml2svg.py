@@ -21,7 +21,6 @@ from .properties import (
     Rectangle,
     Wall,
 )
-from .types import TimeIntervalCollection
 
 
 def create_svgs(
@@ -276,17 +275,17 @@ def create_svgs(
             x_min, x_max, y_min, y_max, deg_lon, deg_lon, deg_lat, deg_lat
         )
 
-    return "".join(svg_elements), x_min, x_max, y_min, y_max
+    return svg_elements, x_min, x_max, y_min, y_max
 
 
 def extract_colour_from_material(material: Material | None) -> str:
-    if material is None or isinstance(material, TimeIntervalCollection):
+    if material is None or not isinstance(material, Material):
         return extract_colour_from_color(None)
     return extract_colour_from_color(material.solidColor.color)
 
 
 def extract_colour_from_color(color: Color | None) -> str:
-    if color is None or isinstance(color, TimeIntervalCollection):
+    if color is None or not isinstance(color, Color):
         c = list(Colour("black").rgba)
     elif color.rgba:
         c = deepcopy(color.rgba.values)
