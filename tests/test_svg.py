@@ -1,4 +1,4 @@
-
+import datetime as dt
 
 from czml3 import Packet
 from czml3.enums import InterpolationAlgorithms, ReferenceFrames
@@ -25,6 +25,7 @@ from czml3.properties import (
     Wall,
 )
 from czml3.types import (
+    IntervalValue,
     TimeIntervalCollection,
 )
 
@@ -96,6 +97,8 @@ def test_packet_wall_svg():
 
 
 def test_packet_path_svg():
+    start = dt.datetime(2012, 3, 15, 10, tzinfo=dt.timezone.utc)
+    end = dt.datetime(2012, 3, 16, 10, tzinfo=dt.timezone.utc)
     packet = (
         Packet(
             path=Path(
