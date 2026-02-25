@@ -169,4 +169,31 @@ class Document(BaseCZMLObject):
     def custom_serializer(self):
         return list(self.packets)
 
-    def _repr_svg_(self) -> str: ...
+    def _repr_svg_(self) -> str:
+        start_num = 9999999.0
+        x_min, x_max, y_min, y_max = start_num, -start_num, start_num, -start_num
+        svg_elements = []
+        for p in self.packets:
+            svg_elements_tmp, x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp = create_svgs(
+                p.position,
+                p.point,
+                p.rectangle,
+                p.box,
+                p.polyline,
+                p.corridor,
+                p.wall,
+                p.path,
+                p.polygon,
+                p.ellipse,
+                p.ellipsoid,
+                p.cylinder,
+            )
+            svg_elements.extend(svg_elements_tmp)
+            x_min = min(x_min, x_min_tmp)
+            x_max = max(x_max, x_max_tmp)
+            y_min = min(y_min, y_min_tmp)
+            y_max = max(y_max, y_max_tmp)
+        x_min, _, y_min, y_max, dx, dy, width, height = create_bounds(
+            x_min, x_max, y_min, y_max
+        )
+        return make_svg(x_min, y_min, y_max, dx, dy, width, height, svg_elements)
