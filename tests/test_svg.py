@@ -1,6 +1,6 @@
 import datetime as dt
 
-from czml3 import Packet
+from czml3 import CZML_VERSION, Document, Packet
 from czml3.enums import InterpolationAlgorithms, ReferenceFrames
 from czml3.properties import (
     Box,
@@ -1367,3 +1367,18 @@ def test_packet_polygon_svg():
         ),
     )
     print(packet._repr_svg_())
+
+
+def test_document_svg():
+    packets = [
+        Packet(version=CZML_VERSION, name="document", id="document"),
+        Packet(
+            point=Point(color=Color(rgba=[255, 0, 0, 255])),
+            position=Position(cartographicDegrees=[30.0, 31.0, 10.0]),
+        ),
+        Packet(
+            point=Point(color=Color(rgba=[100, 0, 0, 255])),
+            position=Position(cartographicDegrees=[31.0, 31.0, 10.0]),
+        ),
+    ]
+    print(Document(packets=packets)._repr_svg_())
