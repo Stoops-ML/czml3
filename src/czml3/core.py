@@ -128,7 +128,7 @@ class Document(BaseCZMLObject):
 
     @field_validator("packets")
     @classmethod
-    def validate_packets(cls, packets):
+    def validate_packets(cls, packets: list[Packet]):
         if packets[0].version is None or packets[0].name is None:
             raise ValueError(
                 "The first packet must be a preamble and include 'version' and 'name' properties."
