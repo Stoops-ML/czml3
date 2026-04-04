@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import sys
 from typing import Any
 from urllib.parse import urlparse
 
@@ -49,9 +50,86 @@ from .types import (
     RgbaValue,
     TimeInterval,
     TimeIntervalCollection,
+    UnitCartesian3Value,
     UnitQuaternionValue,
+    UnitSphericalValue,
+    VelocityReferenceValue,
     format_datetime_like,
 )
+
+if sys.version_info[1] >= 11:
+    from typing import Self
+else:
+    from typing_extensions import Self  # pragma: no cover
+
+
+class AlignedAxis(BaseCZMLObject, Interpolatable, Deletable):
+    """An aligned axis represented by a unit vector which can optionally vary over time.
+
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/AlignedAxis>`__ for it's definition.
+    """
+
+    unitCartesian: None | UnitCartesian3Value | list[float] | TimeIntervalCollection = (
+        Field(default=None)
+    )
+    """The axis specified as a three-dimensional unit magnitude Cartesian value [X, Y, Z], in world coordinates. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/UnitCartesian3Value>`__ for it's definition."""
+    unitSpherical: None | UnitSphericalValue | list[float] | TimeIntervalCollection = (
+        Field(default=None)
+    )
+    """The axis specified as a unit spherical value [Clock, Cone], in radians. The clock angle is measured in the XY plane from the positive X axis toward the positive Y axis. The cone angle is the angle from the positive Z axis toward the negative Z axis. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/UnitSphericalValue>`__ for it's definition."""
+    reference: None | ReferenceValue | str | TimeIntervalCollection = Field(
+        default=None
+    )
+    """The axis specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
+    velocityReference: None | VelocityReferenceValue | str | TimeIntervalCollection = (
+        Field(default=None)
+    )
+    """The axis specified as the normalized velocity vector of a position property. The reference must be to a position property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/VelocityReferenceValue>`__ for it's definition."""
+
+    @model_validator(mode="after")
+    def checks(self) -> Self:
+        if self.delete:
+            return self
+        if (
+            sum(
+                val is not None
+                for val in (
+                    self.unitCartesian,
+                    self.unitSpherical,
+                    self.reference,
+                    self.velocityReference,
+                )
+            )
+            != 1
+        ):
+            raise TypeError(_ := "Only one of unit or reference must be given.")
+        return self
+
+    @field_validator("unitCartesian")
+    @classmethod
+    def validate_cartesian(
+        cls, r: UnitCartesian3Value | list[float]
+    ) -> UnitCartesian3Value:
+        return UnitCartesian3Value(values=r) if isinstance(r, list) else r
+
+    @field_validator("unitSpherical")
+    @classmethod
+    def validate_spherical(
+        cls, r: UnitSphericalValue | list[float]
+    ) -> UnitSphericalValue:
+        return UnitSphericalValue(values=r) if isinstance(r, list) else r
+
+    @field_validator("reference")
+    @classmethod
+    def validate_reference(cls, r: ReferenceValue | str) -> ReferenceValue:
+        return ReferenceValue(value=r) if isinstance(r, str) else r
+
+    @field_validator("velocityReference")
+    @classmethod
+    def validate_velocity_reference(
+        cls, r: VelocityReferenceValue | str
+    ) -> VelocityReferenceValue:
+        return VelocityReferenceValue(value=r) if isinstance(r, str) else r
 
 
 class Material(BaseCZMLObject):
@@ -475,6 +553,8 @@ class Billboard(BaseCZMLObject):
     """The height reference of the billboard, which indicates if height is relative to terrain or not. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/HeightReference>`__ for it's definition."""
     color: None | Color | str | TimeIntervalCollection = Field(default=None)
     """The color of the billboard. This color value is multiplied with the values of the billboard's image to produce the final color. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Color>`__ for it's definition."""
+    alignedAxis: None | AlignedAxis = Field(default=None)
+    """The aligned axis is the unit vector, in world coordinates, that the billboard up vector points towards. The default is the zero vector, which means the billboard is aligned to the screen up vector."""
     rotation: None | float | Rotation | NumberValue | TimeIntervalCollection = Field(
         default=None
     )
@@ -1658,6 +1738,18 @@ class Label(BaseCZMLObject):
         default=None
     )
     """See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/VerticalOrigin>`__ for it's definition."""
+    heightReference: None | HeightReference = Field(default=None)
+    """The height reference of the label, which indicates if the position is relative to terrain or not."""
+    translucencyByDistance: None | list[float] | NearFarScalar = Field(default=None)
+    """How the label's translucency should change based on the label's distance from the camera. This scalar value should range from 0 to 1."""
+    pixelOffsetScaleByDistance: None | list[float] | NearFarScalar = Field(default=None)
+    """How the label's pixel offset should change based on the label's distance from the camera. This scalar value will be multiplied by pixelOffset."""
+    scaleByDistance: None | list[float] | NearFarScalar = Field(default=None)
+    """How the label's scale should change based on the label's distance from the camera. This scalar value will be multiplied by scale."""
+    distanceDisplayCondition: None | DistanceDisplayCondition = Field(default=None)
+    """The display condition specifying the distance from the camera at which this label will be displayed."""
+    disableDepthTestDistance: None | float = Field(default=None)
+    """The distance from the camera at which to disable the depth test. This can be used to prevent clipping against terrain, for example. When set to zero, the depth test is always applied. When set to Infinity, the depth test is never applied."""
 
 
 class Orientation(BaseCZMLObject, Interpolatable, Deletable):

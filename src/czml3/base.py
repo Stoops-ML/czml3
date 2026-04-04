@@ -16,7 +16,7 @@ class BaseCZMLObject(BaseModel):
     @model_validator(mode="after")
     def check_delete(self) -> Self:
         if hasattr(self, "delete") and self.delete:
-            for k in self.model_fields:
+            for k in type(self).model_fields:
                 if k not in NON_DELETE_PROPERTIES and getattr(self, k) is not None:
                     setattr(self, k, None)
         return self
