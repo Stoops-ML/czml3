@@ -12,6 +12,7 @@ from czml3.enums import (
     ShadowModes,
 )
 from czml3.properties import (
+    AlignedAxis,
     ArcType,
     Billboard,
     Box,
@@ -629,6 +630,23 @@ def test_position_has_delete():
     pos = Position(delete=True, cartesian=[0, 0, 0])
     assert pos.delete
     assert str(pos) == expected_result
+
+
+def test_aligned_axis_has_delete():
+    expected_result = """{
+    "delete": true
+}"""
+    r = AlignedAxis(delete=True, reference="this#that")
+    assert r.delete
+    assert str(r) == expected_result
+
+
+def test_aligned_axis_has_one_property():
+    with pytest.raises(TypeError, match="Only one of unit or reference must be given"):
+        AlignedAxis(
+            unitCartesian=[1, 0, 0],
+            velocityReference="this#that",
+        )
 
 
 def test_rotation_has_delete():
@@ -2262,6 +2280,62 @@ def test_billboard_rotation():
         rotation=NumberValue(
             values=[1, 2, 3],
             epoch=dt.datetime(2019, 6, 11, 12, 26, 58, tzinfo=dt.timezone.utc),
+        ),
+    )
+    assert str(packet) == expected_result
+
+
+def test_aligned_axis():
+    expected_result = """{
+    "unitCartesian": [
+        0.0,
+        0.0,
+        1.0
+    ]
+}"""
+    p = AlignedAxis(unitCartesian=[0.0, 0.0, 1.0])
+    assert str(p) == expected_result
+
+    expected_result = """{
+    "unitSpherical": [
+        0.0,
+        1.0,
+        0.0
+    ]
+}"""
+    p = AlignedAxis(unitSpherical=[0.0, 1.0, 0.0])
+    assert str(p) == expected_result
+
+    expected_result = """{
+    "reference": "object#property"
+}"""
+    p = AlignedAxis(reference="object#property")
+    assert str(p) == expected_result
+
+    expected_result = """{
+    "velocityReference": "object#position"
+}"""
+    p = AlignedAxis(velocityReference="object#position")
+    assert str(p) == expected_result
+
+
+def test_billboard_aligned_axis():
+    expected_result = """{
+    "image": "file://image.png",
+    "alignedAxis": {
+        "epoch": "2019-06-11T12:26:58.000000Z",
+        "unitCartesian": [
+            1.0,
+            0.0,
+            0.0
+        ]
+    }
+}"""
+    packet = Billboard(
+        image="file://image.png",
+        alignedAxis=AlignedAxis(
+            epoch=dt.datetime(2019, 6, 11, 12, 26, 58, tzinfo=dt.timezone.utc),
+            unitCartesian=[1.0, 0.0, 0.0],
         ),
     )
     assert str(packet) == expected_result
