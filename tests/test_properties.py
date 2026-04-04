@@ -634,6 +634,23 @@ def test_position_has_delete():
     assert str(pos) == expected_result
 
 
+def test_aligned_axis_has_delete():
+    expected_result = """{
+    "delete": true
+}"""
+    r = AlignedAxis(delete=True, reference="this#that")
+    assert r.delete
+    assert str(r) == expected_result
+
+
+def test_aligned_axis_has_one_property():
+    with pytest.raises(TypeError, match="Only one of unit or reference must be given"):
+        AlignedAxis(
+            unitCartesian=[1, 0, 0],
+            velocityReference="this#that",
+        )
+
+
 def test_rotation_has_delete():
     expected_result = """{
     "delete": true
