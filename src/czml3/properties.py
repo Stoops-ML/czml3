@@ -1652,6 +1652,18 @@ class Label(BaseCZMLObject):
         default=None
     )
     """See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/VerticalOrigin>`__ for it's definition."""
+    heightReference: None | HeightReference = Field(default=None)
+    """The height reference of the label, which indicates if the position is relative to terrain or not."""
+    translucencyByDistance: None | list[float] | NearFarScalar = Field(default=None)
+    """How the label's translucency should change based on the label's distance from the camera. This scalar value should range from 0 to 1."""
+    pixelOffsetScaleByDistance: None | list[float] | NearFarScalar = Field(default=None)
+    """How the label's pixel offset should change based on the label's distance from the camera. This scalar value will be multiplied by pixelOffset."""
+    scaleByDistance: None | list[float] | NearFarScalar = Field(default=None)
+    """How the label's scale should change based on the label's distance from the camera. This scalar value will be multiplied by scale."""
+    distanceDisplayCondition: None | DistanceDisplayCondition = Field(default=None)
+    """The display condition specifying the distance from the camera at which this label will be displayed."""
+    disableDepthTestDistance: None | float = Field(default=None)
+    """The distance from the camera at which to disable the depth test. This can be used to prevent clipping against terrain, for example. When set to zero, the depth test is always applied. When set to Infinity, the depth test is never applied."""
 
 
 class Orientation(BaseCZMLObject, Interpolatable, Deletable):
