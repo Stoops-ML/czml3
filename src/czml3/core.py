@@ -3,8 +3,6 @@ from uuid import uuid4
 
 from pydantic import Field, field_validator, model_serializer
 
-from czml3.types import StringValue
-
 from .base import BaseCZMLObject
 from .properties import (
     Billboard,
@@ -29,7 +27,7 @@ from .properties import (
     ViewFrom,
     Wall,
 )
-from .types import IntervalValue, TimeInterval, TimeIntervalCollection
+from .types import IntervalValue, StringValue, TimeInterval, TimeIntervalCollection
 
 CZML_VERSION = "1.0"
 

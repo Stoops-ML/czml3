@@ -15,6 +15,7 @@ from pydantic import (
 from .base import BaseCZMLObject
 from .common import Deletable, Interpolatable
 from .constants import ISO8601_FORMAT_Z
+from .enums import ExtrapolationTypes, InterpolationAlgorithms  # noqa
 
 if sys.version_info[1] >= 11:
     from typing import Self

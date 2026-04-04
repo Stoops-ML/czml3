@@ -1,9 +1,10 @@
+from __future__ import annotations
+
 import datetime as dt
 
 from pydantic import BaseModel, field_validator
 
 from .enums import InterpolationAlgorithms
-from .types import TimeIntervalCollection, format_datetime_like
 
 
 class Deletable(BaseModel):
@@ -28,4 +29,11 @@ class Interpolatable(BaseModel):
     @field_validator("epoch")
     @classmethod
     def check(cls, e):
+        from .types import format_datetime_like
+
         return format_datetime_like(e)
+
+
+from .types import TimeIntervalCollection  # noqa
+
+Interpolatable.model_rebuild()
