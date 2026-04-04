@@ -23,7 +23,9 @@ else:
 TYPE_MAPPING = {bool: "boolean"}
 
 
-def get_color(color: None | list[float], max_val: float) -> list[float] | None:
+def get_color(
+    color: None | list[int | float], max_val: int | float
+) -> list[int | float] | None:
     """Determines if the input is a valid color"""
     if isinstance(color, list) and len(color) == 0:
         raise ValueError("Length of colours must be non-zero")
@@ -153,12 +155,12 @@ class RgbaValue(BaseCZMLObject):
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/RgbaValue>`__ for it's definition.
     """
 
-    values: list[float]
+    values: list[int] | list[float] | list[int | float]
 
     @field_validator("values")
     @classmethod
     def get_color_from_values(cls, r):
-        return get_color(r, 255.0)
+        return get_color(r, 255)
 
     @model_serializer
     def custom_serializer(self):

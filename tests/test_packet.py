@@ -97,10 +97,10 @@ def test_packet_label():
         },
         "outlineColor": {
             "rgba": [
-                0.0,
-                233.0,
-                255.0,
-                2.0
+                0,
+                233,
+                255,
+                2
             ]
         },
         "outlineWidth": 2.0
@@ -303,10 +303,10 @@ def test_packet_point():
     "point": {
         "color": {
             "rgba": [
-                255.0,
-                0.0,
-                0.0,
-                255.0
+                255,
+                0,
+                0,
+                255
             ]
         }
     }
@@ -334,10 +334,10 @@ def test_packet_polyline():
             "solidColor": {
                 "color": {
                     "rgba": [
-                        255.0,
-                        0.0,
-                        0.0,
-                        255.0
+                        255,
+                        0,
+                        0,
+                        255
                     ]
                 }
             }
@@ -377,18 +377,18 @@ def test_packet_polyline_outline():
             "polylineOutline": {
                 "color": {
                     "rgba": [
-                        255.0,
-                        0.0,
-                        0.0,
-                        255.0
+                        255,
+                        0,
+                        0,
+                        255
                     ]
                 },
                 "outlineColor": {
                     "rgba": [
-                        255.0,
-                        0.0,
-                        0.0,
-                        255.0
+                        255,
+                        0,
+                        0,
+                        255
                     ]
                 },
                 "outlineWidth": 2.0
@@ -434,10 +434,10 @@ def test_packet_polyline_glow():
             "polylineGlow": {
                 "color": {
                     "rgba": [
-                        255.0,
-                        0.0,
-                        0.0,
-                        255.0
+                        255,
+                        0,
+                        0,
+                        255
                     ]
                 },
                 "glowPower": 0.2,
@@ -483,10 +483,10 @@ def test_packet_polyline_arrow():
             "polylineArrow": {
                 "color": {
                     "rgba": [
-                        255.0,
-                        0.0,
-                        0.0,
-                        255.0
+                        255,
+                        0,
+                        0,
+                        255
                     ]
                 }
             }
@@ -526,10 +526,10 @@ def test_packet_polyline_dashed():
             "polylineDash": {
                 "color": {
                     "rgba": [
-                        255.0,
-                        0.0,
-                        0.0,
-                        255.0
+                        255,
+                        0,
+                        0,
+                        255
                     ]
                 }
             }
@@ -579,10 +579,10 @@ def test_packet_polygon():
             "solidColor": {
                 "color": {
                     "rgba": [
-                        255.0,
-                        0.0,
-                        0.0,
-                        255.0
+                        255,
+                        0,
+                        0,
+                        255
                     ]
                 }
             }
