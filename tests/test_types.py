@@ -189,6 +189,15 @@ def test_interval_value():
 }"""
     )
 
+    # value is a string
+    assert (
+        str(IntervalValue(start=start, end=end, value="Text"))
+        == """{
+    "interval": "2019-01-01T12:00:00.000000Z/2019-09-02T21:59:59.000000Z",
+    "string": "Text"
+}"""
+    )
+
     # value is a float
     assert (
         str(IntervalValue(start=start, end=end, value=1.1))

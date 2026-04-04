@@ -26,6 +26,7 @@ TYPE_MAPPING = {
     int: "number",
     list: "number",
     set: "number",
+    str: "string",
     tuple: "number",
 }
 
