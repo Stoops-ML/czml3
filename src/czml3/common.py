@@ -2,7 +2,7 @@ import datetime as dt
 
 from pydantic import BaseModel, field_validator
 
-from .enums import InterpolationAlgorithms
+from .enums import ExtrapolationTypes, InterpolationAlgorithms
 from .types import TimeIntervalCollection, format_datetime_like
 
 
@@ -24,6 +24,14 @@ class Interpolatable(BaseModel):
     """The interpolation algorithm to use when interpolating. Valid values are `LINEAR`, `LAGRANGE`, and `HERMITE`."""
     interpolationDegree: None | int | TimeIntervalCollection = None
     """The degree of interpolation to use when interpolating."""
+    backwardExtrapolationDuration: None | int | float = None
+    """The duration of time to extrapolate backwards before the first provided sample time."""
+    backwardExtrapolationType: None | ExtrapolationTypes = None
+    """The type of extrapolation to use when extrapolating backwards."""
+    forwardExtrapolationDuration: None | int | float = None
+    """The duration of time to extrapolate forwards after the last provided sample time."""
+    forwardExtrapolationType: None | ExtrapolationTypes = None
+    """The type of extrapolation to use when extrapolating forwards."""
 
     @field_validator("epoch")
     @classmethod

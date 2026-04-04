@@ -20,7 +20,15 @@ if sys.version_info[1] >= 11:
 else:
     from typing_extensions import Self  # pragma: no cover
 
-TYPE_MAPPING = {bool: "boolean"}
+TYPE_MAPPING = {
+    bool: "boolean",
+    float: "number",
+    int: "number",
+    list: "number",
+    set: "number",
+    str: "string",
+    tuple: "number",
+}
 
 
 def get_color(color: None | list[float], max_val: float) -> list[float] | None:
@@ -530,6 +538,24 @@ class TimeIntervalCollection(BaseCZMLObject):
         return self.values
 
 
+class UnitCartesian3Value(BaseCZMLObject):
+    """A three-dimensional unit magnitude Cartesian value specified as [X, Y, Z]. If the array has three elements, the value is constant. If it has four or more elements, they are time-tagged samples arranged as [Time, X, Y, Z, Time, X, Y, Z, ...], where Time is an ISO 8601 date and time string or seconds since epoch.
+
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/UnitCartesian3Value>`__ for it's definition.
+    """
+
+    values: list[float]
+
+    @model_validator(mode="after")
+    def _check_values(self) -> Self:
+        check_values(3, self.values)
+        return self
+
+    @model_serializer
+    def custom_serializer(self) -> list[float]:
+        return self.values
+
+
 class UnitQuaternionValue(BaseCZMLObject):
     """A set of 4-dimensional coordinates used to represent rotation in 3-dimensional space. It's specified as `[X, Y, Z, W]`. If the array has four elements, the value is constant. If it has five or more elements, they are time-tagged samples arranged as `[Time, X, Y, Z, W, Time, X, Y, Z, W, ...]`, where Time is an ISO 8601 date and time string or seconds since epoch.
 
@@ -546,6 +572,43 @@ class UnitQuaternionValue(BaseCZMLObject):
     @model_serializer
     def custom_serializer(self):
         return self.values
+
+
+class UnitSphericalValue(BaseCZMLObject):
+    """A unit spherical value specified as [Clock, Cone] angles. The clock angle is measured in the XY plane from the positive X axis toward the positive Y axis. The cone angle is the angle from the positive Z axis toward the negative Z axis. If the array has two elements, the value is constant. If it has three or more elements, they are time-tagged samples arranged as [Time, Clock, Cone, Time, Clock, Cone, ...], where Time is an ISO 8601 date and time string or seconds since epoch.
+
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/UnitSphericalValue>`__ for it's definition.
+    """
+
+    values: list[float]
+
+    @model_validator(mode="after")
+    def _check_values(self) -> Self:
+        check_values(3, self.values)
+        return self
+
+    @model_serializer
+    def custom_serializer(self) -> list[float]:
+        return self.values
+
+
+class VelocityReferenceValue(BaseCZMLObject):
+    """Represents the normalized velocity vector of a position property. The reference must be to a position property.
+
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/VelocityReferenceValue>`__ for it's definition.
+    """
+
+    value: str
+
+    @field_validator("value")
+    @classmethod
+    def _check_string(cls, v):
+        check_reference(v)
+        return v
+
+    @model_serializer
+    def custom_serializer(self):
+        return self.value
 
 
 class EpochValue(BaseCZMLObject):
