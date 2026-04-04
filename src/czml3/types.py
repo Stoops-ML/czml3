@@ -22,7 +22,15 @@ if sys.version_info[1] >= 11:
 else:
     from typing_extensions import Self  # pragma: no cover
 
-TYPE_MAPPING = {bool: "boolean"}
+TYPE_MAPPING = {
+    bool: "boolean",
+    float: "number",
+    int: "number",
+    list: "number",
+    set: "number",
+    str: "string",
+    tuple: "number",
+}
 
 
 def get_color(color: None | list[float], max_val: float) -> list[float] | None:

@@ -189,6 +189,69 @@ def test_interval_value():
 }"""
     )
 
+    # value is a string
+    assert (
+        str(IntervalValue(start=start, end=end, value="Text"))
+        == """{
+    "interval": "2019-01-01T12:00:00.000000Z/2019-09-02T21:59:59.000000Z",
+    "string": "Text"
+}"""
+    )
+
+    # value is a float
+    assert (
+        str(IntervalValue(start=start, end=end, value=1.1))
+        == """{
+    "interval": "2019-01-01T12:00:00.000000Z/2019-09-02T21:59:59.000000Z",
+    "number": 1.1
+}"""
+    )
+
+    # value is an integer
+    assert (
+        str(IntervalValue(start=start, end=end, value=1))
+        == """{
+    "interval": "2019-01-01T12:00:00.000000Z/2019-09-02T21:59:59.000000Z",
+    "number": 1
+}"""
+    )
+
+    # value is a list of floats
+    assert (
+        str(IntervalValue(start=start, end=end, value=[1.1, 2.2]))
+        == """{
+    "interval": "2019-01-01T12:00:00.000000Z/2019-09-02T21:59:59.000000Z",
+    "number": [
+        1.1,
+        2.2
+    ]
+}"""
+    )
+
+    # value is a set of ints
+    assert (
+        str(IntervalValue(start=start, end=end, value={1, 2}))
+        == """{
+    "interval": "2019-01-01T12:00:00.000000Z/2019-09-02T21:59:59.000000Z",
+    "number": [
+        1,
+        2
+    ]
+}"""
+    )
+
+    # value is a tuple of floats or ints
+    assert (
+        str(IntervalValue(start=start, end=end, value=(1.1, 2)))
+        == """{
+    "interval": "2019-01-01T12:00:00.000000Z/2019-09-02T21:59:59.000000Z",
+    "number": [
+        1.1,
+        2
+    ]
+}"""
+    )
+
     assert (
         str(
             IntervalValue(
