@@ -200,9 +200,7 @@ def test_polyline():
             10.0
         ]
     },
-    "arcType": {
-        "arcType": "GEODESIC"
-    },
+    "arcType": "GEODESIC",
     "distanceDisplayCondition": {
         "distanceDisplayCondition": [
             14.0,
@@ -217,7 +215,7 @@ def test_polyline():
         positions=PositionList(
             cartographicDegrees=CartographicDegreesListValue(values=[20, 30, 10])
         ),
-        arcType=ArcType(arcType="GEODESIC"),
+        arcType=ArcTypes.GEODESIC,
         distanceDisplayCondition=DistanceDisplayCondition(
             distanceDisplayCondition=DistanceDisplayConditionValue(values=[14, 81])
         ),

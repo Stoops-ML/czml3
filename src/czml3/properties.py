@@ -702,7 +702,7 @@ class Polygon(BaseCZMLObject):
     """The array of positions defining a simple polygon. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PositionList>`__ for it's definition."""
     show: None | bool | TimeIntervalCollection = Field(default=None)
     """Whether or not the polygon is shown."""
-    arcType: None | ArcType | TimeIntervalCollection = Field(default=None)
+    arcType: None | ArcTypes | ArcType | TimeIntervalCollection = Field(default=None)
     """The type of arc that should connect the positions of the polygon. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ArcType>`__ for it's definition."""
     granularity: None | float | TimeIntervalCollection = Field(default=None)
     """The sampling distance, in radians."""
@@ -760,7 +760,7 @@ class Polyline(BaseCZMLObject):
     """Whether or not the polyline is shown."""
     positions: PositionList | TimeIntervalCollection = Field()
     """The array of positions defining the polyline as a line strip."""
-    arcType: None | ArcType | TimeIntervalCollection = Field(default=None)
+    arcType: None | ArcTypes | ArcType | TimeIntervalCollection = Field(default=None)
     """The type of arc that should connect the positions of the polyline. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ArcType>`__ for it's definition."""
     width: None | float | TimeIntervalCollection = Field(default=None)
     """The width of the polyline."""
