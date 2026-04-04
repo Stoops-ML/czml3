@@ -16,7 +16,7 @@ if sys.version_info[1] >= 11:
         ) -> str:
             return name
 else:
-    from strenum import StrEnum as OCaseStrEnum
+    from strenum import StrEnum as OCaseStrEnum  # pragma: no cover
 
 
 class InterpolationAlgorithms(OCaseStrEnum):
