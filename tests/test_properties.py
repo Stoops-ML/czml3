@@ -2267,19 +2267,19 @@ def test_billboard_rotation():
     expected_result = """{
     "image": "file://image.png",
     "rotation": {
+        "epoch": "2019-06-11T12:26:58.000000Z",
         "number": [
             1,
             2,
             3
-        ],
-        "epoch": "2019-06-11T12:26:58.000000Z"
+        ]
     }
 }"""
     packet = Billboard(
         image="file://image.png",
         rotation=NumberValue(
-            values=[1, 2, 3],
             epoch=dt.datetime(2019, 6, 11, 12, 26, 58, tzinfo=dt.timezone.utc),
+            values=[1, 2, 3],
         ),
     )
     assert str(packet) == expected_result

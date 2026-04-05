@@ -257,10 +257,10 @@ def test_interval_value():
             IntervalValue(
                 start=start,
                 end=end,
-                value=[
-                    EpochValue(value=start),
-                    NumberValue(values=[1, 2, 3, 4]),
-                ],
+                value=NumberValue(
+                    epoch=start,
+                    values=[1, 2, 3, 4],
+                ),
             )
         )
         == """{
