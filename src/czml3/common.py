@@ -5,7 +5,6 @@ import datetime as dt
 from pydantic import BaseModel, field_validator
 
 from .enums import ExtrapolationTypes, InterpolationAlgorithms
-from .types import TimeIntervalCollection, format_datetime_like
 
 
 class Deletable(BaseModel):
