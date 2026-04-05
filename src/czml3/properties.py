@@ -927,6 +927,13 @@ class ArcType(BaseCZMLObject, Deletable):
             raise TypeError("Only one of arcType or reference must be given")
         return self
 
+    @field_validator("arcType")
+    @classmethod
+    def validate_arc_type(cls, t):
+        if isinstance(t, str):
+            return ArcTypes(t)
+        return t
+
     @field_validator("reference")
     @classmethod
     def validate_reference(cls, r):

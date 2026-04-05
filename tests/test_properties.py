@@ -184,6 +184,19 @@ def test_arc_type():
     assert str(arc_type) == expected_result
 
 
+def test_arc_type_from_string():
+    expected_result = """{
+    "arcType": "RHUMB"
+}"""
+    arc_type = ArcType(arcType="RHUMB")
+    assert str(arc_type) == expected_result
+
+
+def test_bad_arc_type_from_string():
+    with pytest.raises(ValueError):
+        ArcType(arcType="INVALID_ARC_TYPE")
+
+
 def test_shadow_mode():
     expected_result = """{
     "shadowMode": "ENABLED"
@@ -193,6 +206,43 @@ def test_shadow_mode():
 
 
 def test_polyline():
+    expected_result = """{
+    "positions": {
+        "cartographicDegrees": [
+            20.0,
+            30.0,
+            10.0
+        ]
+    },
+    "arcType": {
+        "arcType": "GEODESIC"
+    },
+    "distanceDisplayCondition": {
+        "distanceDisplayCondition": [
+            14.0,
+            81.0
+        ]
+    },
+    "classificationType": {
+        "classificationType": "CESIUM_3D_TILE"
+    }
+}"""
+    pol = Polyline(
+        positions=PositionList(
+            cartographicDegrees=CartographicDegreesListValue(values=[20, 30, 10])
+        ),
+        arcType=ArcType(arcType="GEODESIC"),
+        distanceDisplayCondition=DistanceDisplayCondition(
+            distanceDisplayCondition=DistanceDisplayConditionValue(values=[14, 81])
+        ),
+        classificationType=ClassificationType(
+            classificationType=ClassificationTypes.CESIUM_3D_TILE
+        ),
+    )
+    assert str(pol) == expected_result
+
+
+def test_polyline_with_enum_arc_type():
     expected_result = """{
     "positions": {
         "cartographicDegrees": [
