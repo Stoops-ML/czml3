@@ -13,7 +13,9 @@ from pydantic import (
 )
 
 from .base import BaseCZMLObject
+from .common import Deletable, Interpolatable
 from .constants import ISO8601_FORMAT_Z
+from .enums import ExtrapolationTypes, InterpolationAlgorithms  # noqa
 
 if sys.version_info[1] >= 11:
     from typing import Self
@@ -623,23 +625,10 @@ class EpochValue(BaseCZMLObject):
         return {"epoch": format_datetime_like(self.value)}
 
 
-class NumberValue(BaseCZMLObject):
+class NumberValue(BaseCZMLObject, Interpolatable, Deletable):
     """A single number, or a list of number pairs signifying the time and representative value."""
 
-    values: int | float | list[float] | int | list[int]
-    epoch: None | str | dt.datetime = Field(default=None)
-
-    @field_validator("epoch")
-    @classmethod
-    def check(cls, e):
-        return format_datetime_like(e)
-
-    @model_serializer
-    def custom_serializer(self):
-        out: dict[str, Any] = {}
-        out["number"] = (
-            self.values if isinstance(self.values, int | float) else list(self.values)
-        )
-        if self.epoch:
-            out["epoch"] = self.epoch
-        return out
+    number: int | float | list[int] | list[float] | list[int | float] = Field(
+        alias="values"
+    )
+    """The numerical value or values."""
