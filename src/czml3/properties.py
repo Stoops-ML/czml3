@@ -930,9 +930,9 @@ class ArcType(BaseCZMLObject, Deletable):
     @field_validator("arcType")
     @classmethod
     def validate_arc_type(cls, t):
-        if isinstance(t, str):
-            return ArcTypes(t)
-        return t
+        if t is None or isinstance(t, ArcTypes):
+            return t
+        return ArcTypes(t)
 
     @field_validator("reference")
     @classmethod
