@@ -422,6 +422,7 @@ def test_check_reference():
     with pytest.raises(TypeError):
         check_reference("thisthat")
     assert check_reference("this#that") is None
+    assert check_reference(None) is None
 
 
 def test_format_datetime_like():

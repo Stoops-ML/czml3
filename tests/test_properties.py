@@ -184,6 +184,19 @@ def test_arc_type():
     assert str(arc_type) == expected_result
 
 
+def test_arc_type_from_string():
+    expected_result = """{
+    "arcType": "RHUMB"
+}"""
+    arc_type = ArcType(arcType="RHUMB")
+    assert str(arc_type) == expected_result
+
+
+def test_bad_arc_type_from_string():
+    with pytest.raises(ValueError):
+        ArcType(arcType="INVALID_ARC_TYPE")
+
+
 def test_shadow_mode():
     expected_result = """{
     "shadowMode": "ENABLED"
@@ -219,6 +232,41 @@ def test_polyline():
             cartographicDegrees=CartographicDegreesListValue(values=[20, 30, 10])
         ),
         arcType=ArcType(arcType="GEODESIC"),
+        distanceDisplayCondition=DistanceDisplayCondition(
+            distanceDisplayCondition=DistanceDisplayConditionValue(values=[14, 81])
+        ),
+        classificationType=ClassificationType(
+            classificationType=ClassificationTypes.CESIUM_3D_TILE
+        ),
+    )
+    assert str(pol) == expected_result
+
+
+def test_polyline_with_enum_arc_type():
+    expected_result = """{
+    "positions": {
+        "cartographicDegrees": [
+            20.0,
+            30.0,
+            10.0
+        ]
+    },
+    "arcType": "GEODESIC",
+    "distanceDisplayCondition": {
+        "distanceDisplayCondition": [
+            14.0,
+            81.0
+        ]
+    },
+    "classificationType": {
+        "classificationType": "CESIUM_3D_TILE"
+    }
+}"""
+    pol = Polyline(
+        positions=PositionList(
+            cartographicDegrees=CartographicDegreesListValue(values=[20, 30, 10])
+        ),
+        arcType=ArcTypes.GEODESIC,
         distanceDisplayCondition=DistanceDisplayCondition(
             distanceDisplayCondition=DistanceDisplayConditionValue(values=[14, 81])
         ),
@@ -1675,6 +1723,9 @@ def test_position_list_of_lists_with_cartographicRadians():
     )
     assert str(p1) == expected_result
 
+    p2 = PositionListOfLists(cartographicRadians=[[1, 2, 3]])
+    assert str(p2) == expected_result
+
 
 def test_position_list_of_lists_with_cartographicDegrees():
     expected_result = """{
@@ -2210,12 +2261,40 @@ def test_Orientation_delete():
     assert str(p) == expected_result
 
 
-def test_Uri_delete():
+def test_uri_delete():
     expected_result = """{
     "delete": true
 }"""
     p = Uri(delete=True, reference="this#that")
     assert p.delete
+    assert str(p) == expected_result
+
+
+def test_uri_multiple_interval_value():
+    expected_result = """[
+    {
+        "interval": "2019-01-01T00:00:00.000000Z/2019-01-02T00:00:00.000000Z",
+        "string": "this#that"
+    },
+    {
+        "interval": "2019-01-02T00:00:00.000000Z/2019-01-03T00:00:00.000000Z",
+        "string": "that#this"
+    }
+]"""
+
+    start0 = dt.datetime(2019, 1, 1, tzinfo=dt.timezone.utc)
+    end0 = start1 = dt.datetime(2019, 1, 2, tzinfo=dt.timezone.utc)
+    end1 = dt.datetime(2019, 1, 3, tzinfo=dt.timezone.utc)
+
+    time_interval_collection = TimeIntervalCollection(
+        values=[
+            IntervalValue(start=start0, end=end0, value="this#that"),
+            IntervalValue(start=start1, end=end1, value="that#this"),
+        ]
+    )
+
+    p = Uri(reference=time_interval_collection)
+
     assert str(p) == expected_result
 
 

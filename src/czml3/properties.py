@@ -810,7 +810,7 @@ class Polygon(BaseCZMLObject):
     """The array of positions defining a simple polygon. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PositionList>`__ for it's definition."""
     show: None | bool | TimeIntervalCollection = Field(default=None)
     """Whether or not the polygon is shown."""
-    arcType: None | ArcType | TimeIntervalCollection = Field(default=None)
+    arcType: None | ArcTypes | ArcType | TimeIntervalCollection = Field(default=None)
     """The type of arc that should connect the positions of the polygon. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ArcType>`__ for it's definition."""
     granularity: None | float | NumberValue | TimeIntervalCollection = Field(
         default=None
@@ -878,7 +878,7 @@ class Polyline(BaseCZMLObject):
     """Whether or not the polyline is shown."""
     positions: PositionList | TimeIntervalCollection = Field()
     """The array of positions defining the polyline as a line strip."""
-    arcType: None | ArcType | TimeIntervalCollection = Field(default=None)
+    arcType: None | ArcTypes | ArcType | TimeIntervalCollection = Field(default=None)
     """The type of arc that should connect the positions of the polyline. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ArcType>`__ for it's definition."""
     width: None | float | NumberValue | TimeIntervalCollection = Field(default=None)
     """The width of the polyline."""
@@ -932,6 +932,13 @@ class ArcType(BaseCZMLObject, Deletable):
         if sum(val is not None for val in (self.arcType, self.reference)) != 1:
             raise TypeError("Only one of arcType or reference must be given")
         return self
+
+    @field_validator("arcType")
+    @classmethod
+    def validate_arc_type(cls, t):
+        if t is None or isinstance(t, ArcTypes):
+            return t
+        return ArcTypes(t)
 
     @field_validator("reference")
     @classmethod
@@ -1961,7 +1968,11 @@ class Uri(BaseCZMLObject, Deletable):
     @model_serializer
     def custom_serializer(
         self,
-    ) -> None | str | dict[str, bool] | TimeIntervalCollection:
+    ) -> str | dict[str, bool | ReferenceValue] | TimeIntervalCollection | None:
         if self.delete:
             return {"delete": True}
-        return self.uri if self.uri is not None else str(self.reference)
+        if self.uri is not None:
+            return self.uri
+        if isinstance(self.reference, ReferenceValue):
+            return {"reference": self.reference}
+        return self.reference
