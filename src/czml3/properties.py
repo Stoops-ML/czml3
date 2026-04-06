@@ -340,9 +340,15 @@ class Color(BaseCZMLObject, Interpolatable, Deletable):
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Color>`__ for it's definition.
     """
 
-    rgba: None | RgbaValue | str | list[float] | TimeIntervalCollection = Field(
-        default=None
-    )
+    rgba: (
+        None
+        | RgbaValue
+        | str
+        | list[int]
+        | list[float]
+        | list[int | float]
+        | TimeIntervalCollection
+    ) = Field(default=None)
     """The color specified as an array of color components [Red, Green, Blue, Alpha] where each component is an integer in the range 0-255. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/RgbaValue>`__ for it's definition."""
     rgbaf: None | RgbafValue | str | list[float] | TimeIntervalCollection = Field(
         default=None

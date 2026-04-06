@@ -282,10 +282,10 @@ def test_material_solid_color():
     "solidColor": {
         "color": {
             "rgba": [
-                200.0,
-                100.0,
-                30.0,
-                255.0
+                200,
+                100,
+                30,
+                255
             ]
         }
     }
@@ -305,10 +305,10 @@ def test_arrowmaterial_color():
     "polylineArrow": {
         "color": {
             "rgba": [
-                200.0,
-                100.0,
-                30.0,
-                255.0
+                200,
+                100,
+                30,
+                255
             ]
         }
     }
@@ -325,18 +325,18 @@ def test_dashmaterial_colors():
     "polylineDash": {
         "color": {
             "rgba": [
-                200.0,
-                100.0,
-                30.0,
-                255.0
+                200,
+                100,
+                30,
+                255
             ]
         },
         "gapColor": {
             "rgba": [
-                100.0,
-                200.0,
-                0.0,
-                255.0
+                100,
+                200,
+                0,
+                255
             ]
         },
         "dashLength": 16.0,
@@ -360,10 +360,10 @@ def test_glowmaterial_color():
     "polylineGlow": {
         "color": {
             "rgba": [
-                200.0,
-                100.0,
-                30.0,
-                255.0
+                200,
+                100,
+                30,
+                255
             ]
         },
         "glowPower": 0.7,
@@ -383,18 +383,18 @@ def test_outline_material_colors():
     "polylineOutline": {
         "color": {
             "rgba": [
-                200.0,
-                100.0,
-                30.0,
-                255.0
+                200,
+                100,
+                30,
+                255
             ]
         },
         "outlineColor": {
             "rgba": [
-                100.0,
-                200.0,
-                0.0,
-                255.0
+                100,
+                200,
+                0,
+                255
             ]
         },
         "outlineWidth": 3.0
@@ -495,10 +495,10 @@ def test_material_image():
         ],
         "color": {
             "rgba": [
-                200.0,
-                100.0,
-                30.0,
-                255.0
+                200,
+                100,
+                30,
+                255
             ]
         }
     }
@@ -524,10 +524,10 @@ def test_material_image_uri():
         ],
         "color": {
             "rgba": [
-                200.0,
-                100.0,
-                30.0,
-                255.0
+                200,
+                100,
+                30,
+                255
             ]
         }
     }
@@ -549,10 +549,10 @@ def test_material_grid():
     expected_result = """{
     "color": {
         "rgba": [
-            20.0,
-            20.0,
-            30.0,
-            255.0
+            20,
+            20,
+            30,
+            255
         ]
     },
     "cellAlpha": 1.0,
@@ -614,18 +614,18 @@ def test_material_stripe():
     expected_result = """{
     "evenColor": {
         "rgba": [
-            0.0,
-            0.0,
-            0.0,
-            255.0
+            0,
+            0,
+            0,
+            255
         ]
     },
     "oddColor": {
         "rgba": [
-            255.0,
-            255.0,
-            255.0,
-            255.0
+            255,
+            255,
+            255,
+            255
         ]
     },
     "offset": 0.3,
@@ -645,18 +645,18 @@ def test_material_checkerboard():
     expected_result = """{
     "evenColor": {
         "rgba": [
-            0.0,
-            0.0,
-            0.0,
-            255.0
+            0,
+            0,
+            0,
+            255
         ]
     },
     "oddColor": {
         "rgba": [
-            255.0,
-            255.0,
-            255.0,
-            255.0
+            255,
+            255,
+            255,
+            255
         ]
     },
     "repeat": [
@@ -1073,10 +1073,10 @@ def test_ellipsoid_parameters():
         "solidColor": {
             "color": {
                 "rgba": [
-                    255.0,
-                    0.0,
-                    0.0,
-                    100.0
+                    255,
+                    0,
+                    0,
+                    100
                 ]
             }
         }
@@ -1178,20 +1178,20 @@ def test_polygon_outline():
         "solidColor": {
             "color": {
                 "rgba": [
-                    255.0,
-                    100.0,
-                    0.0,
-                    100.0
+                    255,
+                    100,
+                    0,
+                    100
                 ]
             }
         }
     },
     "outlineColor": {
         "rgba": [
-            0.0,
-            0.0,
-            0.0,
-            255.0
+            0,
+            0,
+            0,
+            255
         ]
     },
     "outline": true,

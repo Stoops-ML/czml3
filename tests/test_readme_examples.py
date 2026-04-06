@@ -37,10 +37,10 @@ def test_example0():
                 "solidColor": {
                     "color": {
                         "rgba": [
-                            0.0,
-                            0.0,
-                            255.0,
-                            255.0
+                            0,
+                            0,
+                            255,
+                            255
                         ]
                     }
                 }
