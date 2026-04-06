@@ -1962,7 +1962,11 @@ class Uri(BaseCZMLObject, Deletable):
     @model_serializer
     def custom_serializer(
         self,
-    ) -> None | str | dict[str, bool] | TimeIntervalCollection:
+    ) -> str | dict[str, bool | ReferenceValue] | TimeIntervalCollection | None:
         if self.delete:
             return {"delete": True}
-        return self.uri if self.uri is not None else str(self.reference)
+        if self.uri is not None:
+            return self.uri
+        if isinstance(self.reference, ReferenceValue):
+            return {"reference": self.reference}
+        return self.reference
