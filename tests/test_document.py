@@ -1,5 +1,7 @@
 import json
 
+import pytest
+
 from czml3 import CZML_VERSION, Document, Packet
 
 
@@ -47,3 +49,8 @@ def test_doc_to_dict():
     packet1 = Packet(id="id_01")
     document = Document(packets=[packet, packet0, packet1])
     assert json.loads(document.dumps()) == document.to_dict()
+
+
+def test_empty_document():
+    with pytest.raises(ValueError):
+        Document(packets=[])
