@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import base64
+import binascii
 import datetime as dt
 import sys
 from typing import Any
@@ -1944,19 +1946,45 @@ class Uri(BaseCZMLObject, Deletable):
     @field_validator("uri")
     @classmethod
     def _check_uri(cls, url: str):
-        is_url = urlparse(url)
-        if all([is_url.scheme, is_url.netloc]):
+        parsed = urlparse(url)
+
+        # Absolute URIs (e.g., https://..., file://..., urn:...)
+        if parsed.scheme and (parsed.netloc or parsed.path) and parsed.scheme != "data":
             return url
-        return url  # TODO: implement check base64 checks
-        # else:
-        #     try:
-        #         base64.b64decode(url, validate=True)
-        #         return url
-        #     except Exception:
-        #         pass
-        # raise TypeError(
-        #     "uri must be a URL, a data URI or base64 encoded string."
-        # )
+
+        # Data URIs with base64 payload
+        if url.startswith("data:"):
+            try:
+                metadata, payload = url.split(",", maxsplit=1)
+            except ValueError as exc:
+                raise TypeError(
+                    "uri must be an absolute URI, relative path, data URI, or base64 encoded string."
+                ) from exc
+
+            if ";base64" not in metadata:
+                raise TypeError(
+                    "uri must be an absolute URI, relative path, data URI, or base64 encoded string."
+                )
+            try:
+                base64.b64decode(payload, validate=True)
+            except binascii.Error as exc:
+                raise TypeError(
+                    "uri must be an absolute URI, relative path, data URI, or base64 encoded string."
+                ) from exc
+            return url
+
+        # Relative paths are commonly used in CZML asset references.
+        if "/" in url or "\\" in url or url.startswith(("./", "../")):
+            return url
+
+        # Raw base64 payloads are also accepted.
+        try:
+            base64.b64decode(url, validate=True)
+            return url
+        except binascii.Error as exc:
+            raise TypeError(
+                "uri must be an absolute URI, relative path, data URI, or base64 encoded string."
+            ) from exc
 
     @field_validator("reference")
     @classmethod

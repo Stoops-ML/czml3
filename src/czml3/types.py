@@ -509,19 +509,15 @@ class IntervalValue(BaseCZMLObject):
 
     @model_serializer
     def custom_serializer(self) -> dict[str, Any]:
-        obj_dict = {
-            "interval": TimeInterval(start=self.start, end=self.end).model_dump(
-                exclude_none=True
-            )
-        }
+        obj_dict = {"interval": TimeInterval(start=self.start, end=self.end).to_dict()}
 
         if isinstance(self.value, BaseCZMLObject):
-            obj_dict.update(self.value.model_dump(exclude_none=True))
+            obj_dict.update(self.value.to_dict())
         elif isinstance(self.value, list) and all(
             isinstance(v, BaseCZMLObject) for v in self.value
         ):
             for value in self.value:
-                obj_dict.update(value.model_dump())
+                obj_dict.update(value.to_dict())
         else:
             key = TYPE_MAPPING[type(self.value)]
             obj_dict[key] = self.value

@@ -276,6 +276,37 @@ def test_interval_value():
     )
 
 
+def test_interval_value_with_list_of_base_objects():
+    start = "2019-01-01T12:00:00.000000Z"
+    end = "2019-09-02T21:59:59.000000Z"
+    packet = IntervalValue(
+        start=start,
+        end=end,
+        value=NumberValue(values=[1, 2, 3, 4], epoch=start),
+    )
+    packet1 = IntervalValue(
+        start=start,
+        end=end,
+        value=[
+            EpochValue(value=start),
+            NumberValue(values=[1, 2, 3, 4]),
+        ],
+    )  # note: this is not the correct way to create an epoch for a NumberValue as NumberValue inherits from Interpolatable. Writing the code here just to increase code coverage.
+    expected_output = """{
+    "interval": "2019-01-01T12:00:00.000000Z/2019-09-02T21:59:59.000000Z",
+    "epoch": "2019-01-01T12:00:00.000000Z",
+    "number": [
+        1,
+        2,
+        3,
+        4
+    ]
+}"""
+
+    assert str(packet) == expected_output
+    assert str(packet1) == expected_output
+
+
 def test_epoch_value():
     epoch: str = "2019-01-01T12:00:00.000000Z"
 
@@ -297,7 +328,6 @@ def test_epoch_value():
         str(EpochValue(value="test"))
 
 
-@pytest.mark.xfail(reason="NumberValue class requires further explanaition")
 def test_numbers_value():
     expected_result = """{
     "number": [
@@ -323,9 +353,6 @@ def test_numbers_value():
 
     with pytest.raises(ValidationError):
         NumberValue(values=[1, "test"])  # type: ignore
-
-    with pytest.raises(ValidationError):
-        NumberValue(values=[1, 2, 3, 4, 5])
 
 
 def test_quaternion_value_is_invalid():

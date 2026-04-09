@@ -1024,10 +1024,28 @@ def test_model():
     assert str(result) == str(result1) == expected_result
 
 
-@pytest.mark.xfail
 def test_bad_uri_raises_error():
     with pytest.raises(TypeError):
         Uri(uri="a")
+
+
+@pytest.mark.parametrize(
+    "uri",
+    [
+        "data:image/png;base64",
+        "data:image/png,SGVsbG8=",
+        "data:image/png;base64,not-base64!",
+    ],
+)
+def test_bad_data_uri_raises_error(uri):
+    with pytest.raises(TypeError):
+        Uri(uri=uri)
+
+
+def test_raw_base64_uri():
+    expected_result = '"SGVsbG8="'
+    result = Uri(uri="SGVsbG8=")
+    assert result.dumps() == expected_result
 
 
 def test_ellipsoid():
@@ -1896,17 +1914,6 @@ def test_forbid_extras():
             delete=True,
             a=1,  # type: ignore[call-arg]
         )
-
-
-# @pytest.mark.xfail(reason="Reference value needs further clarifying")
-# def test_uri_ref():
-#     expected_result = """{
-#     "uri": "file://image.png",
-#     "reference": "this#that"
-# }"""
-#     uri = Uri(uri="file://image.png", reference="this#that")
-#     uri1 = Uri(uri="file://image.png", reference=ReferenceValue(value="this#that"))
-#     assert str(uri) == str(uri1) == expected_result
 
 
 def test_bad_color():
