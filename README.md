@@ -32,7 +32,7 @@ conda install czml3 --channel conda-forge
 ## Examples
 A CZML document is a list of *packets*, which have several properties. Recreating the blue box from Cesium sandcastle's [CZML Box](https://sandcastle.cesium.com/?src=CZML%20Box.html&label=CZML):
 
-```
+```python
 from czml3 import CZML_VERSION, Document, Packet
 from czml3.properties import (
     Box,
@@ -60,7 +60,7 @@ doc = Document(
 )
 print(doc)
 ```
-```
+```bash
 [
     {
         "id": "document",
@@ -102,12 +102,12 @@ print(doc)
 ```
 
 czml3 uses [pydantic](https://docs.pydantic.dev/latest/) for all classes. As such czml3 is able to [coerce data to their right type](https://docs.pydantic.dev/latest/why/#json-schema). For example, the following creates a Position property of doubles using a numpy array of interger type:
-```
+```python
 import numpy as np
 from czml3.properties import Position
 print(Position(cartographicDegrees=np.array([-114, 40, 300000], dtype=int)))
 ```
-```
+```bash
 {
     "cartographicDegrees": [
         -114.0,
