@@ -1024,10 +1024,15 @@ def test_model():
     assert str(result) == str(result1) == expected_result
 
 
-@pytest.mark.xfail
 def test_bad_uri_raises_error():
     with pytest.raises(TypeError):
         Uri(uri="a")
+
+
+def test_raw_base64_uri():
+    expected_result = '"SGVsbG8="'
+    result = Uri(uri="SGVsbG8=")
+    assert result.dumps() == expected_result
 
 
 def test_ellipsoid():
