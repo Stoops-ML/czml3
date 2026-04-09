@@ -1903,17 +1903,6 @@ def test_forbid_extras():
         )
 
 
-# @pytest.mark.xfail(reason="Reference value needs further clarifying")
-# def test_uri_ref():
-#     expected_result = """{
-#     "uri": "file://image.png",
-#     "reference": "this#that"
-# }"""
-#     uri = Uri(uri="file://image.png", reference="this#that")
-#     uri1 = Uri(uri="file://image.png", reference=ReferenceValue(value="this#that"))
-#     assert str(uri) == str(uri1) == expected_result
-
-
 def test_bad_color():
     with pytest.raises(TypeError):
         Color(rgba=[0, 0, 0, 0], rgbaf=[0, 0, 0, 0])
