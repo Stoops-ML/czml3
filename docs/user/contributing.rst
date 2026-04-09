@@ -8,16 +8,9 @@ Missing CZML Properties
 * `LineOffset <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/LineOffset>`_
 * `LineThickness <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/LineThickness>`_
 * `LineCount <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/LineCount>`_
-* `Repeat <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Repeat>`_
-* `NodeTransformations <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/NodeTransformations>`_
-* `Articulations <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Articulations>`_
-* `PixelOffset <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PixelOffset>`_
-* `VelocityReferenceValue <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/VelocityReferenceValue>`_
-* `Font <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Font>`_
-* `BackgroundPadding <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/BackgroundPadding>`_
 * `CartographicRectangleRadiansValue <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/CartographicRectangleRadiansValue>`_
 * `CartographicRectangleDegreesValue <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/CartographicRectangleDegreesValue>`_
-* `CustomProperties <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/CustomProperties>`_
+* `CustomProperties <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/CustomProperties>`_ (``Packet.properties`` currently accepts ``Any``)
 * `CustomProperty <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/CustomProperty>`_
 * `PolylineVolume <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineVolume>`_
 
