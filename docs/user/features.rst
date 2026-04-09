@@ -1,7 +1,7 @@
 Features
 ========
 
-``czml3`` is built upon `pydantic <https://docs.pydantic.dev/latest/>`_ and leverages a lot of it's capabilities to achieve it's goal: making the process of writing CZML files in Python easy.
+``czml3`` is built upon `pydantic <https://docs.pydantic.dev/latest/>`_ and leverages a lot of its capabilities to achieve its goal: making the process of writing CZML files in Python easy.
 
 Type Checking
 -------------

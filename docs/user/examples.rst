@@ -8,16 +8,16 @@ Example 1
 
 A CZML document is a list of ``packets``, which have several properties. Recreating the blue box from Cesium sandcastle's `CZML Box <https://sandcastle.cesium.com/?src=CZML%20Box.html&label=CZML>`_::
 
-    from czml3 import Document, Packet, Preamble
+    from czml3 import CZML_VERSION, Document, Packet
     from czml3.properties import (
         Box,
         BoxDimensions,
-        Cartesian3Value,
         Color,
         Material,
         Position,
         SolidColorMaterial,
     )
+    from czml3.types import Cartesian3Value
     packet_box = Packet(
         id="my_id",
         position=Position(cartographicDegrees=[-114.0, 40.0, 300000.0]),
@@ -95,3 +95,37 @@ This produces the following output::
             300000.0
         ]
     }
+
+Example 3
+---------
+
+Time-dynamic positions can be described by pairing an ``epoch`` with interleaved ``[time_offset, x, y, z, ...]`` values. This example tracks the International Space Station using Lagrange interpolation on Cartesian coordinates in the inertial reference frame::
+
+    from czml3 import CZML_VERSION, Document, Packet
+    from czml3.enums import InterpolationAlgorithms, ReferenceFrames
+    from czml3.properties import Path, Point, Position
+    from czml3.types import TimeInterval
+    packet_iss = Packet(
+        id="InternationalSpaceStation",
+        availability=TimeInterval(
+            start="2024-01-01T00:00:00Z", end="2024-01-01T00:01:00Z"
+        ),
+        position=Position(
+            epoch="2024-01-01T00:00:00Z",
+            interpolationAlgorithm=InterpolationAlgorithms.LAGRANGE,
+            referenceFrame=ReferenceFrames.INERTIAL,
+            cartesian=[
+                0.0,  -6668447.2, 1201886.5, 146789.4,
+                60.0, -6711432.8,  919677.7, -214047.6,
+            ],
+        ),
+        point=Point(pixelSize=5.0),
+        path=Path(show=True, width=1.0),
+    )
+    doc = Document(
+        packets=[
+            Packet(id="document", name="ISS", version=CZML_VERSION),
+            packet_iss,
+        ]
+    )
+    print(doc)
