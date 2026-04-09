@@ -1,4 +1,5 @@
 import sys
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, model_validator
 
@@ -46,7 +47,7 @@ class BaseCZMLObject(BaseModel):
         """
         return self.model_dump_json(exclude_none=True, indent=indent, **kwargs)
 
-    def to_dict(self, **kwargs) -> dict:
+    def to_dict(self, **kwargs) -> dict[str, Any]:
         """Return the object as a dictionary.
 
         kwargs are passed to `BaseModel.model_dump()`.
