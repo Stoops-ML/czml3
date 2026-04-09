@@ -448,8 +448,8 @@ def test_rgbaf_value():
 def test_check_reference():
     with pytest.raises(TypeError):
         check_reference("thisthat")
-    assert check_reference("this#that") is None
-    assert check_reference(None) is None
+    check_reference("this#that")
+    check_reference(None)
 
 
 def test_format_datetime_like():

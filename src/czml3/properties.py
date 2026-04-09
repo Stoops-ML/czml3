@@ -1945,7 +1945,7 @@ class Uri(BaseCZMLObject, Deletable):
 
     @field_validator("uri")
     @classmethod
-    def _check_uri(cls, url: str):
+    def _check_uri(cls, url: str) -> str:
         parsed = urlparse(url)
 
         # Absolute URIs (e.g., https://..., file://..., urn:...)

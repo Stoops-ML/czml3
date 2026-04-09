@@ -63,7 +63,7 @@ def get_color(
     raise TypeError("Colour type not supported")
 
 
-def check_list_of_list_values(num_points: int, values: list[list[Any]]):
+def check_list_of_list_values(num_points: int, values: list[list[Any]]) -> None:
     """Values that support `[X, Y, Z, X, Y, Z, ...]`"""
     if len(values) <= 0:
         raise ValueError("No values present")
@@ -76,7 +76,7 @@ def check_list_of_list_values(num_points: int, values: list[list[Any]]):
             )
 
 
-def check_list_of_values(num_points: int, values: list[Any]):
+def check_list_of_values(num_points: int, values: list[Any]) -> None:
     """Values that support `[X, Y, Z, X, Y, Z, ...]`"""
     if len(values) <= 0:
         raise ValueError("No values present")
@@ -86,7 +86,7 @@ def check_list_of_values(num_points: int, values: list[Any]):
         )
 
 
-def check_values(num_points: int, values: list[Any]):
+def check_values(num_points: int, values: list[Any]) -> None:
     """Values that support `[X, Y, Z]` or `[Time, X, Y, Z, Time, X, Y, Z, ...]`"""
     if len(values) <= 0:
         raise ValueError("No values present")
@@ -100,7 +100,7 @@ def check_values(num_points: int, values: list[Any]):
         raise TypeError("Time values must be increasing.")
 
 
-def check_reference(r):
+def check_reference(r: str | None) -> None:
     if r is None:
         return
     elif re.search(r"^.+#.+$", r) is None:

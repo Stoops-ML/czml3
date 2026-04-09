@@ -92,7 +92,7 @@ class CZMLWidget(BaseModel):
     imagery: str = Field(default=IMAGERY["OSM"])
     container_id: str = Field(default=str(uuid4))
 
-    def build_script(self):
+    def build_script(self) -> str:
         return SCRIPT_TPL.format(
             cesium_version=self.cesium_version,
             czml=self.document.to_json(),
@@ -102,7 +102,7 @@ class CZMLWidget(BaseModel):
             imagery=self.imagery,
         )
 
-    def to_html(self, widget_height="400px"):
+    def to_html(self, widget_height: str = "400px") -> str:
         return CESIUM_TPL.format(
             cesium_version=self.cesium_version,
             script=self.build_script(),
@@ -110,5 +110,5 @@ class CZMLWidget(BaseModel):
             widget_height=widget_height,
         )
 
-    def _repr_html_(self):
+    def _repr_html_(self) -> str:
         return self.to_html()

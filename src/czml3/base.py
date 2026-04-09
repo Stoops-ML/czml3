@@ -25,7 +25,7 @@ class BaseCZMLObject(BaseModel):
     def __str__(self) -> str:
         return self.to_json()
 
-    def dumps(self, **kwargs) -> str:
+    def dumps(self, **kwargs: Any) -> str:
         """Serialize the object to a JSON string.
 
         kwargs are passed to `BaseModel.model_dump_json()`.
@@ -35,7 +35,7 @@ class BaseCZMLObject(BaseModel):
         """
         return self.model_dump_json(exclude_none=True, **kwargs)
 
-    def to_json(self, *, indent: int = 4, **kwargs) -> str:
+    def to_json(self, *, indent: int = 4, **kwargs: Any) -> str:
         """Return the object as a formatted JSON string.
 
         kwargs are passed to `BaseModel.model_dump_json()`.
@@ -47,7 +47,7 @@ class BaseCZMLObject(BaseModel):
         """
         return self.model_dump_json(exclude_none=True, indent=indent, **kwargs)
 
-    def to_dict(self, **kwargs) -> dict[str, Any]:
+    def to_dict(self, **kwargs: Any) -> dict[str, Any]:
         """Return the object as a dictionary.
 
         kwargs are passed to `BaseModel.model_dump()`.
