@@ -1029,6 +1029,19 @@ def test_bad_uri_raises_error():
         Uri(uri="a")
 
 
+@pytest.mark.parametrize(
+    "uri",
+    [
+        "data:image/png;base64",
+        "data:image/png,SGVsbG8=",
+        "data:image/png;base64,not-base64!",
+    ],
+)
+def test_bad_data_uri_raises_error(uri):
+    with pytest.raises(TypeError):
+        Uri(uri=uri)
+
+
 def test_raw_base64_uri():
     expected_result = '"SGVsbG8="'
     result = Uri(uri="SGVsbG8=")
