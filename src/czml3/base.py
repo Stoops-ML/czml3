@@ -29,3 +29,13 @@ class BaseCZMLObject(BaseModel):
 
     def to_json(self, *, indent: int = 4) -> str:
         return self.model_dump_json(exclude_none=True, indent=indent)
+
+    def to_dict(self, **kwargs) -> dict:
+        """Return the object as a dictionary.
+
+        kwargs are passed to `BaseModel.model_dump()`.
+
+        :return: Dictionary representation of the object with None values excluded
+        :rtype: dict
+        """
+        return self.model_dump(exclude_none=True, **kwargs)
