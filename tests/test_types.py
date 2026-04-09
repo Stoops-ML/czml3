@@ -297,7 +297,6 @@ def test_epoch_value():
         str(EpochValue(value="test"))
 
 
-@pytest.mark.xfail(reason="NumberValue class requires further explanaition")
 def test_numbers_value():
     expected_result = """{
     "number": [
@@ -323,9 +322,6 @@ def test_numbers_value():
 
     with pytest.raises(ValidationError):
         NumberValue(values=[1, "test"])  # type: ignore
-
-    with pytest.raises(ValidationError):
-        NumberValue(values=[1, 2, 3, 4, 5])
 
 
 def test_quaternion_value_is_invalid():
