@@ -13,12 +13,12 @@ From the official [CZML Guide](https://github.com/AnalyticalGraphicsInc/czml-wri
 
 czml3 aims to make the process of writing CZML files in Python easy by:
 - Type checking properties
-- Cooercion of data to their required format
+- Coercion of data to their required format
 - Forbidding unrecognised properties
 - Creating minimal CZML files
-- Performant JSON serialisation
+- Fast JSON serialization
 
-## Insallation
+## Installation
 You can install czml3 using pip:
 ```
 pip install czml3
