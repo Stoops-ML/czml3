@@ -8,7 +8,7 @@ Type Checking
 
 Inputs to classes are type checked, which ensures that the data is in the correct format before it is written to the CZML file.
 
-Cooercion of Data
+Coercion of Data
 -----------------
 
 Inputted data that is not of the specified type in the class is `coerced to their right type <https://docs.pydantic.dev/latest/why/#json-schema>`_. See Example 2 in  :ref:`examples-label`.
@@ -25,7 +25,7 @@ Minimal CZML File Creation
 
 ``czml3`` will remove all fields that are not set (i.e. ``None``), which ensures that the CZML file is as small as possible.
 
-Performant JSON Serialisation
+Fast JSON Serialisation
 --------------------------
 
 Pydantic is very fast at JSON serialisation. See `here <https://janhendrikewers.uk/pydantic-1-vs-2-a-benchmark-test>`_ for a breakdown.

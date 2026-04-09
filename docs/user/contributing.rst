@@ -20,7 +20,6 @@ Missing CZML Properties
 * `CustomProperties <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/CustomProperties>`_
 * `CustomProperty <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/CustomProperty>`_
 * `PolylineVolume <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PolylineVolume>`_
-* `UriValue <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/UriValue>`_
 
 
 CZML Properties With Missing Inputs
@@ -31,9 +30,3 @@ CZML Properties With Missing Inputs
 * `Rectangle <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Rectangle>`_
 * `Polyline <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Polyline>`_
 * `InterpolatableProperty <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/InterpolatableProperty>`_
-
-Broken Validations
-------------------
-- The ``Uri._check_uri`` does not check base64 images correctly.
-- The ``Uri._check_uri`` does not allow relative paths, which seems to be supported despite it not being a valid uri value.
-- The ``Uri.reference`` is stated in the `CZML documentation <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Uri>`_ but ``Uri`` returns only the ``uri`` property.
