@@ -11,7 +11,7 @@ TESTS_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 @pytest.mark.parametrize("document,filename", [(simple, "simple.czml")])
-def test_simple(document: Document, filename):
+def test_simple(document: Document, filename: str) -> None:
     with open(os.path.join(TESTS_DIR, filename)) as fp:
         expected_result = json.load(fp)
 
