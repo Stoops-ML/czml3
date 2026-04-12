@@ -31,6 +31,7 @@ from czml3.properties import (
     HeightReference,
     ImageMaterial,
     Label,
+    LineOffset,
     Material,
     Model,
     NearFarScalar,
@@ -715,6 +716,22 @@ def test_rotation_has_one_property():
         Rotation(reference="this#that", unitQuaternion=[0, 0, 0, 0])
 
 
+def test_line_offset_has_delete():
+    expected_result = """{
+    "delete": true
+}"""
+    lo = LineOffset(delete=True, reference="this#that")
+    assert lo.delete
+    assert str(lo) == expected_result
+
+
+def test_line_offset_has_one_property():
+    with pytest.raises(
+        TypeError, match="Only one of cartesian2 or reference must be given"
+    ):
+        LineOffset(reference="this#that", cartesian2=[0, 0])
+
+
 def test_position_list_has_delete():
     expected_result = """{
     "delete": true
@@ -1003,6 +1020,46 @@ def test_rotation_with_reference():
 }"""
 
     result = Rotation(reference=ReferenceValue(value="this#that"))
+
+    assert str(result) == expected_result
+
+
+def test_line_offset_cartesian2():
+    expected_result = """{
+    "cartesian2": {
+        "cartesian2": [
+            0.0,
+            1.0
+        ]
+    }
+}"""
+
+    result = LineOffset(cartesian2=Cartesian2Value(values=[0.0, 1.0]))
+
+    assert str(result) == expected_result
+
+
+def test_line_offset_cartesian2_as_list():
+    expected_result = """{
+    "cartesian2": {
+        "cartesian2": [
+            0.0,
+            1.0
+        ]
+    }
+}"""
+
+    result = LineOffset(cartesian2=[0.0, 1.0])
+
+    assert str(result) == expected_result
+
+
+def test_line_offset_with_reference():
+    expected_result = """{
+    "reference": "this#that"
+}"""
+
+    result = LineOffset(reference=ReferenceValue(value="this#that"))
 
     assert str(result) == expected_result
 
