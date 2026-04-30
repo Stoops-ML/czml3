@@ -625,6 +625,6 @@ class NumberValue(BaseCZMLObject, Interpolatable, Deletable):
     """A single number, or a list of number pairs signifying the time and representative value."""
 
     number: int | float | list[int] | list[float] | list[int | float] = Field(
-        alias="values"
+        alias="values", serialization_alias="number"
     )
     """The numerical value or values."""
