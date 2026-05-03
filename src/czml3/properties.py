@@ -421,12 +421,6 @@ class Position(BaseCZMLObject, Interpolatable, Deletable):
         default=None
     )
     """The position specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
-    interval: None | TimeInterval | TimeIntervalCollection = Field(
-        default=None
-    )  # NOTE: not found in documentation
-    epoch: None | str | dt.datetime | TimeIntervalCollection = Field(
-        default=None
-    )  # NOTE: not found in documentation
 
     @model_validator(mode="after")
     def checks(self):
@@ -484,11 +478,6 @@ class Position(BaseCZMLObject, Interpolatable, Deletable):
         if isinstance(r, list):
             return Cartesian3VelocityValue(values=r)
         return r
-
-    @field_validator("epoch")
-    @classmethod
-    def validate_epoch(cls, e):
-        return format_datetime_like(e)
 
 
 class ViewFrom(BaseCZMLObject, Interpolatable, Deletable):
@@ -1164,9 +1153,6 @@ class PositionList(BaseCZMLObject, Deletable):
     interval: None | TimeInterval | TimeIntervalCollection = Field(
         default=None
     )  # NOTE: not in documentation
-    epoch: None | str | dt.datetime | TimeIntervalCollection = Field(
-        default=None
-    )  # NOTE: not in documentation
 
     @model_validator(mode="after")
     def checks(self):
@@ -1218,11 +1204,6 @@ class PositionList(BaseCZMLObject, Deletable):
         if isinstance(r, list):
             return CartographicDegreesListValue(values=r)
         return r
-
-    @field_validator("epoch")
-    @classmethod
-    def check(cls, e):
-        return format_datetime_like(e)
 
 
 class Ellipsoid(BaseCZMLObject):
@@ -1740,9 +1721,6 @@ class Rotation(BaseCZMLObject, Interpolatable, Deletable):
         default=None
     )
     """The value specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
-    epoch: None | str | dt.datetime | TimeIntervalCollection = Field(
-        default=None
-    )  # NOTE: not found in documentation
 
     @model_validator(mode="after")
     def checks(self):

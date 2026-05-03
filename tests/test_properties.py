@@ -411,22 +411,6 @@ def test_outline_material_colors():
     assert str(omat) == expected_result
 
 
-def test_positionlist_epoch():
-    expected_result = """{
-    "cartographicDegrees": [
-        200.0,
-        100.0,
-        30.0
-    ],
-    "epoch": "2019-06-11T12:26:58.000000Z"
-}"""
-    p = PositionList(
-        epoch=dt.datetime(2019, 6, 11, 12, 26, 58, tzinfo=dt.timezone.utc),
-        cartographicDegrees=[200, 100, 30],
-    )
-    assert str(p) == expected_result
-
-
 def test_colors_rgba():
     Color(rgba=[255, 204, 0, 55])
     Color(rgba=[255, 204, 55])
@@ -813,16 +797,6 @@ def test_position_has_given_epoch():
     )
 
     pos = Position(epoch=expected_epoch, cartesian=[0, 0, 0])
-
-    assert pos.epoch == expected_epoch
-
-
-def test_positionlist_has_given_epoch():
-    expected_epoch = format_datetime_like(
-        dt.datetime(2019, 6, 11, 12, 26, 58, tzinfo=dt.timezone.utc)
-    )
-
-    pos = PositionList(epoch=expected_epoch, cartesian=[0, 0, 0])
 
     assert pos.epoch == expected_epoch
 
