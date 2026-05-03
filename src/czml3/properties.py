@@ -282,7 +282,9 @@ class GridMaterial(BaseCZMLObject):
     """The number of grid lines along each axis. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/LineCount>`__ for it's definition."""
     lineThickness: None | list[float] | TimeIntervalCollection = Field(default=None)
     """The thickness of grid lines along each axis, in pixels. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/LineThickness>`__ for it's definition."""
-    lineOffset: None | list[float] | TimeIntervalCollection = Field(default=None)
+    lineOffset: None | list[float] | LineOffset | TimeIntervalCollection = Field(
+        default=None
+    )
     """The offset of grid lines along each axis, as a percentage from 0 to 1. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/LineOffset>`__ for it's definition."""
 
 
@@ -1734,6 +1736,41 @@ class Rotation(BaseCZMLObject, Interpolatable, Deletable):
         if isinstance(q, list):
             return UnitQuaternionValue(values=q)
         return q
+
+    @field_validator("reference")
+    @classmethod
+    def validate_reference(cls, r):
+        if isinstance(r, str):
+            return ReferenceValue(value=r)
+        return r
+
+
+class LineOffset(BaseCZMLObject, Interpolatable, Deletable):
+    """The offset of grid lines along each axis, as a percentage from 0 to 1.
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/LineOffset>`__ for its definition.
+    """
+
+    cartesian2: None | list[float] | Cartesian2Value = Field(default=None)
+    """The offset specified as a 2D Cartesian value. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Cartesian2Value>`__ for its definition."""
+    reference: None | ReferenceValue | str | TimeIntervalCollection = Field(
+        default=None
+    )
+    """The value specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
+
+    @model_validator(mode="after")
+    def checks(self):
+        if self.delete:
+            return self
+        if sum(val is not None for val in (self.cartesian2, self.reference)) != 1:
+            raise TypeError("Only one of cartesian2 or reference must be given")
+        return self
+
+    @field_validator("cartesian2")
+    @classmethod
+    def validate_cartesian2(cls, c):
+        if isinstance(c, list):
+            return Cartesian2Value(values=c)
+        return c
 
     @field_validator("reference")
     @classmethod
