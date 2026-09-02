@@ -43,6 +43,7 @@ from czml3.properties import (
     SolidColorMaterial,
 )
 from czml3.types import Cartesian3Value
+
 packet_box = Packet(
     id="my_id",
     position=Position(cartographicDegrees=[-114.0, 40.0, 300000.0]),
@@ -105,6 +106,7 @@ czml3 uses [pydantic](https://docs.pydantic.dev/latest/) for all classes. As suc
 ```python
 import numpy as np
 from czml3.properties import Position
+
 print(Position(cartographicDegrees=np.array([-114, 40, 300000], dtype=int)))
 ```
 ```bash
