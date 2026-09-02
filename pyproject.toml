@@ -98,3 +98,9 @@ select = [
     "I",  # isort
     "C","W","B9"
 ]
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version_provider = "uv"
+tag_format = "v$version"
+update_changelog_on_bump = true
