@@ -116,8 +116,10 @@ def format_datetime_like(dt_object: None | str | dt.datetime) -> str | None:
     elif isinstance(dt_object, str):
         try:
             parse_iso_date(dt_object)
-        except Exception:
-            raise
+        except Exception as error:
+            raise ValueError(
+                f"{dt_object!r} is not a valid ISO 8601 datetime, e.g. '2019-06-11T12:26:58Z'"
+            ) from error
         else:
             return dt_object
 

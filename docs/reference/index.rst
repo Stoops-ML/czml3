@@ -34,6 +34,14 @@ czml3.core module
    :undoc-members:
    :show-inheritance:
 
+czml3.errors module
+-------------------
+
+.. automodule:: czml3.errors
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 czml3.base module
 -----------------
 
