@@ -18,4 +18,8 @@ To install ``czml3`` from source with all development dependencies::
 
    git clone https://github.com/Stoops-ML/czml3.git
    cd czml3
-   pip install -e .[dev]
+   uv sync
+
+or, using ``pip`` (requires pip >= 25.1 for ``--group``)::
+
+   pip install -e . --group dev
