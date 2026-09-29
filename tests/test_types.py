@@ -17,6 +17,7 @@ from czml3.types import (
     EpochValue,
     FontValue,
     IntervalValue,
+    NaiveDatetimeWarning,
     NearFarScalarValue,
     NumberValue,
     ReferenceListOfListsValue,
@@ -312,7 +313,7 @@ def test_epoch_value():
     )
 
     assert (
-        str(EpochValue(value=dt.datetime(2019, 1, 1, 12)))
+        str(EpochValue(value=dt.datetime(2019, 1, 1, 12, tzinfo=dt.timezone.utc)))
         == """{
     "epoch": "2019-01-01T12:00:00.000000Z"
 }"""
@@ -438,10 +439,11 @@ def test_format_datetime_like():
         format_datetime_like("2019-01-01T12:00:00.000000Z")
         == "2019-01-01T12:00:00.000000Z"
     )
-    assert (
-        format_datetime_like(dt.datetime(2019, 1, 1, 12))
-        == "2019-01-01T12:00:00.000000Z"
-    )
+    with pytest.warns(NaiveDatetimeWarning, match="treated as UTC"):
+        assert (
+            format_datetime_like(dt.datetime(2019, 1, 1, 12))
+            == "2019-01-01T12:00:00.000000Z"
+        )
     with pytest.raises(ValueError):
         format_datetime_like("test")
     with pytest.raises(ValueError):

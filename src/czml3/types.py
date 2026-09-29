@@ -13,6 +13,7 @@ from pydantic import (
 )
 
 from ._compat import Self
+from ._datetime import NaiveDatetimeWarning as NaiveDatetimeWarning
 from ._datetime import format_datetime_like as format_datetime_like
 from .base import BaseCZMLObject
 from .common import Deletable, Interpolatable
@@ -688,9 +689,14 @@ class EpochValue(BaseCZMLObject):
             return {"value": data["epoch"]}
         return data
 
+    @field_validator("value")
+    @classmethod
+    def format_time(cls, time: str | dt.datetime) -> str | None:
+        return format_datetime_like(time)
+
     @model_serializer
-    def custom_serializer(self) -> dict[str, str | None]:
-        return {"epoch": format_datetime_like(self.value)}
+    def custom_serializer(self) -> dict[str, str | dt.datetime]:
+        return {"epoch": self.value}
 
 
 class NumberValue(BaseCZMLObject, Interpolatable, Deletable):
@@ -720,6 +726,7 @@ __all__ = [
     "EpochValue",
     "FontValue",
     "IntervalValue",
+    "NaiveDatetimeWarning",
     "NearFarScalarValue",
     "NumberValue",
     "ReferenceListOfListsValue",

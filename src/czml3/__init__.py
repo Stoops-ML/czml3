@@ -24,7 +24,12 @@ from .properties import (
     SolidColorMaterial,
     Wall,
 )
-from .types import IntervalValue, TimeInterval, TimeIntervalCollection
+from .types import (
+    IntervalValue,
+    NaiveDatetimeWarning,
+    TimeInterval,
+    TimeIntervalCollection,
+)
 
 __version__ = version("czml3")
 __all__ = [
@@ -41,6 +46,7 @@ __all__ = [
     "Label",
     "Material",
     "Model",
+    "NaiveDatetimeWarning",
     "Orientation",
     "Packet",
     "Path",

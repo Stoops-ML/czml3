@@ -4,10 +4,15 @@ Kept in a leaf module so that neither imports the other for it.
 """
 
 import datetime as dt
+import warnings
 
 from dateutil.parser import isoparse as parse_iso_date
 
 from .constants import ISO8601_FORMAT_Z
+
+
+class NaiveDatetimeWarning(UserWarning):
+    """A timezone-naive datetime was given and has been interpreted as UTC."""
 
 
 def format_datetime_like(dt_object: None | str | dt.datetime) -> str | None:
@@ -25,7 +30,13 @@ def format_datetime_like(dt_object: None | str | dt.datetime) -> str | None:
             return dt_object
 
     elif isinstance(dt_object, dt.datetime):
-        if dt_object.tzinfo is not None:
+        if dt_object.tzinfo is None:
+            warnings.warn(
+                f"naive datetime {dt_object.isoformat()} has no timezone and is treated as UTC; pass an aware datetime (e.g. tzinfo=datetime.timezone.utc) to silence this warning",
+                NaiveDatetimeWarning,
+                stacklevel=2,
+            )
+        else:
             dt_object = dt_object.astimezone(dt.timezone.utc)
         return dt_object.strftime(ISO8601_FORMAT_Z)
 

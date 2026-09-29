@@ -1,5 +1,7 @@
 # Unreleased
 
+* Timezone-naive datetimes emit a `czml3.NaiveDatetimeWarning` and are treated as UTC. Pass aware datetimes (e.g. `tzinfo=datetime.timezone.utc`) to silence it.
+* **Fix:** timezone-aware datetimes are converted to UTC before formatting; previously a non-UTC time was written with its local clock time and a `Z` suffix.
 * **Breaking:** custom validation checks now raise `pydantic.ValidationError` (via `ValueError`) instead of a raw `TypeError`, so they are caught by `except ValidationError` and get readable error messages. Code catching `TypeError` must catch `ValidationError` instead.
 
 # v3.3.1
