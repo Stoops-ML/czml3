@@ -120,3 +120,15 @@ def test_save_and_load(tmp_path: pathlib.Path, indent: int | None) -> None:
     text = path.read_text(encoding="utf-8")
     assert ("\n" in text) == (indent is not None)
     assert json.loads(Document.load(path).dumps()) == json.loads(INTERVALS.dumps())
+
+
+def test_interval_value_without_value_round_trips() -> None:
+    serialized = {"interval": "2012-03-15T10:00:00Z/2012-03-16T10:00:00Z"}
+    assert IntervalValue.model_validate(serialized).to_dict() == serialized
+
+
+def test_epoch_value_reads_serialized_form() -> None:
+    from czml3.types import EpochValue
+
+    serialized = {"epoch": "2012-03-15T10:00:00Z"}
+    assert EpochValue.model_validate(serialized).to_dict() == serialized
