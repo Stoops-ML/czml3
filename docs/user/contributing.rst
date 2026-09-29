@@ -3,6 +3,18 @@ Contributing
 
 This page details the features/properties that are missing from ``czml3``. The lists are incomplete.
 
+Development Setup
+-----------------
+Install the package with its development dependencies, then enable the
+`pre-commit <https://pre-commit.com/>`_ hooks, which run ``ruff check``,
+``ruff format`` and ``mypy`` before each commit, the same checks as CI::
+
+    pip install -e . --group dev
+    pip install pre-commit
+    pre-commit install
+
+Run the test suite with ``python -m pytest``.
+
 Missing CZML Properties
 -----------------------
 * `LineOffset <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/LineOffset>`_
