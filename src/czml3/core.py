@@ -41,7 +41,7 @@ class Packet(BaseCZMLObject):
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Packet>`__ for it's definition.
     """
 
-    id: str = Field(default_factory=lambda _: str(uuid4()))
+    id: str = Field(default_factory=lambda: str(uuid4()))
     """The ID of the object described by this packet. IDs do not need to be GUIDs, but they do need to uniquely identify a single object within a CZML source and any other CZML sources loaded into the same scope. If this property is not specified, the client will automatically generate a unique one. However, this prevents later packets from referring to this object in order to add more data to it."""
     delete: None | bool = Field(default=None)
     """Whether the client should delete all existing data for this object, identified by ID. If true, all other properties in this packet will be ignored."""
