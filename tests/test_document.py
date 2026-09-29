@@ -105,3 +105,19 @@ def test_packet_dumps():
     packet = Packet(id="id_00")
 
     assert packet.dumps() == expected_result
+
+
+def test_preamble_is_added_when_missing():
+    doc = Document(packets=[Packet(id="a"), Packet(id="b")])
+
+    assert [p.id for p in doc.packets] == ["document", "a", "b"]
+    assert doc.packets[0].version == CZML_VERSION
+    assert doc.packets[0].name == "document"
+
+
+def test_explicit_preamble_is_kept():
+    preamble = Packet(id="document", name="scene", version=CZML_VERSION)
+    doc = Document(packets=[preamble, Packet(id="a")])
+
+    assert doc.packets[0] == preamble
+    assert len(doc.packets) == 2

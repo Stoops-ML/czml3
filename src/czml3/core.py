@@ -106,7 +106,12 @@ class Packet(BaseCZMLObject):
 
 
 class Document(BaseCZMLObject):
-    """A CZML document, consisting on a list of packets."""
+    """A CZML document, consisting of a list of packets.
+
+    The first packet must be the document preamble (``id="document"`` with a
+    ``name`` and ``version``), which is also where a ``clock`` goes. If no packet
+    is a preamble, a minimal one named ``"document"`` is added automatically.
+    """
 
     packets: list[Packet]
 
@@ -121,6 +126,12 @@ class Document(BaseCZMLObject):
     def validate_packets(cls, packets: list[Packet]) -> list[Packet]:
         if len(packets) == 0:
             raise ValueError("Number of packets must be greater than zero.")
+        if packets[0].version is None and all(p.id != "document" for p in packets):
+            # No preamble was attempted, so supply the minimal one CZML requires.
+            packets = [
+                Packet(id="document", name="document", version=CZML_VERSION),
+                *packets,
+            ]
         if packets[0].version is None or packets[0].name is None:
             raise ValueError(
                 "The first packet must be a preamble and include 'version' and 'name' properties."
