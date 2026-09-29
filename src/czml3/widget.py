@@ -90,7 +90,7 @@ class CZMLWidget(BaseModel):
 
     def model_post_init(self, context: Any, /) -> None:
         warnings.warn(
-            "CZMLWidget is deprecated and will be removed in a future version.",
+            "CZMLWidget is deprecated and will be removed in a future version; display the Document itself in Jupyter, or use Document.to_html().",
             DeprecationWarning,
             stacklevel=2,
         )

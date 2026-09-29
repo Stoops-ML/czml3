@@ -7,6 +7,7 @@ from uuid import uuid4
 
 from pydantic import Field, field_validator, model_serializer, model_validator
 
+from ._html import DEFAULT_CESIUM_VERSION, document_html, iframe_html
 from .base import BaseCZMLObject
 from .properties import (
     Billboard,
@@ -158,6 +159,38 @@ class Document(BaseCZMLObject):
         pathlib.Path(path).write_text(
             self.model_dump_json(exclude_none=True, indent=indent), encoding="utf-8"
         )
+
+    def to_html(
+        self,
+        *,
+        cesium_version: str = DEFAULT_CESIUM_VERSION,
+        ion_token: str | None = None,
+    ) -> str:
+        """Return a standalone HTML page that displays the document with CesiumJS.
+
+        Without an ``ion_token`` the page uses OpenStreetMap imagery and no
+        terrain; with a `Cesium ion <https://cesium.com/ion/>`__ access token it
+        uses Cesium's default imagery and world terrain.
+
+        :param cesium_version: The CesiumJS release to load (1.107 or later).
+        :param ion_token: An optional Cesium ion access token.
+        """
+        return document_html(
+            self.to_dict(),
+            title=self.packets[0].name
+            if isinstance(self.packets[0].name, str)
+            else "czml3",
+            cesium_version=cesium_version,
+            ion_token=ion_token,
+        )
+
+    def save_html(self, path: str | os.PathLike[str], **kwargs: Any) -> None:
+        """Write the page from :meth:`to_html` to ``path``; kwargs are passed on."""
+        pathlib.Path(path).write_text(self.to_html(**kwargs), encoding="utf-8")
+
+    def _repr_html_(self) -> str:
+        """Display the document in a Cesium viewer in Jupyter and similar tools."""
+        return iframe_html(self.to_html())
 
     @classmethod
     def load(cls, path: str | os.PathLike[str]) -> Document:
