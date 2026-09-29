@@ -678,7 +678,8 @@ def test_aligned_axis_has_delete():
 
 def test_aligned_axis_has_one_property():
     with pytest.raises(
-        ValidationError, match="Only one of unit or reference must be given"
+        ValidationError,
+        match="Only one of unitCartesian, unitSpherical, reference or velocityReference must be given",
     ):
         AlignedAxis(
             unitCartesian=[1, 0, 0],
@@ -743,7 +744,7 @@ def test_position_no_values_raises_error():
         Position()
 
     assert (
-        "One of cartesian, cartographicDegrees, cartographicRadians or reference must be given"
+        "Only one of cartesian, cartographicDegrees, cartographicRadians, cartesianVelocity or reference must be given"
         in exc.exconly()
     )
 
@@ -753,7 +754,7 @@ def test_position_list_of_lists_no_values_raises_error():
         PositionListOfLists()
 
     assert (
-        "One of cartesian, cartographicDegrees, cartographicRadians or references must be given"
+        "Only one of cartesian, cartographicDegrees, cartographicRadians or references must be given"
         in exc.exconly()
     )
 
@@ -763,7 +764,7 @@ def test_position_list_no_values_raises_error():
         PositionList()
 
     assert (
-        "One of cartesian, cartographicDegrees, cartographicRadians or references must be given"
+        "Only one of cartesian, cartographicDegrees, cartographicRadians or references must be given"
         in exc.exconly()
     )
 

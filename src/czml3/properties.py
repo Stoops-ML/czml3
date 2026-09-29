@@ -12,7 +12,7 @@ from pydantic import (
     model_validator,
 )
 
-from ._compat import Self
+from ._validators import exactly_one_of, from_list, from_str
 from .base import BaseCZMLObject
 from .common import Deletable, Interpolatable
 from .enums import (
@@ -80,50 +80,13 @@ class AlignedAxis(BaseCZMLObject, Interpolatable, Deletable):
     )
     """The axis specified as the normalized velocity vector of a position property. The reference must be to a position property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/VelocityReferenceValue>`__ for it's definition."""
 
-    @model_validator(mode="after")
-    def checks(self) -> Self:
-        if self.delete:
-            return self
-        if (
-            sum(
-                val is not None
-                for val in (
-                    self.unitCartesian,
-                    self.unitSpherical,
-                    self.reference,
-                    self.velocityReference,
-                )
-            )
-            != 1
-        ):
-            raise ValueError("Only one of unit or reference must be given.")
-        return self
-
-    @field_validator("unitCartesian")
-    @classmethod
-    def validate_cartesian(
-        cls, r: UnitCartesian3Value | list[float]
-    ) -> UnitCartesian3Value:
-        return UnitCartesian3Value(values=r) if isinstance(r, list) else r
-
-    @field_validator("unitSpherical")
-    @classmethod
-    def validate_spherical(
-        cls, r: UnitSphericalValue | list[float]
-    ) -> UnitSphericalValue:
-        return UnitSphericalValue(values=r) if isinstance(r, list) else r
-
-    @field_validator("reference")
-    @classmethod
-    def validate_reference(cls, r: ReferenceValue | str) -> ReferenceValue:
-        return ReferenceValue(value=r) if isinstance(r, str) else r
-
-    @field_validator("velocityReference")
-    @classmethod
-    def validate_velocity_reference(
-        cls, r: VelocityReferenceValue | str
-    ) -> VelocityReferenceValue:
-        return VelocityReferenceValue(value=r) if isinstance(r, str) else r
+    checks = exactly_one_of(
+        "unitCartesian", "unitSpherical", "reference", "velocityReference"
+    )
+    validate_cartesian = from_list("unitCartesian", UnitCartesian3Value)
+    validate_spherical = from_list("unitSpherical", UnitSphericalValue)
+    validate_reference = from_str("reference", ReferenceValue)
+    validate_velocity_reference = from_str("velocityReference", VelocityReferenceValue)
 
 
 class Material(BaseCZMLObject):
@@ -321,34 +284,10 @@ class Color(BaseCZMLObject, Interpolatable, Deletable):
     reference: None | ReferenceValue | str | TimeIntervalCollection = None
     """The color specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
 
-    @model_validator(mode="after")
-    def checks(self):
-        if self.delete:
-            return self
-        if sum(val is not None for val in (self.rgba, self.rgbaf, self.reference)) != 1:
-            raise ValueError("Only one of rgba, rgbaf or reference must be given")
-        return self
-
-    @field_validator("rgba")
-    @classmethod
-    def validate_rgba(cls, c):
-        if isinstance(c, list):
-            return RgbaValue(values=c)
-        return c
-
-    @field_validator("rgbaf")
-    @classmethod
-    def validate_rgbaf(cls, c):
-        if isinstance(c, list):
-            return RgbafValue(values=c)
-        return c
-
-    @field_validator("reference")
-    @classmethod
-    def validate_reference(cls, r):
-        if isinstance(r, str):
-            return ReferenceValue(value=r)
-        return r
+    checks = exactly_one_of("rgba", "rgbaf", "reference")
+    validate_rgba = from_list("rgba", RgbaValue)
+    validate_rgbaf = from_list("rgbaf", RgbafValue)
+    validate_reference = from_str("reference", ReferenceValue)
 
 
 class Position(BaseCZMLObject, Interpolatable, Deletable):
@@ -376,62 +315,22 @@ class Position(BaseCZMLObject, Interpolatable, Deletable):
     reference: None | ReferenceValue | str | TimeIntervalCollection = None
     """The position specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
 
-    @model_validator(mode="after")
-    def checks(self):
-        if self.delete:
-            return self
-        if (
-            sum(
-                val is not None
-                for val in (
-                    self.cartesian,
-                    self.cartographicDegrees,
-                    self.cartographicRadians,
-                    self.cartesianVelocity,
-                    self.reference,
-                )
-            )
-            != 1
-        ):
-            raise ValueError(
-                "One of cartesian, cartographicDegrees, cartographicRadians or reference must be given"
-            )
-        return self
-
-    @field_validator("reference")
-    @classmethod
-    def validate_reference(cls, r):
-        if isinstance(r, str):
-            return ReferenceValue(value=r)
-        return r
-
-    @field_validator("cartesian")
-    @classmethod
-    def validate_cartesian(cls, r):
-        if isinstance(r, list):
-            return Cartesian3Value(values=r)
-        return r
-
-    @field_validator("cartographicRadians")
-    @classmethod
-    def validate_cartographicRadians(cls, r):
-        if isinstance(r, list):
-            return CartographicRadiansValue(values=r)
-        return r
-
-    @field_validator("cartographicDegrees")
-    @classmethod
-    def validate_cartographicDegrees(cls, r):
-        if isinstance(r, list):
-            return CartographicDegreesValue(values=r)
-        return r
-
-    @field_validator("cartesianVelocity")
-    @classmethod
-    def validate_cartesianVelocity(cls, r):
-        if isinstance(r, list):
-            return Cartesian3VelocityValue(values=r)
-        return r
+    checks = exactly_one_of(
+        "cartesian",
+        "cartographicDegrees",
+        "cartographicRadians",
+        "cartesianVelocity",
+        "reference",
+    )
+    validate_reference = from_str("reference", ReferenceValue)
+    validate_cartesian = from_list("cartesian", Cartesian3Value)
+    validate_cartographicRadians = from_list(
+        "cartographicRadians", CartographicRadiansValue
+    )
+    validate_cartographicDegrees = from_list(
+        "cartographicDegrees", CartographicDegreesValue
+    )
+    validate_cartesianVelocity = from_list("cartesianVelocity", Cartesian3VelocityValue)
 
 
 class ViewFrom(BaseCZMLObject, Interpolatable, Deletable):
@@ -445,19 +344,8 @@ class ViewFrom(BaseCZMLObject, Interpolatable, Deletable):
     reference: None | ReferenceValue | str | TimeIntervalCollection = None
     """The offset specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
 
-    @field_validator("cartesian")
-    @classmethod
-    def validate_cartesian(cls, r):
-        if isinstance(r, list):
-            return Cartesian3Value(values=r)
-        return r
-
-    @field_validator("reference")
-    @classmethod
-    def validate_reference(cls, r):
-        if isinstance(r, str):
-            return ReferenceValue(value=r)
-        return r
+    validate_cartesian = from_list("cartesian", Cartesian3Value)
+    validate_reference = from_str("reference", ReferenceValue)
 
     @model_validator(mode="after")
     def checks(self):
@@ -468,6 +356,22 @@ class ViewFrom(BaseCZMLObject, Interpolatable, Deletable):
                 "ViewFrom must have either 'cartesian' or 'reference' specified"
             )
         return self
+
+
+class EyeOffset(BaseCZMLObject, Deletable):
+    """An offset in eye coordinates which can optionally vary over time. Eye coordinates are a left-handed coordinate system where the X-axis points toward the viewer's right, the Y-axis poitns up, and the Z-axis points into the screen.
+
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/EyeOffset>`__ for it's definition.
+    """
+
+    cartesian: None | Cartesian3Value | list[float] | TimeIntervalCollection = None
+    """The eye offset specified as a three-dimensional Cartesian value `[X, Y, Z]`, in eye coordinates in meters. If the array has three elements, the eye offset is constant. If it has four or more elements, they are time-tagged samples arranged as `[Time, X, Y, Z, Time, X, Y, Z, ...]`, where Time is an ISO 8601 date and time string or seconds since epoch. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Cartesian3Value>`__ for it's definition."""
+    reference: None | ReferenceValue | str | TimeIntervalCollection = None
+    """The eye offset specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
+
+    checks = exactly_one_of("cartesian", "reference")
+    validate_cartesian = from_list("cartesian", Cartesian3Value)
+    validate_reference = from_str("reference", ReferenceValue)
 
 
 class Billboard(BaseCZMLObject):
@@ -517,12 +421,7 @@ class Billboard(BaseCZMLObject):
     disableDepthTestDistance: None | float | NumberValue | TimeIntervalCollection = None
     """The distance from the camera at which to disable the depth test. This can be used to prevent clipping against terrain, for example. When set to zero, the depth test is always applied. When set to Infinity, the depth test is never applied."""
 
-    @field_validator("eyeOffset")
-    @classmethod
-    def validate_eye_offset(cls, r):
-        if isinstance(r, list):
-            return EyeOffset(cartesian=r)
-        return r
+    validate_eye_offset = from_list("eyeOffset", EyeOffset, key="cartesian")
 
 
 class EllipsoidRadii(BaseCZMLObject, Interpolatable, Deletable):
@@ -536,27 +435,9 @@ class EllipsoidRadii(BaseCZMLObject, Interpolatable, Deletable):
     reference: None | ReferenceValue | str | TimeIntervalCollection = None
     """The radii specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
 
-    @model_validator(mode="after")
-    def checks(self):
-        if self.delete:
-            return self
-        if sum(val is not None for val in (self.cartesian, self.reference)) != 1:
-            raise ValueError("Only one of cartesian or reference must be given")
-        return self
-
-    @field_validator("cartesian")
-    @classmethod
-    def validate_cartesian(cls, r):
-        if isinstance(r, list):
-            return Cartesian3Value(values=r)
-        return r
-
-    @field_validator("reference")
-    @classmethod
-    def validate_reference(cls, r):
-        if isinstance(r, str):
-            return ReferenceValue(value=r)
-        return r
+    checks = exactly_one_of("cartesian", "reference")
+    validate_cartesian = from_list("cartesian", Cartesian3Value)
+    validate_reference = from_str("reference", ReferenceValue)
 
 
 class Corridor(BaseCZMLObject):
@@ -794,13 +675,8 @@ class ArcType(BaseCZMLObject, Deletable):
     reference: None | ReferenceValue | str | TimeIntervalCollection = None
     """The arc type specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
 
-    @model_validator(mode="after")
-    def checks(self):
-        if self.delete:
-            return self
-        if sum(val is not None for val in (self.arcType, self.reference)) != 1:
-            raise ValueError("Only one of arcType or reference must be given")
-        return self
+    checks = exactly_one_of("arcType", "reference")
+    validate_reference = from_str("reference", ReferenceValue)
 
     @field_validator("arcType")
     @classmethod
@@ -808,13 +684,6 @@ class ArcType(BaseCZMLObject, Deletable):
         if t is None or isinstance(t, ArcTypes):
             return t
         return ArcTypes(t)
-
-    @field_validator("reference")
-    @classmethod
-    def validate_reference(cls, r):
-        if isinstance(r, str):
-            return ReferenceValue(value=r)
-        return r
 
 
 class ShadowMode(BaseCZMLObject, Deletable):
@@ -828,20 +697,8 @@ class ShadowMode(BaseCZMLObject, Deletable):
     reference: None | ReferenceValue | str | TimeIntervalCollection = None
     """The shadow mode specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
 
-    @model_validator(mode="after")
-    def checks(self):
-        if self.delete:
-            return self
-        if sum(val is not None for val in (self.shadowMode, self.reference)) != 1:
-            raise ValueError("Only one of shadowMode or reference must be given")
-        return self
-
-    @field_validator("reference")
-    @classmethod
-    def validate_reference(cls, r):
-        if isinstance(r, str):
-            return ReferenceValue(value=r)
-        return r
+    checks = exactly_one_of("shadowMode", "reference")
+    validate_reference = from_str("reference", ReferenceValue)
 
 
 class ClassificationType(BaseCZMLObject, Deletable):
@@ -855,25 +712,8 @@ class ClassificationType(BaseCZMLObject, Deletable):
     reference: None | ReferenceValue | str | TimeIntervalCollection = None
     """The classification type specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
 
-    @model_validator(mode="after")
-    def checks(self):
-        if self.delete:
-            return self
-        if (
-            sum(val is not None for val in (self.classificationType, self.reference))
-            != 1
-        ):
-            raise ValueError(
-                "Only one of classificationType or reference must be given"
-            )
-        return self
-
-    @field_validator("reference")
-    @classmethod
-    def validate_reference(cls, r):
-        if isinstance(r, str):
-            return ReferenceValue(value=r)
-        return r
+    checks = exactly_one_of("classificationType", "reference")
+    validate_reference = from_str("reference", ReferenceValue)
 
 
 class DistanceDisplayCondition(BaseCZMLObject, Interpolatable, Deletable):
@@ -889,28 +729,8 @@ class DistanceDisplayCondition(BaseCZMLObject, Interpolatable, Deletable):
     reference: None | ReferenceValue | str | TimeIntervalCollection = None
     """The value specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
 
-    @model_validator(mode="after")
-    def checks(self):
-        if self.delete:
-            return self
-        if (
-            sum(
-                val is not None
-                for val in (self.distanceDisplayCondition, self.reference)
-            )
-            != 1
-        ):
-            raise ValueError(
-                "Only one of distanceDisplayCondition or reference must be given"
-            )
-        return self
-
-    @field_validator("reference")
-    @classmethod
-    def validate_reference(cls, r):
-        if isinstance(r, str):
-            return ReferenceValue(value=r)
-        return r
+    checks = exactly_one_of("distanceDisplayCondition", "reference")
+    validate_reference = from_str("reference", ReferenceValue)
 
 
 class PositionListOfLists(BaseCZMLObject, Deletable):
@@ -945,55 +765,17 @@ class PositionListOfLists(BaseCZMLObject, Deletable):
     ) = None
     """The list of lists of positions specified as references. Each reference is to a property that defines a single position, which may change with time. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceListOfListsValue>`__ for it's definition."""
 
-    @model_validator(mode="after")
-    def checks(self):
-        if self.delete:
-            return self
-        if (
-            sum(
-                val is not None
-                for val in (
-                    self.cartesian,
-                    self.cartographicDegrees,
-                    self.cartographicRadians,
-                    self.references,
-                )
-            )
-            != 1
-        ):
-            raise ValueError(
-                "One of cartesian, cartographicDegrees, cartographicRadians or references must be given"
-            )
-
-        return self
-
-    @field_validator("references")
-    @classmethod
-    def validate_reference(cls, r):
-        if isinstance(r, list):
-            return ReferenceListOfListsValue(values=r)
-        return r
-
-    @field_validator("cartesian")
-    @classmethod
-    def validate_cartesian(cls, r):
-        if isinstance(r, list):
-            return Cartesian3ListOfListsValue(values=r)
-        return r
-
-    @field_validator("cartographicRadians")
-    @classmethod
-    def validate_cartographicRadians(cls, r):
-        if isinstance(r, list):
-            return CartographicRadiansListOfListsValue(values=r)
-        return r
-
-    @field_validator("cartographicDegrees")
-    @classmethod
-    def validate_cartographicDegrees(cls, r):
-        if isinstance(r, list):
-            return CartographicDegreesListOfListsValue(values=r)
-        return r
+    checks = exactly_one_of(
+        "cartesian", "cartographicDegrees", "cartographicRadians", "references"
+    )
+    validate_reference = from_list("references", ReferenceListOfListsValue)
+    validate_cartesian = from_list("cartesian", Cartesian3ListOfListsValue)
+    validate_cartographicRadians = from_list(
+        "cartographicRadians", CartographicRadiansListOfListsValue
+    )
+    validate_cartographicDegrees = from_list(
+        "cartographicDegrees", CartographicDegreesListOfListsValue
+    )
 
 
 class PositionList(BaseCZMLObject, Deletable):
@@ -1020,56 +802,17 @@ class PositionList(BaseCZMLObject, Deletable):
         None  # NOTE: not in documentation
     )
 
-    @model_validator(mode="after")
-    def checks(self):
-        if self.delete:
-            return self
-
-        if (
-            sum(
-                val is not None
-                for val in (
-                    self.cartesian,
-                    self.cartographicDegrees,
-                    self.cartographicRadians,
-                    self.references,
-                )
-            )
-            != 1
-        ):
-            raise ValueError(
-                "One of cartesian, cartographicDegrees, cartographicRadians or references must be given"
-            )
-
-        return self
-
-    @field_validator("references")
-    @classmethod
-    def validate_reference(cls, r):
-        if isinstance(r, list):
-            return ReferenceListValue(values=r)
-        return r
-
-    @field_validator("cartesian")
-    @classmethod
-    def validate_cartesian(cls, r):
-        if isinstance(r, list):
-            return Cartesian3ListValue(values=r)
-        return r
-
-    @field_validator("cartographicRadians")
-    @classmethod
-    def validate_cartographicRadians(cls, r):
-        if isinstance(r, list):
-            return CartographicRadiansListValue(values=r)
-        return r
-
-    @field_validator("cartographicDegrees")
-    @classmethod
-    def validate_cartographicDegrees(cls, r):
-        if isinstance(r, list):
-            return CartographicDegreesListValue(values=r)
-        return r
+    checks = exactly_one_of(
+        "cartesian", "cartographicDegrees", "cartographicRadians", "references"
+    )
+    validate_reference = from_list("references", ReferenceListValue)
+    validate_cartesian = from_list("cartesian", Cartesian3ListValue)
+    validate_cartographicRadians = from_list(
+        "cartographicRadians", CartographicRadiansListValue
+    )
+    validate_cartographicDegrees = from_list(
+        "cartographicDegrees", CartographicDegreesListValue
+    )
 
 
 class Ellipsoid(BaseCZMLObject):
@@ -1159,27 +902,9 @@ class BoxDimensions(BaseCZMLObject, Interpolatable, Deletable):
     reference: None | ReferenceValue | str | TimeIntervalCollection = None
     """The dimensions specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
 
-    @model_validator(mode="after")
-    def checks(self):
-        if self.delete:
-            return self
-        if sum(val is not None for val in (self.cartesian, self.reference)) != 1:
-            raise ValueError("Only one of cartesian or reference must be given")
-        return self
-
-    @field_validator("cartesian")
-    @classmethod
-    def validate_cartesian(cls, r):
-        if isinstance(r, list):
-            return Cartesian3Value(values=r)
-        return r
-
-    @field_validator("reference")
-    @classmethod
-    def validate_reference(cls, r):
-        if isinstance(r, str):
-            return ReferenceValue(value=r)
-        return r
+    checks = exactly_one_of("cartesian", "reference")
+    validate_cartesian = from_list("cartesian", Cartesian3Value)
+    validate_reference = from_str("reference", ReferenceValue)
 
 
 class Rectangle(BaseCZMLObject):
@@ -1211,59 +936,8 @@ class RectangleCoordinates(BaseCZMLObject, Interpolatable, Deletable):
     reference: None | ReferenceValue | str | TimeIntervalCollection = None
     """The set of coordinates specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
 
-    @model_validator(mode="after")
-    def checks(self):
-        if self.delete:
-            return self
-        if (
-            sum(
-                val is not None for val in (self.wsen, self.wsenDegrees, self.reference)
-            )
-            != 1
-        ):
-            raise ValueError("Only one of wsen, wsenDegrees or reference must be given")
-        return self
-
-    @field_validator("reference")
-    @classmethod
-    def validate_reference(cls, r):
-        if isinstance(r, str):
-            return ReferenceValue(value=r)
-        return r
-
-
-class EyeOffset(BaseCZMLObject, Deletable):
-    """An offset in eye coordinates which can optionally vary over time. Eye coordinates are a left-handed coordinate system where the X-axis points toward the viewer's right, the Y-axis poitns up, and the Z-axis points into the screen.
-
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/EyeOffset>`__ for it's definition.
-    """
-
-    cartesian: None | Cartesian3Value | list[float] | TimeIntervalCollection = None
-    """The eye offset specified as a three-dimensional Cartesian value `[X, Y, Z]`, in eye coordinates in meters. If the array has three elements, the eye offset is constant. If it has four or more elements, they are time-tagged samples arranged as `[Time, X, Y, Z, Time, X, Y, Z, ...]`, where Time is an ISO 8601 date and time string or seconds since epoch. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Cartesian3Value>`__ for it's definition."""
-    reference: None | ReferenceValue | str | TimeIntervalCollection = None
-    """The eye offset specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
-
-    @model_validator(mode="after")
-    def checks(self):
-        if self.delete:
-            return self
-        if sum(val is not None for val in (self.cartesian, self.reference)) != 1:
-            raise ValueError("Only one of cartesian or reference must be given")
-        return self
-
-    @field_validator("cartesian")
-    @classmethod
-    def validate_cartesian(cls, r):
-        if isinstance(r, list):
-            return Cartesian3Value(values=r)
-        return r
-
-    @field_validator("reference")
-    @classmethod
-    def validate_reference(cls, r):
-        if isinstance(r, str):
-            return ReferenceValue(value=r)
-        return r
+    checks = exactly_one_of("wsen", "wsenDegrees", "reference")
+    validate_reference = from_str("reference", ReferenceValue)
 
 
 class HeightReference(BaseCZMLObject, Deletable):
@@ -1277,20 +951,8 @@ class HeightReference(BaseCZMLObject, Deletable):
     reference: None | ReferenceValue | str | TimeIntervalCollection = None
     """The height reference specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
 
-    @model_validator(mode="after")
-    def checks(self):
-        if self.delete:
-            return self
-        if sum(val is not None for val in (self.heightReference, self.reference)) != 1:
-            raise ValueError("Only one of heightReference or reference must be given")
-        return self
-
-    @field_validator("reference")
-    @classmethod
-    def validate_reference(cls, r):
-        if isinstance(r, str):
-            return ReferenceValue(value=r)
-        return r
+    checks = exactly_one_of("heightReference", "reference")
+    validate_reference = from_str("reference", ReferenceValue)
 
 
 class ColorBlendMode(BaseCZMLObject, Deletable):
@@ -1304,20 +966,8 @@ class ColorBlendMode(BaseCZMLObject, Deletable):
     reference: None | ReferenceValue | str | TimeIntervalCollection = None
     """The color blend mode specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
 
-    @model_validator(mode="after")
-    def checks(self):
-        if self.delete:
-            return self
-        if sum(val is not None for val in (self.colorBlendMode, self.reference)) != 1:
-            raise ValueError("Only one of colorBlendMode or reference must be given")
-        return self
-
-    @field_validator("reference")
-    @classmethod
-    def validate_reference(cls, r):
-        if isinstance(r, str):
-            return ReferenceValue(value=r)
-        return r
+    checks = exactly_one_of("colorBlendMode", "reference")
+    validate_reference = from_str("reference", ReferenceValue)
 
 
 class CornerType(BaseCZMLObject, Deletable):
@@ -1331,20 +981,8 @@ class CornerType(BaseCZMLObject, Deletable):
     reference: None | ReferenceValue | str | TimeIntervalCollection = None
     """The corner style specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
 
-    @model_validator(mode="after")
-    def checks(self):
-        if self.delete:
-            return self
-        if sum(val is not None for val in (self.cornerType, self.reference)) != 1:
-            raise ValueError("Only one of cornerType or reference must be given")
-        return self
-
-    @field_validator("reference")
-    @classmethod
-    def validate_reference(cls, r):
-        if isinstance(r, str):
-            return ReferenceValue(value=r)
-        return r
+    checks = exactly_one_of("cornerType", "reference")
+    validate_reference = from_str("reference", ReferenceValue)
 
 
 class Clock(BaseCZMLObject):
@@ -1424,6 +1062,76 @@ class Point(BaseCZMLObject):
     """The distance from the camera at which to disable the depth test. This can be used to prevent clipping against terrain, for example. When set to zero, the depth test is always applied. When set to Infinity, the depth test is never applied."""
 
 
+class Uri(BaseCZMLObject, Deletable):
+    """A URI value. The URI can optionally vary with time.
+
+    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Uri>`__ for it's definition.
+    """
+
+    uri: None | str | TimeIntervalCollection = None
+    """The URI value."""
+    reference: None | ReferenceValue | str | TimeIntervalCollection = None
+    """The color specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
+
+    checks = exactly_one_of("uri", "reference")
+    validate_reference = from_str("reference", ReferenceValue)
+
+    @field_validator("uri")
+    @classmethod
+    def _check_uri(cls, url: str) -> str:
+        parsed = urlparse(url)
+
+        # Absolute URIs (e.g., https://..., file://..., urn:...)
+        if parsed.scheme and (parsed.netloc or parsed.path) and parsed.scheme != "data":
+            return url
+
+        # Data URIs with base64 payload
+        if url.startswith("data:"):
+            try:
+                metadata, payload = url.split(",", maxsplit=1)
+            except ValueError as exc:
+                raise ValueError(
+                    "uri must be an absolute URI, relative path, data URI, or base64 encoded string."
+                ) from exc
+
+            if ";base64" not in metadata:
+                raise ValueError(
+                    "uri must be an absolute URI, relative path, data URI, or base64 encoded string."
+                )
+            try:
+                base64.b64decode(payload, validate=True)
+            except binascii.Error as exc:
+                raise ValueError(
+                    "uri must be an absolute URI, relative path, data URI, or base64 encoded string."
+                ) from exc
+            return url
+
+        # Relative paths are commonly used in CZML asset references.
+        if "/" in url or "\\" in url or url.startswith(("./", "../")):
+            return url
+
+        # Raw base64 payloads are also accepted.
+        try:
+            base64.b64decode(url, validate=True)
+            return url
+        except binascii.Error as exc:
+            raise ValueError(
+                "uri must be an absolute URI, relative path, data URI, or base64 encoded string."
+            ) from exc
+
+    @model_serializer
+    def custom_serializer(
+        self,
+    ) -> str | dict[str, bool | ReferenceValue] | TimeIntervalCollection | None:
+        if self.delete:
+            return {"delete": True}
+        if self.uri is not None:
+            return self.uri
+        if isinstance(self.reference, ReferenceValue):
+            return {"reference": self.reference}
+        return self.reference
+
+
 class Tileset(BaseCZMLObject):
     """A 3D Tiles tileset.
 
@@ -1437,12 +1145,7 @@ class Tileset(BaseCZMLObject):
     maximumScreenSpaceError: None | float | NumberValue | TimeIntervalCollection = None
     """The maximum screen space error used to drive level of detail refinement."""
 
-    @field_validator("uri")
-    @classmethod
-    def validate_uri(cls, r):
-        if isinstance(r, str):
-            return Uri(uri=r)
-        return r
+    validate_uri = from_str("uri", Uri, key="uri")
 
 
 class Wall(BaseCZMLObject):
@@ -1492,27 +1195,9 @@ class NearFarScalar(BaseCZMLObject, Interpolatable, Deletable):
     reference: None | ReferenceValue | str | TimeIntervalCollection = None
     """The value specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
 
-    @model_validator(mode="after")
-    def checks(self):
-        if self.delete:
-            return self
-        if sum(val is not None for val in (self.nearFarScalar, self.reference)) != 1:
-            raise ValueError("Only one of nearFarScalar or reference must be given")
-        return self
-
-    @field_validator("reference")
-    @classmethod
-    def validate_reference(cls, r):
-        if isinstance(r, str):
-            return ReferenceValue(value=r)
-        return r
-
-    @field_validator("nearFarScalar")
-    @classmethod
-    def validate_nearFarScalar(cls, r):
-        if isinstance(r, list):
-            return NearFarScalarValue(values=r)
-        return r
+    checks = exactly_one_of("nearFarScalar", "reference")
+    validate_reference = from_str("reference", ReferenceValue)
+    validate_nearFarScalar = from_list("nearFarScalar", NearFarScalarValue)
 
 
 class Rotation(BaseCZMLObject, Interpolatable, Deletable):
@@ -1528,27 +1213,9 @@ class Rotation(BaseCZMLObject, Interpolatable, Deletable):
     reference: None | ReferenceValue | str | TimeIntervalCollection = None
     """The value specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
 
-    @model_validator(mode="after")
-    def checks(self):
-        if self.delete:
-            return self
-        if sum(val is not None for val in (self.unitQuaternion, self.reference)) != 1:
-            raise ValueError("Only one of unitQuaternion or reference must be given")
-        return self
-
-    @field_validator("unitQuaternion")
-    @classmethod
-    def validate_unitQuaternion(cls, q):
-        if isinstance(q, list):
-            return UnitQuaternionValue(values=q)
-        return q
-
-    @field_validator("reference")
-    @classmethod
-    def validate_reference(cls, r):
-        if isinstance(r, str):
-            return ReferenceValue(value=r)
-        return r
+    checks = exactly_one_of("unitQuaternion", "reference")
+    validate_unitQuaternion = from_list("unitQuaternion", UnitQuaternionValue)
+    validate_reference = from_str("reference", ReferenceValue)
 
 
 class LineOffset(BaseCZMLObject, Interpolatable, Deletable):
@@ -1561,27 +1228,9 @@ class LineOffset(BaseCZMLObject, Interpolatable, Deletable):
     reference: None | ReferenceValue | str | TimeIntervalCollection = None
     """The value specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
 
-    @model_validator(mode="after")
-    def checks(self):
-        if self.delete:
-            return self
-        if sum(val is not None for val in (self.cartesian2, self.reference)) != 1:
-            raise ValueError("Only one of cartesian2 or reference must be given")
-        return self
-
-    @field_validator("cartesian2")
-    @classmethod
-    def validate_cartesian2(cls, c):
-        if isinstance(c, list):
-            return Cartesian2Value(values=c)
-        return c
-
-    @field_validator("reference")
-    @classmethod
-    def validate_reference(cls, r):
-        if isinstance(r, str):
-            return ReferenceValue(value=r)
-        return r
+    checks = exactly_one_of("cartesian2", "reference")
+    validate_cartesian2 = from_list("cartesian2", Cartesian2Value)
+    validate_reference = from_str("reference", ReferenceValue)
 
 
 class Label(BaseCZMLObject):
@@ -1649,27 +1298,9 @@ class Orientation(BaseCZMLObject, Interpolatable, Deletable):
     velocityReference: None | str | TimeIntervalCollection = None
     """The orientation specified as the normalized velocity vector of a position property. The reference must be to a position property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/VelocityReferenceValue>`__ for it's definition."""
 
-    @model_validator(mode="after")
-    def checks(self):
-        if self.delete:
-            return self
-        if sum(val is not None for val in (self.unitQuaternion, self.reference)) != 1:
-            raise ValueError("Only one of unitQuaternion or reference must be given")
-        return self
-
-    @field_validator("unitQuaternion")
-    @classmethod
-    def validate_unitQuaternion(cls, q):
-        if isinstance(q, list):
-            return UnitQuaternionValue(values=q)
-        return q
-
-    @field_validator("reference")
-    @classmethod
-    def validate_reference(cls, r):
-        if isinstance(r, str):
-            return ReferenceValue(value=r)
-        return r
+    checks = exactly_one_of("unitQuaternion", "reference")
+    validate_unitQuaternion = from_list("unitQuaternion", UnitQuaternionValue)
+    validate_reference = from_str("reference", ReferenceValue)
 
 
 class Model(BaseCZMLObject):
@@ -1715,94 +1346,7 @@ class Model(BaseCZMLObject):
     articulations: None | Any | TimeIntervalCollection = None
     """A mapping of keys to articulation values, where the keys are the name of the articulation, a single space, and the name of the stage. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Articulations>`__ for it's definition."""
 
-    @field_validator("gltf")
-    @classmethod
-    def validate_gltf(cls, r):
-        if isinstance(r, str):
-            return Uri(uri=r)
-        return r
-
-
-class Uri(BaseCZMLObject, Deletable):
-    """A URI value. The URI can optionally vary with time.
-
-    See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Uri>`__ for it's definition.
-    """
-
-    uri: None | str | TimeIntervalCollection = None
-    """The URI value."""
-    reference: None | ReferenceValue | str | TimeIntervalCollection = None
-    """The color specified as a reference to another property. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/ReferenceValue>`__ for it's definition."""
-
-    @model_validator(mode="after")
-    def checks(self):
-        if self.delete:
-            return self
-        if sum(val is not None for val in (self.uri, self.reference)) != 1:
-            raise ValueError("Only one of uri or reference must be given")
-        return self
-
-    @field_validator("uri")
-    @classmethod
-    def _check_uri(cls, url: str) -> str:
-        parsed = urlparse(url)
-
-        # Absolute URIs (e.g., https://..., file://..., urn:...)
-        if parsed.scheme and (parsed.netloc or parsed.path) and parsed.scheme != "data":
-            return url
-
-        # Data URIs with base64 payload
-        if url.startswith("data:"):
-            try:
-                metadata, payload = url.split(",", maxsplit=1)
-            except ValueError as exc:
-                raise ValueError(
-                    "uri must be an absolute URI, relative path, data URI, or base64 encoded string."
-                ) from exc
-
-            if ";base64" not in metadata:
-                raise ValueError(
-                    "uri must be an absolute URI, relative path, data URI, or base64 encoded string."
-                )
-            try:
-                base64.b64decode(payload, validate=True)
-            except binascii.Error as exc:
-                raise ValueError(
-                    "uri must be an absolute URI, relative path, data URI, or base64 encoded string."
-                ) from exc
-            return url
-
-        # Relative paths are commonly used in CZML asset references.
-        if "/" in url or "\\" in url or url.startswith(("./", "../")):
-            return url
-
-        # Raw base64 payloads are also accepted.
-        try:
-            base64.b64decode(url, validate=True)
-            return url
-        except binascii.Error as exc:
-            raise ValueError(
-                "uri must be an absolute URI, relative path, data URI, or base64 encoded string."
-            ) from exc
-
-    @field_validator("reference")
-    @classmethod
-    def validate_reference(cls, r):
-        if isinstance(r, str):
-            return ReferenceValue(value=r)
-        return r
-
-    @model_serializer
-    def custom_serializer(
-        self,
-    ) -> str | dict[str, bool | ReferenceValue] | TimeIntervalCollection | None:
-        if self.delete:
-            return {"delete": True}
-        if self.uri is not None:
-            return self.uri
-        if isinstance(self.reference, ReferenceValue):
-            return {"reference": self.reference}
-        return self.reference
+    validate_gltf = from_str("gltf", Uri, key="uri")
 
 
 __all__ = [
