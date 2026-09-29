@@ -86,7 +86,7 @@ class CZMLWidget(BaseModel):
     ion_token: str = Field(default="")
     terrain: str = Field(default=TERRAIN["Ellipsoid"])
     imagery: str = Field(default=IMAGERY["OSM"])
-    container_id: str = Field(default=str(uuid4))
+    container_id: str = Field(default_factory=lambda: str(uuid4()))
 
     def model_post_init(self, context: Any, /) -> None:
         warnings.warn(

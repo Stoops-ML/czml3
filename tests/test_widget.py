@@ -1,6 +1,7 @@
 import importlib
 import sys
 import warnings
+from uuid import UUID
 
 import pytest
 
@@ -46,3 +47,10 @@ def test_to_html_contains_script():
 def test_repr():
     widget = CZMLWidget()
     assert widget.to_html() == widget._repr_html_()
+
+
+def test_container_id_is_unique_uuid():
+    first, second = CZMLWidget().container_id, CZMLWidget().container_id
+
+    assert first != second
+    assert str(UUID(first)) == first
