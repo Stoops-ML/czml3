@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Iterator
 from typing import TYPE_CHECKING, Any, cast
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
@@ -59,6 +60,13 @@ class BaseCZMLObject(BaseModel, metaclass=_HumanErrorsMeta):
                 if k not in NON_DELETE_PROPERTIES and getattr(self, k) is not None:
                     setattr(self, k, None)
         return self
+
+    def __repr_args__(self) -> Iterator[tuple[str | None, Any]]:
+        # Only show the properties that are set: most CZML objects have dozens
+        # of optional properties, almost all of them None.
+        for name, value in super().__repr_args__():
+            if value is not None:
+                yield name, value
 
     def __str__(self) -> str:
         return self.to_json()
