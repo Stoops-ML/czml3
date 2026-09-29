@@ -1,7 +1,9 @@
 import datetime as dt
+from itertools import pairwise
 
 from czml3 import CZML_VERSION, Document, Packet
 from czml3.enums import (
+    ArcTypes,
     HorizontalOrigins,
     InterpolationAlgorithms,
     LabelStyles,
@@ -12,17 +14,394 @@ from czml3.properties import (
     Billboard,
     Clock,
     Color,
+    EyeOffset,
     Label,
+    Material,
     Path,
+    Point,
+    Polygon,
+    Polyline,
     PolylineMaterial,
     Position,
+    PositionList,
     SolidColorMaterial,
 )
-from czml3.types import IntervalValue, TimeInterval, TimeIntervalCollection
+from czml3.types import (
+    Cartesian2Value,
+    IntervalValue,
+    NumberValue,
+    TimeInterval,
+    TimeIntervalCollection,
+)
 
 accesses_id = "9927edc4-e87a-4e1f-9b8b-0bfb3b05b227"
 start = dt.datetime(2012, 3, 15, 10, tzinfo=dt.timezone.utc)
 end = dt.datetime(2012, 3, 16, 10, tzinfo=dt.timezone.utc)
+
+GEOEYE1_TO_ISS_ACCESSES = [
+    ("2012-03-15T10:16:06.97400000000198Z", "2012-03-15T10:33:59.3549999999959Z"),
+    ("2012-03-15T11:04:09.73799999999756Z", "2012-03-15T11:21:04.51900000000023Z"),
+    ("2012-03-15T11:52:06.94400000000314Z", "2012-03-15T12:08:18.8840000000055Z"),
+    ("2012-03-15T12:40:57.2069999999949Z", "2012-03-15T12:54:39.301999999996Z"),
+    ("2012-03-15T13:29:44.5040000000008Z", "2012-03-15T13:41:05.96899999999732Z"),
+    ("2012-03-15T14:20:16.8450000000012Z", "2012-03-15T14:25:48.0559999999969Z"),
+    ("2012-03-16T07:01:44.4309999999823Z", "2012-03-16T07:06:19.6309999999939Z"),
+    ("2012-03-16T07:46:00.457999999984168Z", "2012-03-16T07:57:20.8470000000088Z"),
+    ("2012-03-16T08:32:14.5289999999804Z", "2012-03-16T08:46:17.0109999999986Z"),
+    ("2012-03-16T09:18:28.4590000000026Z", "2012-03-16T09:35:16.6410000000033Z"),
+]
+
+GEOEYE1_TO_ISS_DESCRIPTION = (
+    "<h2>Access times</h2><table class='sky-infoBox-access-table'><tr><th>Start</th><th>End</th><th>Duration</th></tr>"
+    "<tr><td> 2012-03-15 10:16:06.974Z </td><td>2012-03-15 10:33:59.355Z </td><td> 1072.381s </td></tr>"
+    "<tr><td> 2012-03-15 11:04:09.738Z </td><td>2012-03-15 11:21:04.519Z </td><td> 1014.781s </td></tr>"
+    "<tr><td> 2012-03-15 11:52:06.944Z </td><td>2012-03-15 12:08:18.884Z </td><td> 971.940s </td></tr>"
+    "<tr><td> 2012-03-15 12:40:57.207Z </td><td>2012-03-15 12:54:39.302Z </td><td> 822.095s </td></tr>"
+    "<tr><td> 2012-03-15 13:29:44.504Z </td><td>2012-03-15 13:41:05.969Z </td><td> 681.465s </td></tr>"
+    "<tr><td> 2012-03-15 14:20:16.845Z </td><td>2012-03-15 14:25:48.056Z </td><td> 331.211s </td></tr>"
+    "<tr><td> 2012-03-16 07:01:44.431Z </td><td>2012-03-16 07:06:19.631Z </td><td> 275.200s </td></tr>"
+    "<tr><td> 2012-03-16 07:46:00.458Z </td><td>2012-03-16 07:57:20.847Z </td><td> 680.389s </td></tr>"
+    "<tr><td> 2012-03-16 08:32:14.529Z </td><td>2012-03-16 08:46:17.011Z </td><td> 842.482s </td></tr>"
+    "<tr><td> 2012-03-16 09:18:28.459Z </td><td>2012-03-16 09:35:16.641Z </td><td> 1008.182s </td></tr>"
+    "</table>"
+)
+
+AGI_TO_ISS_ACCESSES = [
+    ("2012-03-15T10:52:19.3940000000002Z", "2012-03-15T11:02:24.5570000000007Z"),
+    ("2012-03-15T12:28:24.0339999999997Z", "2012-03-15T12:38:34.6399999999994Z"),
+    ("2012-03-15T14:06:02.09799999999814Z", "2012-03-15T14:14:48.5310000000027Z"),
+    ("2012-03-15T15:43:15.2350000000006Z", "2012-03-15T15:52:06.56500000000233Z"),
+    ("2012-03-15T17:19:26.3190000000031Z", "2012-03-15T17:29:36.0240000000049Z"),
+    ("2012-03-15T18:55:44.7079999999987Z", "2012-03-15T19:05:17.7339999999967Z"),
+    ("2012-03-16T09:56:05.90600000001723Z", "2012-03-16T10:00:00.000000Z"),
+]
+
+AGI_TO_ISS_DESCRIPTION = (
+    "<h2>Access times</h2><table class='sky-infoBox-access-table'><tr><th>Start</th><th>End</th><th>Duration</th></tr>"
+    "<tr><td> 2012-03-15 10:52:19.394Z </td><td>2012-03-15 11:02:24.557Z </td><td> 605.163s </td></tr>"
+    "<tr><td> 2012-03-15 12:28:24.034Z </td><td>2012-03-15 12:38:34.640Z </td><td> 610.606s </td></tr>"
+    "<tr><td> 2012-03-15 14:06:02.098Z </td><td>2012-03-15 14:14:48.531Z </td><td> 526.433s </td></tr>"
+    "<tr><td> 2012-03-15 15:43:15.235Z </td><td>2012-03-15 15:52:06.565Z </td><td> 531.330s </td></tr>"
+    "<tr><td> 2012-03-15 17:19:26.319Z </td><td>2012-03-15 17:29:36.024Z </td><td> 609.705s </td></tr>"
+    "<tr><td> 2012-03-15 18:55:44.708Z </td><td>2012-03-15 19:05:17.734Z </td><td> 573.026s </td></tr>"
+    "<tr><td> 2012-03-16 09:56:05.906Z </td><td>2012-03-16 10:00:00.000Z </td><td> 234.094s </td></tr>"
+    "</table>"
+)
+
+PENNSYLVANIA_DESCRIPTION = (
+    "<!--HTML-->\r\n"
+    "<p>Pennsylvania, officially the Commonwealth of Pennsylvania, is a U.S. state that is located in the Northeastern and Mid-Atlantic regions of the United States, and the Great Lakes region. The state borders Delaware to the southeast, Maryland to the south, West Virginia to the southwest, Ohio to the west, Lake Erie and Ontario, Canada to the northwest, New York to the north and New Jersey to the east. The Appalachian Mountains run through the middle of the state.\r\n"
+    "Pennsylvania is the 33rd most extensive, the 6th most populous, and the 9th most densely populated of the 50 United States. The state's four most populous cities are Philadelphia, Pittsburgh, Allentown, and Erie. The state capital is Harrisburg. Pennsylvania has 51 miles (82 km) of coastline along Lake Erie and 57 miles (92 km) of shoreline along the Delaware Estuary. The state is one of the 13 original founding states of the U.S.</p>"
+)
+
+AGI_DESCRIPTION = (
+    "<!--HTML-->\r\n"
+    "<p>\r\n"
+    "Analytical Graphics, Inc. (AGI) develops commercial modeling and analysis software used by more than 40,000 global space, defense and intelligence professionals. AGI founded Cesium to meet the need for a cross-platform virtual globe with dynamic-data visualization. AGI continues to invest heavily in Cesium's development and facilitate the growth of the user and contributor community.\r\n"
+    "</p>"
+)
+
+GEOEYE1_DESCRIPTION = (
+    "<!--HTML-->\r\n"
+    "<p>GeoEye-1 is a high-resolution earth observation satellite owned by GeoEye, which was launched in September 2008.</p>\r\n"
+    "\r\n"
+    "<p>On December 1, 2004, General Dynamics C4 Systems announced it had been awarded a contract worth approximately $209 million to build the OrbView-5 satellite. Its sensor is designed by the ITT Exelis.</p>\r\n"
+    "\r\n"
+    "<p>The satellite, now known as GeoEye-1, was originally scheduled for April 2008 but lost its 30-day launch slot to a U.S. government mission which had been delayed. It was rescheduled for launch August 22, 2008 from Vandenberg Air Force Base aboard a Delta II launch vehicle. The launch was postponed to September 4, 2008, due to unavailability of the Big Crow telemetry-relay aircraft. It was delayed again to September 6 because Hurricane Hanna interfered with its launch crews.</p>\r\n"
+    "\r\n"
+    "<p>The launch took place successfully on September 6, 2008 at 11:50:57 a.m. PDT (18:50:57 UTC). The GeoEye-1 satellite separated successfully from its Delta II launch vehicle at 12:49 p.m. PDT (19:49 UTC), 58 minutes and 56 seconds after launch.</p>"
+)
+
+# [longitude, latitude, height] vertices, longitude/latitude in radians
+PENNSYLVANIA_BOUNDARY = [
+    (-1.3522077240237877, 0.6932383436059149, 0),
+    (-1.3630314740519183, 0.6933402355423893, 0),
+    (-1.3671958658568963, 0.6933164116349497, 0),
+    (-1.3680725973741055, 0.6933103378544294, 0),
+    (-1.3756294390644388, 0.693299289626768, 0),
+    (-1.37759145155452, 0.693285710886166, 0),
+    (-1.3857323154905137, 0.6932329317993553, 0),
+    (-1.387204693159873, 0.6932497043584019, 0),
+    (-1.3921642397583167, 0.6932764600632868, 0),
+    (-1.3948369679907713, 0.6932740164944832, 0),
+    (-1.403752356914346, 0.6932421638673993, 0),
+    (-1.4054136839844849, 0.6932660224548367, 0),
+    (-1.4054203339781848, 0.6974061187809533, 0),
+    (-1.40542577948586, 0.6985302157572724, 0),
+    (-1.4054446815793686, 0.7009683713811051, 0),
+    (-1.4054013802466303, 0.7051660984836011, 0),
+    (-1.4054152208071435, 0.7064882030988564, 0),
+    (-1.405374066131245, 0.7092531367782914, 0),
+    (-1.405344517975858, 0.7130398911135833, 0),
+    (-1.4053553041696831, 0.7137921630703696, 0),
+    (-1.4053903506948033, 0.717847558527404, 0),
+    (-1.4053391082894005, 0.7241248283511975, 0),
+    (-1.4054076823049872, 0.724226301809922, 0),
+    (-1.4053853251132624, 0.7304339504245932, 0),
+    (-1.4053495111334156, 0.732809309071272, 0),
+    (-1.3921311340866651, 0.7377041737073639, 0),
+    (-1.3921036273290417, 0.7330926289989202, 0),
+    (-1.3894979895551738, 0.7330486468055195, 0),
+    (-1.3798484450375388, 0.7330586305001696, 0),
+    (-1.3773883852209647, 0.7330357493325297, 0),
+    (-1.3666816595180005, 0.7330283146713379, 0),
+    (-1.3649219132838528, 0.7330070217223114, 0),
+    (-1.3569064163205986, 0.7329918900387238, 0),
+    (-1.354599770992057, 0.7330180002614316, 0),
+    (-1.3433550648083268, 0.7330904667885002, 0),
+    (-1.342653826195758, 0.7330826651925256, 0),
+    (-1.3362924480939438, 0.7330909906599572, 0),
+    (-1.328981348766283, 0.7330498535192947, 0),
+    (-1.3282799705255588, 0.7330296775356948, 0),
+    (-1.317369878937513, 0.7329750316713255, 0),
+    (-1.3156783227347815, 0.7330097463386135, 0),
+    (-1.3150298279817356, 0.7329135612488367, 0),
+    (-1.314652993784966, 0.7323625607125478, 0),
+    (-1.3139482994025766, 0.7321239392772451, 0),
+    (-1.313439099339346, 0.7307498413128194, 0),
+    (-1.3119864438784967, 0.730731794657347, 0),
+    (-1.3115849481938966, 0.7305214824566543, 0),
+    (-1.3111742895338896, 0.7304061685456499, 0),
+    (-1.3110525702187852, 0.7301933081536464, 0),
+    (-1.3103904967805342, 0.7297947098063845, 0),
+    (-1.3106869061243591, 0.7294990335104291, 0),
+    (-1.3106926482391603, 0.7291819769374323, 0),
+    (-1.31006717438301, 0.7290287195687776, 0),
+    (-1.3099912873941209, 0.7282685936295457, 0),
+    (-1.3101384361377446, 0.7280613880956304, 0),
+    (-1.3098927634269164, 0.7267083737010938, 0),
+    (-1.3102614817770415, 0.7262854105154587, 0),
+    (-1.3102163475385047, 0.7261352772658493, 0),
+    (-1.3094348237109952, 0.7254602361685523, 0),
+    (-1.3092568000409661, 0.7250021744241752, 0),
+    (-1.308504580282513, 0.7240255927322389, 0),
+    (-1.3078199921164888, 0.72403864782177, 0),
+    (-1.3072264926882589, 0.7236467166299556, 0),
+    (-1.307169245851595, 0.7233461185166344, 0),
+    (-1.3066244760589671, 0.7233894550695429, 0),
+    (-1.3053806318405998, 0.7230886126517037, 0),
+    (-1.304717877749918, 0.7230926094796837, 0),
+    (-1.3044598132746381, 0.7229514646847072, 0),
+    (-1.304466742212013, 0.7225949985688139, 0),
+    (-1.3038530144070728, 0.7221311597980974, 0),
+    (-1.3037620652441313, 0.7217037983975161, 0),
+    (-1.3053608047669052, 0.7210299440396993, 0),
+    (-1.3054040889283545, 0.7207376013315654, 0),
+    (-1.3059460661823945, 0.7205192954872712, 0),
+    (-1.3066654038056376, 0.7195438482063814, 0),
+    (-1.3066038809082192, 0.7191939794384397, 0),
+    (-1.307509392852277, 0.7180478912764205, 0),
+    (-1.3081242027013054, 0.7175373648956472, 0),
+    (-1.308728104256843, 0.717319652461049, 0),
+    (-1.3088029439804343, 0.7170121428373868, 0),
+    (-1.3084086390699141, 0.7170281126169686, 0),
+    (-1.3090170610213867, 0.7166757130974598, 0),
+    (-1.3096123057176687, 0.7160773791853247, 0),
+    (-1.3102183365700435, 0.7157721733780154, 0),
+    (-1.3110323583836496, 0.7155894722475611, 0),
+    (-1.3114282515208273, 0.715192915896617, 0),
+    (-1.3113623303982265, 0.7149382548578634, 0),
+    (-1.3103886282856712, 0.7138982478932651, 0),
+    (-1.3102830183588716, 0.7135714872902171, 0),
+    (-1.3099828739776964, 0.7133519073843598, 0),
+    (-1.3099502537461944, 0.7130661620241878, 0),
+    (-1.3107343082404708, 0.71278013738274, 0),
+    (-1.3105539981986583, 0.7124678106579555, 0),
+    (-1.3107517440349952, 0.7119489067090039, 0),
+    (-1.31127146832641, 0.711618131825877, 0),
+    (-1.311969495533574, 0.7116548186295764, 0),
+    (-1.3123766984036227, 0.7111869655638845, 0),
+    (-1.312273898452243, 0.7107655382832366, 0),
+    (-1.3125810939125313, 0.7101058734983065, 0),
+    (-1.3122094259121033, 0.7098219258392405, 0),
+    (-1.3126432625232558, 0.7094893707227551, 0),
+    (-1.312451642745932, 0.7092008153872138, 0),
+    (-1.3124943858525955, 0.7088611393395713, 0),
+    (-1.3123744118489564, 0.7083205235010411, 0),
+    (-1.3124452547722973, 0.708092164574061, 0),
+    (-1.3121783938297178, 0.7078498255687451, 0),
+    (-1.311170361152473, 0.7079894345182887, 0),
+    (-1.3103895005747963, 0.707650107564989, 0),
+    (-1.3101083802768658, 0.7072250674577409, 0),
+    (-1.3102207619963784, 0.7060949839922579, 0),
+    (-1.309999715938635, 0.7054652167207774, 0),
+    (-1.3093681334206897, 0.7051362570197143, 0),
+    (-1.3090052619072645, 0.705263631186341, 0),
+    (-1.3085229574630952, 0.7051907985987479, 0),
+    (-1.3081275878407266, 0.704161490481042, 0),
+    (-1.3078189262517947, 0.7039573043817338, 0),
+    (-1.3076207789382897, 0.7036127588721909, 0),
+    (-1.3069140774300372, 0.7033606983954779, 0),
+    (-1.3062526671932404, 0.7024681543136311, 0),
+    (-1.3044385887704104, 0.701233735108179, 0),
+    (-1.3042056919320535, 0.7007377298965646, 0),
+    (-1.304568964853792, 0.7003023050552322, 0),
+    (-1.3060128412908008, 0.7001592403389345, 0),
+    (-1.3067616226475691, 0.699494182468726, 0),
+    (-1.3082325342309757, 0.6991443834599382, 0),
+    (-1.3087087299920748, 0.6987265340836812, 0),
+    (-1.3097941505737305, 0.698265086353168, 0),
+    (-1.310184580829599, 0.6978768726763835, 0),
+    (-1.3104732932768435, 0.6977082912802286, 0),
+    (-1.3109336414681285, 0.6977250115221181, 0),
+    (-1.3114380592151826, 0.6973624890931379, 0),
+    (-1.3115653635501037, 0.6969928457322186, 0),
+    (-1.3113672162189656, 0.6963321861243438, 0),
+    (-1.311491064806832, 0.6960654124902647, 0),
+    (-1.3122363904438565, 0.6959921609813949, 0),
+    (-1.313307848385792, 0.6955209219518895, 0),
+    (-1.3134255708764333, 0.69543595930277, 0),
+    (-1.3150346253356304, 0.6954879526165308, 0),
+    (-1.316335524310828, 0.6946234384593984, 0),
+    (-1.3171997767525299, 0.6951045210815227, 0),
+    (-1.319179975605344, 0.6953413971468251, 0),
+    (-1.3202367902547627, 0.695309754284478, 0),
+    (-1.3211230163524166, 0.694998230372876, 0),
+    (-1.3220100103668133, 0.6942036166803666, 0),
+    (-1.322522002814063, 0.6933243719682792, 0),
+    (-1.3228041702830704, 0.6933123989973828, 0),
+    (-1.3288801694793237, 0.6932838277389112, 0),
+    (-1.330519016712254, 0.693277265241703, 0),
+    (-1.3363957516005893, 0.6932495491982945, 0),
+    (-1.3402469439857425, 0.6932668452760358, 0),
+    (-1.3438479258876066, 0.6932604746923505, 0),
+    (-1.347761635982283, 0.6932567744504896, 0),
+    (-1.3520094545588786, 0.6932461975964622, 0),
+    (-1.3522077240237877, 0.6932383436059149, 0),
+]
+
+# (start, end, orbital period in seconds) of each Geoeye1 path segment
+GEOEYE1_ORBITS = [
+    (
+        "2012-03-15T10:00:00.000000Z",
+        "2012-03-15T10:39:30.5752243210009Z",
+        5903.376977238004,
+    ),
+    (
+        "2012-03-15T10:39:30.5752243210009Z",
+        "2012-03-15T12:17:53.9522015590046Z",
+        5903.376977238004,
+    ),
+    (
+        "2012-03-15T12:17:53.9522015590046Z",
+        "2012-03-15T13:56:17.3309044399939Z",
+        5903.378702880989,
+    ),
+    (
+        "2012-03-15T13:56:17.3309044399939Z",
+        "2012-03-15T15:34:40.7113328760024Z",
+        5903.3804284360085,
+    ),
+    (
+        "2012-03-15T15:34:40.7113328760024Z",
+        "2012-03-15T17:13:04.0934867610049Z",
+        5903.3821538850025,
+    ),
+    (
+        "2012-03-15T17:13:04.0934867610049Z",
+        "2012-03-15T18:51:27.4773659909988Z",
+        5903.383879229994,
+    ),
+    (
+        "2012-03-15T18:51:27.4773659909988Z",
+        "2012-03-15T20:29:50.8629704579944Z",
+        5903.385604466996,
+    ),
+    (
+        "2012-03-15T20:29:50.8629704579944Z",
+        "2012-03-15T22:08:14.6231253900041Z",
+        5903.76015493201,
+    ),
+    (
+        "2012-03-15T22:08:14.6231253900041Z",
+        "2012-03-15T23:46:38.0402241229895Z",
+        5903.417098732985,
+    ),
+    (
+        "2012-03-15T23:46:38.0402241229895Z",
+        "2012-03-16T01:25:01.45978897399618Z",
+        5903.419564851007,
+    ),
+    (
+        "2012-03-16T01:25:01.45978897399618Z",
+        "2012-03-16T03:03:24.8818198189838Z",
+        5903.422030844988,
+    ),
+    (
+        "2012-03-16T03:03:24.8818198189838Z",
+        "2012-03-16T04:41:48.3063165349886Z",
+        5903.424496716005,
+    ),
+    (
+        "2012-03-16T04:41:48.3063165349886Z",
+        "2012-03-16T06:20:11.7332789999782Z",
+        5903.42696246499,
+    ),
+    (
+        "2012-03-16T06:20:11.7332789999782Z",
+        "2012-03-16T07:58:35.1683124770061Z",
+        5903.435033477028,
+    ),
+    (
+        "2012-03-16T07:58:35.1683124770061Z",
+        "2012-03-16T08:21:36.5644517090113Z",
+        5903.435548290989,
+    ),
+    (
+        "2012-03-16T08:21:36.5644517090113Z",
+        "2012-03-16T10:00:00.000000Z",
+        5903.435548290989,
+    ),
+]
+
+
+def access_availability(accesses: list[tuple[str, str]]) -> TimeIntervalCollection:
+    return TimeIntervalCollection(
+        values=[TimeInterval(start=start, end=end) for start, end in accesses]
+    )
+
+
+def access_show(accesses: list[tuple[str, str]]) -> TimeIntervalCollection:
+    """Shown during each access, hidden in the gaps between consecutive accesses."""
+    values = [IntervalValue(start=accesses[0][0], end=accesses[0][1], value=True)]
+    for (_, gap_start), (next_start, next_end) in pairwise(accesses):
+        values.append(IntervalValue(start=gap_start, end=next_start, value=False))
+        values.append(IntervalValue(start=next_start, end=next_end, value=True))
+    return TimeIntervalCollection(values=values)
+
+
+def access_line(
+    accesses: list[tuple[str, str]] | None, color: list[int], *references: str
+) -> Polyline:
+    return Polyline(
+        show=False if accesses is None else access_show(accesses),
+        width=1,
+        material=PolylineMaterial(
+            solidColor=SolidColorMaterial(color=Color(rgba=color))
+        ),
+        arcType=ArcTypes.NONE,
+        positions=PositionList(references=list(references)),
+    )
+
+
+def orbit_times(leading: bool) -> TimeIntervalCollection:
+    """Lead (or trail) time ramping over each orbit, so one full orbit is drawn."""
+    return TimeIntervalCollection(
+        values=[
+            IntervalValue(
+                start=start,
+                end=end,
+                value=NumberValue(
+                    epoch=start,
+                    values=[0, period, period, 0]
+                    if leading
+                    else [0, 0, period, period],
+                ),
+            )
+            for start, end, period in GEOEYE1_ORBITS
+        ]
+    )
+
 
 simple = Document(
     packets=[
@@ -39,63 +418,61 @@ simple = Document(
             id="Satellite/Geoeye1-to-Satellite/ISS",
             name="Geoeye1 to ISS",
             parent=accesses_id,
-            availability=TimeIntervalCollection(
-                values=[
-                    TimeInterval(
-                        start="2012-03-15T10:16:06.97400000000198Z",
-                        end="2012-03-15T10:33:59.3549999999959Z",
-                    ),
-                    TimeInterval(
-                        start="2012-03-15T11:04:09.73799999999756Z",
-                        end="2012-03-15T11:21:04.51900000000023Z",
-                    ),
-                    TimeInterval(
-                        start="2012-03-15T11:52:06.94400000000314Z",
-                        end="2012-03-15T12:08:18.8840000000055Z",
-                    ),
-                    TimeInterval(
-                        start="2012-03-15T12:40:57.2069999999949Z",
-                        end="2012-03-15T12:54:39.301999999996Z",
-                    ),
-                    TimeInterval(
-                        start="2012-03-15T13:29:44.5040000000008Z",
-                        end="2012-03-15T13:41:05.96899999999732Z",
-                    ),
-                    TimeInterval(
-                        start="2012-03-15T14:20:16.8450000000012Z",
-                        end="2012-03-15T14:25:48.0559999999969Z",
-                    ),
-                    TimeInterval(
-                        start="2012-03-16T07:01:44.4309999999823Z",
-                        end="2012-03-16T07:06:19.6309999999939Z",
-                    ),
-                    TimeInterval(
-                        start="2012-03-16T07:46:00.457999999984168Z",
-                        end="2012-03-16T07:57:20.8470000000088Z",
-                    ),
-                    TimeInterval(
-                        start="2012-03-16T08:32:14.5289999999804Z",
-                        end="2012-03-16T08:46:17.0109999999986Z",
-                    ),
-                    TimeInterval(
-                        start="2012-03-16T09:18:28.4590000000026Z",
-                        end="2012-03-16T09:35:16.6410000000033Z",
-                    ),
-                ]
+            availability=access_availability(GEOEYE1_TO_ISS_ACCESSES),
+            description=GEOEYE1_TO_ISS_DESCRIPTION,
+            polyline=access_line(
+                GEOEYE1_TO_ISS_ACCESSES,
+                [0, 255, 0],
+                "Satellite/Geoeye1#position",
+                "Satellite/ISS#position",
             ),
         ),
         Packet(
-            id="Facility/AGI-to-Satellite/ISS", name="AGI to ISS", parent=accesses_id
+            id="Facility/AGI-to-Satellite/ISS",
+            name="AGI to ISS",
+            parent=accesses_id,
+            availability=access_availability(AGI_TO_ISS_ACCESSES),
+            description=AGI_TO_ISS_DESCRIPTION,
+            polyline=access_line(
+                AGI_TO_ISS_ACCESSES,
+                [0, 255, 255],
+                "Facility/AGI#position",
+                "Satellite/ISS#position",
+            ),
         ),
         Packet(
             id="Facility/AGI-to-Satellite/Geoeye1/Sensor/Sensor",
             name="AGI to Sensor",
             parent=accesses_id,
             description="<h2>No accesses</h2>",
+            polyline=access_line(
+                None,
+                [0, 255, 255],
+                "Facility/AGI#position",
+                "Satellite/Geoeye1/Sensor/Sensor#position",
+            ),
         ),
         Packet(
             id="AreaTarget/Pennsylvania",
             name="Pennsylvania",
+            availability=TimeInterval(start=start, end=end),
+            description=PENNSYLVANIA_DESCRIPTION,
+            point=Point(
+                color=Color(rgba=[255, 0, 0]), outlineWidth=0, pixelSize=5, show=True
+            ),
+            polygon=Polygon(
+                positions=PositionList(
+                    cartographicRadians=[
+                        value for vertex in PENNSYLVANIA_BOUNDARY for value in vertex
+                    ]
+                ),
+                material=Material(
+                    solidColor=SolidColorMaterial(color=Color(rgba=[255, 0, 0, 77]))
+                ),
+                fill=False,
+                outline=True,
+                outlineColor=Color(rgba=[255, 0, 0]),
+            ),
             label=Label(
                 horizontalOrigin=HorizontalOrigins.LEFT,
                 show=True,
@@ -115,7 +492,9 @@ simple = Document(
             id="Facility/AGI",
             name="AGI",
             availability=TimeInterval(start=start, end=end),
+            description=AGI_DESCRIPTION,
             billboard=Billboard(
+                eyeOffset=EyeOffset(cartesian=[0, 0, 0]),
                 horizontalOrigin=HorizontalOrigins.CENTER,
                 image=(
                     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/"
@@ -140,6 +519,7 @@ simple = Document(
                 verticalOrigin=VerticalOrigins.CENTER,
                 fillColor=Color(rgba=[0, 255, 255]),
                 outlineColor=Color(rgba=[0, 0, 0]),
+                pixelOffset=Cartesian2Value(values=[12, 0]),
             ),
             position=Position(
                 cartesian=[1216469.9357990976, -4736121.71856379, 4081386.8856866374]
@@ -149,7 +529,9 @@ simple = Document(
             id="Satellite/Geoeye1",
             name="Geoeye1",
             availability=TimeInterval(start=start, end=end),
+            description=GEOEYE1_DESCRIPTION,
             billboard=Billboard(
+                eyeOffset=EyeOffset(cartesian=[0, 0, 0]),
                 horizontalOrigin=HorizontalOrigins.CENTER,
                 image=(
                     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9"
@@ -174,6 +556,7 @@ simple = Document(
                 verticalOrigin=VerticalOrigins.CENTER,
                 fillColor=Color(rgba=[0, 255, 0]),
                 outlineColor=Color(rgba=[0, 0, 0]),
+                pixelOffset=Cartesian2Value(values=[12, 0]),
             ),
             path=Path(
                 show=TimeIntervalCollection(
@@ -181,6 +564,8 @@ simple = Document(
                 ),
                 width=1,
                 resolution=120,
+                leadTime=orbit_times(leading=True),
+                trailTime=orbit_times(leading=False),
                 material=PolylineMaterial(
                     solidColor=SolidColorMaterial(color=Color(rgba=[0, 255, 0]))
                 ),
