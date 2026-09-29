@@ -26,3 +26,28 @@ def test_naive_datetime_warns_once_at_construction():
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         assert epoch.to_dict() == {"epoch": "2020-01-01T00:00:00.000000Z"}
+
+
+def test_epoch_accepts_time_interval_collection():
+    from czml3.types import (
+        IntervalValue,
+        NumberValue,
+        TimeIntervalCollection,
+    )
+
+    epochs = TimeIntervalCollection(
+        values=[
+            IntervalValue(
+                start="2019-01-01T00:00:00Z",
+                end="2019-01-02T00:00:00Z",
+                value="2019-01-01T00:00:00Z",
+            )
+        ]
+    )
+    number = NumberValue(values=[0, 1.0, 60, 2.0], epoch=epochs)
+    assert number.to_dict()["epoch"] == [
+        {
+            "interval": "2019-01-01T00:00:00Z/2019-01-02T00:00:00Z",
+            "string": "2019-01-01T00:00:00Z",
+        }
+    ]

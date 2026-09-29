@@ -37,7 +37,11 @@ class Interpolatable(BaseModel):
 
     @field_validator("epoch")
     @classmethod
-    def format_epoch(cls, epoch: None | str | dt.datetime) -> str | None:
+    def format_epoch(
+        cls, epoch: None | str | dt.datetime | TimeIntervalCollection
+    ) -> None | str | TimeIntervalCollection:
+        if isinstance(epoch, TimeIntervalCollection):
+            return epoch
         return format_datetime_like(epoch)
 
 
