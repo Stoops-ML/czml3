@@ -3,7 +3,6 @@ import re
 import sys
 from typing import Any
 
-import numpy as np
 from dateutil.parser import isoparse as parse_iso_date
 from pydantic import (
     Field,
@@ -94,8 +93,9 @@ def check_values(num_points: int, values: list[Any]) -> None:
         raise TypeError(
             f"Input values must have either {num_points} or N * {num_points + 1} values, where N is the number of time-tagged samples."
         )
-    if len(values) % (num_points + 1) == 0 and np.any(
-        np.diff(values[:: num_points + 1]) <= 0
+    times = values[:: num_points + 1]
+    if len(values) % (num_points + 1) == 0 and any(
+        b <= a for a, b in zip(times, times[1:], strict=False)
     ):
         raise TypeError("Time values must be increasing.")
 
