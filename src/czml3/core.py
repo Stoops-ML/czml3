@@ -31,6 +31,9 @@ from .types import IntervalValue, StringValue, TimeInterval, TimeIntervalCollect
 
 CZML_VERSION = "1.0"
 
+PREAMBLE_FIELDS = frozenset({"id", "name", "version", "description", "clock"})
+"""Packet properties allowed on the document (preamble) packet."""
+
 
 class Packet(BaseCZMLObject):
     """A CZML Packet. Describes the graphical properties of a single object in a scene, such as a single aircraft.
@@ -114,33 +117,10 @@ class Document(BaseCZMLObject):
             )
         if packets[0].id != "document":
             raise ValueError("The first packet must have an ID of 'document'.")
-        for p in (
-            "delete",
-            "parent",
-            "availability",
-            "properties",
-            "position",
-            "orientation",
-            "viewFrom",
-            "billboard",
-            "box",
-            "corridor",
-            "cylinder",
-            "ellipse",
-            "ellipsoid",
-            "label",
-            "model",
-            "path",
-            "point",
-            "polygon",
-            "polyline",
-            "rectangle",
-            "tileset",
-            "wall",
-        ):
-            if getattr(packets[0], p) is not None:
+        for name in type(packets[0]).model_fields:
+            if name not in PREAMBLE_FIELDS and getattr(packets[0], name) is not None:
                 raise ValueError(
-                    f"The first packet must not include the '{p}' property"
+                    f"The first packet must not include the '{name}' property"
                 )
         return packets
 

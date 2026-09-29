@@ -1053,3 +1053,16 @@ def test_preamble_properties_supplied():
                 )
             ]
         )
+
+
+@pytest.mark.parametrize(
+    "kwargs, name",
+    [({"parent": "other"}, "parent"), ({"properties": {"a": 1}}, "properties")],
+)
+def test_preamble_rejects_any_non_preamble_property(kwargs, name):
+    with pytest.raises(
+        ValueError, match=f"The first packet must not include the '{name}' property"
+    ):
+        Document(
+            packets=[Packet(id="document", name="name", version=CZML_VERSION, **kwargs)]
+        )
