@@ -26,6 +26,7 @@ from czml3.types import (
     RgbafValue,
     RgbaValue,
     UnitQuaternionValue,
+    UnitSphericalValue,
     check_reference,
     format_datetime_like,
 )
@@ -726,3 +727,17 @@ def test_interval_value_without_value_serializes_interval_only():
     assert IntervalValue(start=start, end=end).to_dict() == {
         "interval": f"{start}/{end}"
     }
+
+
+def test_unit_spherical_value_is_clock_and_cone():
+    assert UnitSphericalValue(values=[0.5, 1.0]).to_dict() == [0.5, 1.0]
+    assert UnitSphericalValue(values=[0, 0.5, 1.0, 60, 0.6, 1.1]).to_dict() == [
+        0,
+        0.5,
+        1.0,
+        60,
+        0.6,
+        1.1,
+    ]
+    with pytest.raises(ValidationError):
+        UnitSphericalValue(values=[0.5, 1.0, 1.5, 2.0, 2.5])

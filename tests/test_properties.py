@@ -1845,8 +1845,8 @@ def test_aligned_axis():
     p = AlignedAxis(unitCartesian=[0.0, 0.0, 1.0])
     assert p.to_dict() == expected_result
 
-    expected_result = {"unitSpherical": [0.0, 1.0, 0.0]}
-    p = AlignedAxis(unitSpherical=[0.0, 1.0, 0.0])
+    expected_result = {"unitSpherical": [0.0, 1.0]}
+    p = AlignedAxis(unitSpherical=[0.0, 1.0])
     assert p.to_dict() == expected_result
 
     expected_result = {"reference": "object#property"}

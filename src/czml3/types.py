@@ -649,7 +649,7 @@ class UnitSphericalValue(BaseCZMLObject):
 
     @model_validator(mode="after")
     def _check_values(self) -> Self:
-        check_values(3, self.values)
+        check_values(2, self.values)
         return self
 
     @model_serializer
