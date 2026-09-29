@@ -361,20 +361,38 @@ def access_availability(accesses: list[tuple[str, str]]) -> TimeIntervalCollecti
     )
 
 
-def access_show(accesses: list[tuple[str, str]]) -> TimeIntervalCollection:
-    """Shown during each access, hidden in the gaps between consecutive accesses."""
-    values = [IntervalValue(start=accesses[0][0], end=accesses[0][1], value=True)]
+CZML_MINIMUM_TIME = "0000-01-01T00:00:00Z"
+CZML_MAXIMUM_TIME = "9999-12-31T24:00:00Z"
+
+
+def access_show(
+    accesses: list[tuple[str, str]], *, hidden_after: bool
+) -> TimeIntervalCollection:
+    """Shown during each access and hidden before, between and (optionally) after them."""
+    values = [
+        IntervalValue(start=CZML_MINIMUM_TIME, end=accesses[0][0], value=False),
+        IntervalValue(start=accesses[0][0], end=accesses[0][1], value=True),
+    ]
     for (_, gap_start), (next_start, next_end) in pairwise(accesses):
         values.append(IntervalValue(start=gap_start, end=next_start, value=False))
         values.append(IntervalValue(start=next_start, end=next_end, value=True))
+    if hidden_after:
+        values.append(
+            IntervalValue(start=accesses[-1][1], end=CZML_MAXIMUM_TIME, value=False)
+        )
     return TimeIntervalCollection(values=values)
 
 
 def access_line(
-    accesses: list[tuple[str, str]] | None, color: list[int], *references: str
+    accesses: list[tuple[str, str]] | None,
+    color: list[int],
+    *references: str,
+    hidden_after: bool = False,
 ) -> Polyline:
     return Polyline(
-        show=False if accesses is None else access_show(accesses),
+        show=False
+        if accesses is None
+        else access_show(accesses, hidden_after=hidden_after),
         width=1,
         material=PolylineMaterial(
             solidColor=SolidColorMaterial(color=Color(rgba=color))
@@ -425,6 +443,7 @@ simple = Document(
                 [0, 255, 0],
                 "Satellite/Geoeye1#position",
                 "Satellite/ISS#position",
+                hidden_after=True,
             ),
         ),
         Packet(
