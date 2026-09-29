@@ -1,6 +1,59 @@
 from importlib.metadata import version
 
 from .core import CZML_VERSION, Document, Packet
+from .properties import (
+    Billboard,
+    Box,
+    BoxDimensions,
+    Clock,
+    Color,
+    Ellipse,
+    Ellipsoid,
+    Label,
+    Material,
+    Model,
+    Orientation,
+    Path,
+    Point,
+    Polygon,
+    Polyline,
+    PolylineMaterial,
+    Position,
+    PositionList,
+    Rectangle,
+    SolidColorMaterial,
+    Wall,
+)
+from .types import IntervalValue, TimeInterval, TimeIntervalCollection
 
 __version__ = version("czml3")
-__all__ = ["CZML_VERSION", "Document", "Packet", "__version__"]
+__all__ = [
+    "CZML_VERSION",
+    "Billboard",
+    "Box",
+    "BoxDimensions",
+    "Clock",
+    "Color",
+    "Document",
+    "Ellipse",
+    "Ellipsoid",
+    "IntervalValue",
+    "Label",
+    "Material",
+    "Model",
+    "Orientation",
+    "Packet",
+    "Path",
+    "Point",
+    "Polygon",
+    "Polyline",
+    "PolylineMaterial",
+    "Position",
+    "PositionList",
+    "Rectangle",
+    "SolidColorMaterial",
+    "TimeInterval",
+    "TimeIntervalCollection",
+    "Wall",
+    "__version__",
+]
