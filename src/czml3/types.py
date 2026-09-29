@@ -134,7 +134,7 @@ class FontValue(BaseCZMLObject):
     font: str
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> str:
         return self.font
 
 
@@ -148,11 +148,11 @@ class RgbafValue(BaseCZMLObject):
 
     @field_validator("values")
     @classmethod
-    def get_color_from_values(cls, r):
+    def get_color_from_values(cls, r: list[int | float]) -> list[int | float] | None:
         return get_color(r, 1.0)
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[float]:
         return self.values
 
 
@@ -166,11 +166,11 @@ class RgbaValue(BaseCZMLObject):
 
     @field_validator("values")
     @classmethod
-    def get_color_from_values(cls, r):
+    def get_color_from_values(cls, r: list[int | float]) -> list[int | float] | None:
         return get_color(r, 255)
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[int] | list[float] | list[int | float]:
         return self.values
 
 
@@ -184,12 +184,12 @@ class ReferenceValue(BaseCZMLObject):
 
     @field_validator("value")
     @classmethod
-    def _check_string(cls, v):
+    def _check_string(cls, v: str) -> str:
         check_reference(v)
         return v
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> str:
         return self.value
 
 
@@ -203,13 +203,13 @@ class ReferenceListValue(BaseCZMLObject):
 
     @field_validator("values")
     @classmethod
-    def _check_string(cls, vs):
+    def _check_string(cls, vs: list[str]) -> list[str]:
         for v in vs:
             check_reference(v)
         return vs
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[str]:
         return self.values
 
 
@@ -223,14 +223,14 @@ class ReferenceListOfListsValue(BaseCZMLObject):
 
     @field_validator("values")
     @classmethod
-    def _check_string(cls, vss):
+    def _check_string(cls, vss: list[list[str]]) -> list[list[str]]:
         for vs in vss:
             for v in vs:
                 check_reference(v)
         return vss
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[list[str]]:
         return self.values
 
 
@@ -284,7 +284,7 @@ class Cartesian3ListOfListsValue(BaseCZMLObject):
         return self
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[list[float]]:
         return self.values
 
 
@@ -302,7 +302,7 @@ class Cartesian2Value(BaseCZMLObject):
         return self
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> dict[str, list[float]]:
         return {"cartesian2": list(self.values)}
 
 
@@ -320,7 +320,7 @@ class CartographicRadiansValue(BaseCZMLObject):
         return self
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[float]:
         return self.values
 
 
@@ -387,7 +387,7 @@ class CartographicRadiansListValue(BaseCZMLObject):
         return self
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[float]:
         return self.values
 
 
@@ -405,7 +405,7 @@ class CartographicRadiansListOfListsValue(BaseCZMLObject):
         return self
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[list[float]]:
         return self.values
 
 
@@ -423,7 +423,7 @@ class CartographicDegreesListValue(BaseCZMLObject):
         return self
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[float]:
         return self.values
 
 
@@ -441,7 +441,7 @@ class CartographicDegreesListOfListsValue(BaseCZMLObject):
         return self
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[list[float]]:
         return self.values
 
 
@@ -459,7 +459,7 @@ class DistanceDisplayConditionValue(BaseCZMLObject):
         return self
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[float]:
         return self.values
 
 
@@ -477,7 +477,7 @@ class NearFarScalarValue(BaseCZMLObject):
         return self
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[float]:
         return self.values
 
 
@@ -489,7 +489,7 @@ class TimeInterval(BaseCZMLObject):
 
     @field_validator("start", "end")
     @classmethod
-    def format_time(cls, time):
+    def format_time(cls, time: str | dt.datetime) -> str | None:
         return format_datetime_like(time)
 
     @model_serializer
@@ -581,7 +581,7 @@ class UnitQuaternionValue(BaseCZMLObject):
         return self
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[float]:
         return self.values
 
 
@@ -613,12 +613,12 @@ class VelocityReferenceValue(BaseCZMLObject):
 
     @field_validator("value")
     @classmethod
-    def _check_string(cls, v):
+    def _check_string(cls, v: str) -> str:
         check_reference(v)
         return v
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> str:
         return self.value
 
 
@@ -628,7 +628,7 @@ class EpochValue(BaseCZMLObject):
     value: str | dt.datetime
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> dict[str, str | None]:
         return {"epoch": format_datetime_like(self.value)}
 
 

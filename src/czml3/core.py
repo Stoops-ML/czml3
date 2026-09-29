@@ -110,7 +110,7 @@ class Document(BaseCZMLObject):
 
     @field_validator("packets")
     @classmethod
-    def validate_packets(cls, packets):
+    def validate_packets(cls, packets: list[Packet]) -> list[Packet]:
         if len(packets) == 0:
             raise ValueError("Number of packets must be greater than zero.")
         if packets[0].version is None or packets[0].name is None:
@@ -127,5 +127,5 @@ class Document(BaseCZMLObject):
         return packets
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[Packet]:
         return list(self.packets)

@@ -12,6 +12,7 @@ from pydantic import (
     model_validator,
 )
 
+from ._compat import Self
 from ._validators import exactly_one_of, from_list, from_str
 from .base import BaseCZMLObject
 from .common import Deletable, Interpolatable
@@ -348,7 +349,7 @@ class ViewFrom(BaseCZMLObject, Interpolatable, Deletable):
     validate_reference = from_str("reference", ReferenceValue)
 
     @model_validator(mode="after")
-    def checks(self):
+    def checks(self) -> Self:
         if self.delete:
             return self
         if self.cartesian is None and self.reference is None:
@@ -680,7 +681,7 @@ class ArcType(BaseCZMLObject, Deletable):
 
     @field_validator("arcType")
     @classmethod
-    def validate_arc_type(cls, t):
+    def validate_arc_type(cls, t: ArcTypes | str | None) -> ArcTypes | None:
         if t is None or isinstance(t, ArcTypes):
             return t
         return ArcTypes(t)
@@ -1004,7 +1005,7 @@ class Clock(BaseCZMLObject):
 
     @field_validator("currentTime")
     @classmethod
-    def format_time(cls, time):
+    def format_time(cls, time: str | dt.datetime | None) -> str | None:
         return format_datetime_like(time)
 
 

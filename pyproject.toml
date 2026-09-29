@@ -89,13 +89,8 @@ no_implicit_reexport = true
 
 # More strict checks for library code
 [[tool.mypy.overrides]]
-module = "czml3"
+module = "czml3.*"
 disallow_untyped_defs = true
-
-# Ignore certain missing imports
-[[tool.mypy.overrides]]
-module = ["setuptools.*"]
-ignore_missing_imports = true
 
 [tool.ruff.lint]
 ignore = ["E501"]
