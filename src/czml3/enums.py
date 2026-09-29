@@ -1,22 +1,6 @@
-import sys
 from enum import auto
-from typing import Any
 
-if sys.version_info[1] >= 11:
-    from enum import StrEnum
-
-    class OCaseStrEnum(StrEnum):
-        """
-        StrEnum where enum.auto() returns the original member name, not lower-cased name.
-        """
-
-        @staticmethod
-        def _generate_next_value_(
-            name: str, start: int, count: int, last_values: list[Any]
-        ) -> str:
-            return name
-else:
-    from strenum import StrEnum as OCaseStrEnum  # pragma: no cover
+from ._compat import OCaseStrEnum
 
 
 class InterpolationAlgorithms(OCaseStrEnum):

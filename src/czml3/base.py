@@ -1,14 +1,9 @@
-import sys
 from typing import TYPE_CHECKING, Any, cast
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
+from ._compat import Self, dataclass_transform
 from .errors import humanise_validation_error
-
-if sys.version_info[1] >= 11:
-    from typing import Self, dataclass_transform
-else:
-    from typing_extensions import Self, dataclass_transform  # pragma: no cover
 
 if TYPE_CHECKING:
     # Imported under TYPE_CHECKING only so that type checkers keep treating

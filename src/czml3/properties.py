@@ -3,7 +3,6 @@ from __future__ import annotations
 import base64
 import binascii
 import datetime as dt
-import sys
 from typing import Any
 from urllib.parse import urlparse
 
@@ -14,6 +13,7 @@ from pydantic import (
     model_validator,
 )
 
+from ._compat import Self
 from .base import BaseCZMLObject
 from .common import Deletable, Interpolatable
 from .enums import (
@@ -58,11 +58,6 @@ from .types import (
     VelocityReferenceValue,
     format_datetime_like,
 )
-
-if sys.version_info[1] >= 11:
-    from typing import Self
-else:
-    from typing_extensions import Self  # pragma: no cover
 
 
 class AlignedAxis(BaseCZMLObject, Interpolatable, Deletable):
