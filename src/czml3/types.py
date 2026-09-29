@@ -504,6 +504,11 @@ class IntervalValue(BaseCZMLObject):
     end: str | dt.datetime
     value: Any = None
 
+    @field_validator("start", "end")
+    @classmethod
+    def format_time(cls, time: str | dt.datetime) -> str | None:
+        return format_datetime_like(time)
+
     @model_validator(mode="after")
     def _check_value(self) -> Self:
         value = self.value
@@ -521,7 +526,7 @@ class IntervalValue(BaseCZMLObject):
 
     @model_serializer
     def custom_serializer(self) -> dict[str, Any]:
-        obj_dict = {"interval": TimeInterval(start=self.start, end=self.end).to_dict()}
+        obj_dict: dict[str, Any] = {"interval": f"{self.start}/{self.end}"}
 
         if isinstance(self.value, BaseCZMLObject):
             obj_dict.update(self.value.to_dict())
