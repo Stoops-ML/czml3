@@ -1,83 +1,31 @@
-def test_example0():
-    from czml3 import CZML_VERSION, Document, Packet
-    from czml3.properties import (
-        Box,
-        BoxDimensions,
-        Color,
-        Material,
-        Position,
-        SolidColorMaterial,
-    )
-    from czml3.types import Cartesian3Value
+"""Run the README's Python examples and compare their output to the README.
 
-    expected_result = """[
-    {
-        "id": "document",
-        "name": "box",
-        "version": "1.0"
-    },
-    {
-        "id": "my_id",
-        "position": {
-            "cartographicDegrees": [
-                -114.0,
-                40.0,
-                300000.0
-            ]
-        },
-        "box": {
-            "dimensions": {
-                "cartesian": [
-                    400000.0,
-                    300000.0,
-                    500000.0
-                ]
-            },
-            "material": {
-                "solidColor": {
-                    "color": {
-                        "rgba": [
-                            0,
-                            0,
-                            255,
-                            255
-                        ]
-                    }
-                }
-            }
-        }
-    }
-]"""
+Each ```python block that is directly followed by a ```bash block is executed,
+and what it prints must match the bash block exactly, so the README cannot
+drift from the library's actual behaviour.
+"""
 
-    packet_box = Packet(
-        id="my_id",  # fixing id here to ensure test passes
-        position=Position(cartographicDegrees=[-114.0, 40.0, 300000.0]),
-        box=Box(
-            dimensions=BoxDimensions(
-                cartesian=Cartesian3Value(values=[400000.0, 300000.0, 500000.0])
-            ),
-            material=Material(
-                solidColor=SolidColorMaterial(color=Color(rgba=[0, 0, 255, 255]))
-            ),
-        ),
-    )
-    doc = Document(
-        packets=[Packet(id="document", name="box", version=CZML_VERSION), packet_box]
-    )
-    assert str(doc) == expected_result
+import contextlib
+import io
+import re
+from pathlib import Path
+
+import pytest
+
+README = Path(__file__).resolve().parent.parent / "README.md"
+EXAMPLE_RE = re.compile(r"```python\n(.*?)```\n```bash\n(.*?)```", re.DOTALL)
+EXAMPLES = EXAMPLE_RE.findall(README.read_text(encoding="utf-8"))
 
 
-def test_example1():
-    import numpy as np
+def test_readme_has_examples():
+    assert len(EXAMPLES) >= 2
 
-    from czml3.properties import Position
 
-    expected_result = """{
-    "cartographicDegrees": [
-        -114.0,
-        40.0,
-        300000.0
-    ]
-}"""
-    p = Position(cartographicDegrees=np.array([-114, 40, 300000], dtype=int))  # type: ignore
-    assert str(p) == expected_result
+@pytest.mark.parametrize(
+    "code, expected", EXAMPLES, ids=[f"example{i}" for i in range(len(EXAMPLES))]
+)
+def test_readme_example(code: str, expected: str) -> None:
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        exec(compile(code, str(README), "exec"), {})
+    assert stdout.getvalue().rstrip() == expected.rstrip()
