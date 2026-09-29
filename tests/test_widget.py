@@ -1,6 +1,27 @@
+import importlib
+import sys
+import warnings
+
 import pytest
 
 from czml3.widget import CZMLWidget
+
+pytestmark = pytest.mark.filterwarnings(
+    "ignore:CZMLWidget is deprecated:DeprecationWarning"
+)
+
+
+def test_import_does_not_warn():
+    sys.modules.pop("czml3.widget", None)
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        importlib.import_module("czml3.widget")
+
+
+def test_instantiation_warns_every_time():
+    for _ in range(2):
+        with pytest.warns(DeprecationWarning, match="CZMLWidget is deprecated"):
+            CZMLWidget()
 
 
 def test_no_input_makes_empty_document():

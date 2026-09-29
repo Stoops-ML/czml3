@@ -1,4 +1,5 @@
 import warnings
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -76,11 +77,6 @@ require(['cesium'], function (Cesium) {{
 
 
 class CZMLWidget(BaseModel):
-    warnings.warn(
-        "CZMLWidget is deprecated and will be removed in a future version.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
     document: Document = Field(
         default=Document(
             packets=[Packet(id="document", name="name", version=CZML_VERSION)]
@@ -91,6 +87,13 @@ class CZMLWidget(BaseModel):
     terrain: str = Field(default=TERRAIN["Ellipsoid"])
     imagery: str = Field(default=IMAGERY["OSM"])
     container_id: str = Field(default=str(uuid4))
+
+    def model_post_init(self, context: Any, /) -> None:
+        warnings.warn(
+            "CZMLWidget is deprecated and will be removed in a future version.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
 
     def build_script(self) -> str:
         return SCRIPT_TPL.format(
