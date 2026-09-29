@@ -25,6 +25,8 @@ def format_datetime_like(dt_object: None | str | dt.datetime) -> str | None:
             return dt_object
 
     elif isinstance(dt_object, dt.datetime):
+        if dt_object.tzinfo is not None:
+            dt_object = dt_object.astimezone(dt.timezone.utc)
         return dt_object.strftime(ISO8601_FORMAT_Z)
 
     else:
