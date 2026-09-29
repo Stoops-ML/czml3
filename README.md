@@ -102,7 +102,7 @@ print(doc)
 
 Save a document to a file and read it back with `doc.save("scene.czml")` and `Document.load("scene.czml")`.
 
-In Jupyter, displaying a `Document` renders it in an interactive Cesium viewer. Outside notebooks, `doc.save_html("scene.html")` writes the same viewer as a standalone page; pass `ion_token=` to use Cesium ion imagery and terrain, and `cesium_version=` to choose the CesiumJS release.
+In Jupyter, displaying a `Document` renders it in an interactive Cesium viewer. Outside notebooks, `doc.save_html("scene.html")` writes the same viewer as a standalone page; pass `ion_token=` to use Cesium ion imagery and terrain, and `cesium_version=` to choose the CesiumJS release. Browsers block Cesium's web workers on pages opened straight from disk (`file://`), so serve the file over HTTP, e.g. `python -m http.server`, and open `http://localhost:8000/scene.html`.
 
 czml3 uses [pydantic](https://docs.pydantic.dev/latest/) for all classes. As such czml3 is able to [coerce data to their right type](https://docs.pydantic.dev/latest/why/#json-schema). For example, the following creates a Position property of doubles using a numpy array of interger type:
 ```python

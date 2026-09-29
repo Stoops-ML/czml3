@@ -13,7 +13,7 @@ Install the package with its development dependencies, then enable the
     pip install pre-commit
     pre-commit install
 
-Run the test suite with ``python -m pytest``.
+Run the test suite with ``python -m pytest``. The ``browser`` tests render the HTML preview in headless Chrome and need Chrome (or Chromium/Edge) and internet access; they are skipped when either is missing, and ``python -m pytest -m "not browser"`` deselects them.
 
 Missing CZML Properties
 -----------------------

@@ -185,7 +185,11 @@ class Document(BaseCZMLObject):
         )
 
     def save_html(self, path: str | os.PathLike[str], **kwargs: Any) -> None:
-        """Write the page from :meth:`to_html` to ``path``; kwargs are passed on."""
+        """Write the page from :meth:`to_html` to ``path``; kwargs are passed on.
+
+        Serve the file over HTTP to view it: browsers block CesiumJS's web
+        workers on pages opened from ``file://``.
+        """
         pathlib.Path(path).write_text(self.to_html(**kwargs), encoding="utf-8")
 
     def _repr_html_(self) -> str:
