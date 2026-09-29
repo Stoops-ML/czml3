@@ -1,4 +1,5 @@
 import datetime as dt
+from typing import Any
 
 import pytest
 from pydantic import ValidationError
@@ -83,40 +84,25 @@ from czml3.types import (
 
 
 def test_box():
-    expected_result = """{
-    "show": true,
-    "dimensions": {
-        "cartesian": [
-            5.0,
-            6.0,
-            3.0
-        ]
-    }
-}"""
+    expected_result = {"show": True, "dimensions": {"cartesian": [5.0, 6.0, 3.0]}}
 
     box = Box(
         show=True, dimensions=BoxDimensions(cartesian=Cartesian3Value(values=[5, 6, 3]))
     )
-    assert str(box) == expected_result
+    assert box.to_dict() == expected_result
 
 
 def test_eyeOffset():
-    expected_result = """{
-    "cartesian": [
-        1.0,
-        2.0,
-        3.0
-    ]
-}"""
+    expected_result = {"cartesian": [1.0, 2.0, 3.0]}
 
     eyeOffset = EyeOffset(cartesian=Cartesian3Value(values=[1, 2, 3]))
-    assert str(eyeOffset) == expected_result
+    assert eyeOffset.to_dict() == expected_result
 
 
 def test_clock():
-    expected_result = """{
-    "interval": "2019-06-11T12:26:58.000000Z/2019-06-11T12:26:58.000000Z"
-}"""
+    expected_result = {
+        "interval": "2019-06-11T12:26:58.000000Z/2019-06-11T12:26:58.000000Z"
+    }
     clock = Clock(
         interval=TimeInterval(
             start="2019-06-11T12:26:58.000000Z",
@@ -124,23 +110,16 @@ def test_clock():
         )
     )
 
-    assert str(clock) == expected_result
+    assert clock.to_dict() == expected_result
 
 
 def test_point():
-    expected_result = """{
-    "show": true,
-    "pixelSize": 10.0,
-    "scaleByDistance": {
-        "nearFarScalar": [
-            150.0,
-            2.0,
-            15000000.0,
-            0.5
-        ]
-    },
-    "disableDepthTestDistance": 1.2
-}"""
+    expected_result = {
+        "show": True,
+        "pixelSize": 10.0,
+        "scaleByDistance": {"nearFarScalar": [150.0, 2.0, 15000000.0, 0.5]},
+        "disableDepthTestDistance": 1.2,
+    }
 
     pnt = Point(
         show=True,
@@ -150,23 +129,16 @@ def test_point():
         ),
         disableDepthTestDistance=1.2,
     )
-    assert str(pnt) == expected_result
+    assert pnt.to_dict() == expected_result
 
 
 def test_NearFarScalar_list():
-    expected_result = """{
-    "show": true,
-    "pixelSize": 10.0,
-    "scaleByDistance": {
-        "nearFarScalar": [
-            150.0,
-            2.0,
-            15000000.0,
-            0.5
-        ]
-    },
-    "disableDepthTestDistance": 1.2
-}"""
+    expected_result = {
+        "show": True,
+        "pixelSize": 10.0,
+        "scaleByDistance": {"nearFarScalar": [150.0, 2.0, 15000000.0, 0.5]},
+        "disableDepthTestDistance": 1.2,
+    }
 
     pnt = Point(
         show=True,
@@ -174,23 +146,19 @@ def test_NearFarScalar_list():
         scaleByDistance=NearFarScalar(nearFarScalar=[150, 2.0, 15000000, 0.5]),
         disableDepthTestDistance=1.2,
     )
-    assert str(pnt) == expected_result
+    assert pnt.to_dict() == expected_result
 
 
 def test_arc_type():
-    expected_result = """{
-    "arcType": "NONE"
-}"""
+    expected_result = {"arcType": "NONE"}
     arc_type = ArcType(arcType=ArcTypes.NONE)
-    assert str(arc_type) == expected_result
+    assert arc_type.to_dict() == expected_result
 
 
 def test_arc_type_from_string():
-    expected_result = """{
-    "arcType": "RHUMB"
-}"""
+    expected_result = {"arcType": "RHUMB"}
     arc_type = ArcType(arcType="RHUMB")
-    assert str(arc_type) == expected_result
+    assert arc_type.to_dict() == expected_result
 
 
 def test_bad_arc_type_from_string():
@@ -199,35 +167,18 @@ def test_bad_arc_type_from_string():
 
 
 def test_shadow_mode():
-    expected_result = """{
-    "shadowMode": "ENABLED"
-}"""
+    expected_result = {"shadowMode": "ENABLED"}
     shadow_mode = ShadowMode(shadowMode=ShadowModes.ENABLED)
-    assert str(shadow_mode) == expected_result
+    assert shadow_mode.to_dict() == expected_result
 
 
 def test_polyline():
-    expected_result = """{
-    "positions": {
-        "cartographicDegrees": [
-            20.0,
-            30.0,
-            10.0
-        ]
-    },
-    "arcType": {
-        "arcType": "GEODESIC"
-    },
-    "distanceDisplayCondition": {
-        "distanceDisplayCondition": [
-            14.0,
-            81.0
-        ]
-    },
-    "classificationType": {
-        "classificationType": "CESIUM_3D_TILE"
+    expected_result = {
+        "positions": {"cartographicDegrees": [20.0, 30.0, 10.0]},
+        "arcType": {"arcType": "GEODESIC"},
+        "distanceDisplayCondition": {"distanceDisplayCondition": [14.0, 81.0]},
+        "classificationType": {"classificationType": "CESIUM_3D_TILE"},
     }
-}"""
     pol = Polyline(
         positions=PositionList(
             cartographicDegrees=CartographicDegreesListValue(values=[20, 30, 10])
@@ -240,29 +191,16 @@ def test_polyline():
             classificationType=ClassificationTypes.CESIUM_3D_TILE
         ),
     )
-    assert str(pol) == expected_result
+    assert pol.to_dict() == expected_result
 
 
 def test_polyline_with_enum_arc_type():
-    expected_result = """{
-    "positions": {
-        "cartographicDegrees": [
-            20.0,
-            30.0,
-            10.0
-        ]
-    },
-    "arcType": "GEODESIC",
-    "distanceDisplayCondition": {
-        "distanceDisplayCondition": [
-            14.0,
-            81.0
-        ]
-    },
-    "classificationType": {
-        "classificationType": "CESIUM_3D_TILE"
+    expected_result = {
+        "positions": {"cartographicDegrees": [20.0, 30.0, 10.0]},
+        "arcType": "GEODESIC",
+        "distanceDisplayCondition": {"distanceDisplayCondition": [14.0, 81.0]},
+        "classificationType": {"classificationType": "CESIUM_3D_TILE"},
     }
-}"""
     pol = Polyline(
         positions=PositionList(
             cartographicDegrees=CartographicDegreesListValue(values=[20, 30, 10])
@@ -275,75 +213,39 @@ def test_polyline_with_enum_arc_type():
             classificationType=ClassificationTypes.CESIUM_3D_TILE
         ),
     )
-    assert str(pol) == expected_result
+    assert pol.to_dict() == expected_result
 
 
 def test_material_solid_color():
-    expected_result = """{
-    "solidColor": {
-        "color": {
-            "rgba": [
-                200,
-                100,
-                30,
-                255
-            ]
-        }
-    }
-}"""
+    expected_result = {"solidColor": {"color": {"rgba": [200, 100, 30, 255]}}}
     mat = Material(solidColor=SolidColorMaterial(color=Color(rgba=[200, 100, 30])))
 
-    assert str(mat) == expected_result
+    assert mat.to_dict() == expected_result
 
     pol_mat = PolylineMaterial(
         solidColor=SolidColorMaterial(color=Color(rgba=[200, 100, 30]))
     )
-    assert str(pol_mat) == expected_result
+    assert pol_mat.to_dict() == expected_result
 
 
 def test_arrowmaterial_color():
-    expected_result = """{
-    "polylineArrow": {
-        "color": {
-            "rgba": [
-                200,
-                100,
-                30,
-                255
-            ]
-        }
-    }
-}"""
+    expected_result = {"polylineArrow": {"color": {"rgba": [200, 100, 30, 255]}}}
     pamat = PolylineMaterial(
         polylineArrow=PolylineArrowMaterial(color=Color(rgba=[200, 100, 30, 255])),
     )
 
-    assert str(pamat) == expected_result
+    assert pamat.to_dict() == expected_result
 
 
 def test_dashmaterial_colors():
-    expected_result = """{
-    "polylineDash": {
-        "color": {
-            "rgba": [
-                200,
-                100,
-                30,
-                255
-            ]
-        },
-        "gapColor": {
-            "rgba": [
-                100,
-                200,
-                0,
-                255
-            ]
-        },
-        "dashLength": 16.0,
-        "dashPattern": 255
+    expected_result = {
+        "polylineDash": {
+            "color": {"rgba": [200, 100, 30, 255]},
+            "gapColor": {"rgba": [100, 200, 0, 255]},
+            "dashLength": 16.0,
+            "dashPattern": 255,
+        }
     }
-}"""
     dashmat = PolylineMaterial(
         polylineDash=PolylineDashMaterial(
             color=Color(rgba=[200, 100, 30, 255]),
@@ -353,54 +255,33 @@ def test_dashmaterial_colors():
         ),
     )
 
-    assert str(dashmat) == expected_result
+    assert dashmat.to_dict() == expected_result
 
 
 def test_glowmaterial_color():
-    expected_result = """{
-    "polylineGlow": {
-        "color": {
-            "rgba": [
-                200,
-                100,
-                30,
-                255
-            ]
-        },
-        "glowPower": 0.7,
-        "taperPower": 0.3
+    expected_result = {
+        "polylineGlow": {
+            "color": {"rgba": [200, 100, 30, 255]},
+            "glowPower": 0.7,
+            "taperPower": 0.3,
+        }
     }
-}"""
     glowmat = PolylineMaterial(
         polylineGlow=PolylineGlowMaterial(
             color=Color(rgba=[200, 100, 30, 255]), glowPower=0.7, taperPower=0.3
         )
     )
-    assert str(glowmat) == expected_result
+    assert glowmat.to_dict() == expected_result
 
 
 def test_outline_material_colors():
-    expected_result = """{
-    "polylineOutline": {
-        "color": {
-            "rgba": [
-                200,
-                100,
-                30,
-                255
-            ]
-        },
-        "outlineColor": {
-            "rgba": [
-                100,
-                200,
-                0,
-                255
-            ]
-        },
-        "outlineWidth": 3.0
+    expected_result = {
+        "polylineOutline": {
+            "color": {"rgba": [200, 100, 30, 255]},
+            "outlineColor": {"rgba": [100, 200, 0, 255]},
+            "outlineWidth": 3.0,
+        }
     }
-}"""
     omat = PolylineMaterial(
         polylineOutline=PolylineOutlineMaterial(
             color=Color(rgba=[200, 100, 30, 255]),
@@ -408,7 +289,7 @@ def test_outline_material_colors():
             outlineWidth=3,
         )
     )
-    assert str(omat) == expected_result
+    assert omat.to_dict() == expected_result
 
 
 def test_colors_rgba():
@@ -471,23 +352,13 @@ def test_color_invalid_colors_rgbaf():
 
 
 def test_material_image():
-    expected_result = """{
-    "image": {
-        "image": "https://site.com/image.png",
-        "repeat": [
-            2,
-            2
-        ],
-        "color": {
-            "rgba": [
-                200,
-                100,
-                30,
-                255
-            ]
+    expected_result = {
+        "image": {
+            "image": "https://site.com/image.png",
+            "repeat": [2, 2],
+            "color": {"rgba": [200, 100, 30, 255]},
         }
     }
-}"""
 
     mat = Material(
         image=ImageMaterial(
@@ -496,27 +367,17 @@ def test_material_image():
             color=Color(rgba=[200, 100, 30]),
         )
     )
-    assert str(mat) == expected_result
+    assert mat.to_dict() == expected_result
 
 
 def test_material_image_uri():
-    expected_result = """{
-    "image": {
-        "image": "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
-        "repeat": [
-            2,
-            2
-        ],
-        "color": {
-            "rgba": [
-                200,
-                100,
-                30,
-                255
-            ]
+    expected_result = {
+        "image": {
+            "image": "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
+            "repeat": [2, 2],
+            "color": {"rgba": [200, 100, 30, 255]},
         }
     }
-}"""
 
     mat = Material(
         image=ImageMaterial(
@@ -527,33 +388,17 @@ def test_material_image_uri():
             color=Color(rgba=[200, 100, 30]),
         )
     )
-    assert str(mat) == expected_result
+    assert mat.to_dict() == expected_result
 
 
 def test_material_grid():
-    expected_result = """{
-    "color": {
-        "rgba": [
-            20,
-            20,
-            30,
-            255
-        ]
-    },
-    "cellAlpha": 1.0,
-    "lineCount": [
-        16,
-        16
-    ],
-    "lineThickness": [
-        2.0,
-        2.0
-    ],
-    "lineOffset": [
-        0.3,
-        0.4
-    ]
-}"""
+    expected_result = {
+        "color": {"rgba": [20, 20, 30, 255]},
+        "cellAlpha": 1.0,
+        "lineCount": [16, 16],
+        "lineThickness": [2.0, 2.0],
+        "lineOffset": [0.3, 0.4],
+    }
 
     pol_mat = GridMaterial(
         color=Color(rgba=[20, 20, 30]),
@@ -562,28 +407,17 @@ def test_material_grid():
         lineThickness=[2.0, 2.0],
         lineOffset=[0.3, 0.4],
     )
-    assert str(pol_mat) == expected_result
+    assert pol_mat.to_dict() == expected_result
 
 
 def test_nested_delete():
-    expected_result = """{
-    "color": {
-        "delete": true
-    },
-    "cellAlpha": 1.0,
-    "lineCount": [
-        16,
-        16
-    ],
-    "lineThickness": [
-        2.0,
-        2.0
-    ],
-    "lineOffset": [
-        0.3,
-        0.4
-    ]
-}"""
+    expected_result = {
+        "color": {"delete": True},
+        "cellAlpha": 1.0,
+        "lineCount": [16, 16],
+        "lineThickness": [2.0, 2.0],
+        "lineOffset": [0.3, 0.4],
+    }
 
     pol_mat = GridMaterial(
         color=Color(rgba=[20, 20, 30], delete=True),
@@ -592,30 +426,16 @@ def test_nested_delete():
         lineThickness=[2.0, 2.0],
         lineOffset=[0.3, 0.4],
     )
-    assert str(pol_mat) == expected_result
+    assert pol_mat.to_dict() == expected_result
 
 
 def test_material_stripe():
-    expected_result = """{
-    "evenColor": {
-        "rgba": [
-            0,
-            0,
-            0,
-            255
-        ]
-    },
-    "oddColor": {
-        "rgba": [
-            255,
-            255,
-            255,
-            255
-        ]
-    },
-    "offset": 0.3,
-    "repeat": 4.0
-}"""
+    expected_result = {
+        "evenColor": {"rgba": [0, 0, 0, 255]},
+        "oddColor": {"rgba": [255, 255, 255, 255]},
+        "offset": 0.3,
+        "repeat": 4.0,
+    }
 
     pol_mat = StripeMaterial(
         evenColor=Color(rgba=[0, 0, 0]),
@@ -623,57 +443,36 @@ def test_material_stripe():
         offset=0.3,
         repeat=4.0,
     )
-    assert str(pol_mat) == expected_result
+    assert pol_mat.to_dict() == expected_result
 
 
 def test_material_checkerboard():
-    expected_result = """{
-    "evenColor": {
-        "rgba": [
-            0,
-            0,
-            0,
-            255
-        ]
-    },
-    "oddColor": {
-        "rgba": [
-            255,
-            255,
-            255,
-            255
-        ]
-    },
-    "repeat": [
-        4,
-        4
-    ]
-}"""
+    expected_result = {
+        "evenColor": {"rgba": [0, 0, 0, 255]},
+        "oddColor": {"rgba": [255, 255, 255, 255]},
+        "repeat": [4, 4],
+    }
 
     pol_mat = CheckerboardMaterial(
         evenColor=Color(rgba=[0, 0, 0]),
         oddColor=Color(rgba=[255, 255, 255]),
         repeat=[4, 4],
     )
-    assert str(pol_mat) == expected_result
+    assert pol_mat.to_dict() == expected_result
 
 
 def test_position_has_delete():
-    expected_result = """{
-    "delete": true
-}"""
+    expected_result = {"delete": True}
     pos = Position(delete=True, cartesian=[0, 0, 0])
     assert pos.delete
-    assert str(pos) == expected_result
+    assert pos.to_dict() == expected_result
 
 
 def test_aligned_axis_has_delete():
-    expected_result = """{
-    "delete": true
-}"""
+    expected_result = {"delete": True}
     r = AlignedAxis(delete=True, reference="this#that")
     assert r.delete
-    assert str(r) == expected_result
+    assert r.to_dict() == expected_result
 
 
 def test_aligned_axis_has_one_property():
@@ -688,12 +487,10 @@ def test_aligned_axis_has_one_property():
 
 
 def test_rotation_has_delete():
-    expected_result = """{
-    "delete": true
-}"""
+    expected_result = {"delete": True}
     r = Rotation(delete=True, reference="this#that")
     assert r.delete
-    assert str(r) == expected_result
+    assert r.to_dict() == expected_result
 
 
 def test_rotation_has_one_property():
@@ -704,12 +501,10 @@ def test_rotation_has_one_property():
 
 
 def test_line_offset_has_delete():
-    expected_result = """{
-    "delete": true
-}"""
+    expected_result = {"delete": True}
     lo = LineOffset(delete=True, reference="this#that")
     assert lo.delete
-    assert str(lo) == expected_result
+    assert lo.to_dict() == expected_result
 
 
 def test_line_offset_has_one_property():
@@ -720,23 +515,19 @@ def test_line_offset_has_one_property():
 
 
 def test_position_list_has_delete():
-    expected_result = """{
-    "delete": true
-}"""
+    expected_result = {"delete": True}
     pos = PositionList(delete=True, cartesian=[0, 0, 0])
     assert pos.delete
-    assert str(pos) == expected_result
+    assert pos.to_dict() == expected_result
 
 
 def test_position_list_of_lists_has_delete():
-    expected_result = """{
-    "delete": true
-}"""
+    expected_result = {"delete": True}
     pos = PositionListOfLists(
         delete=True, cartesian=[[20.0, 20.0, 0.0], [10.0, 10.0, 0.0]]
     )
     assert pos.delete
-    assert str(pos) == expected_result
+    assert pos.to_dict() == expected_result
 
 
 def test_position_no_values_raises_error():
@@ -770,28 +561,26 @@ def test_position_list_no_values_raises_error():
 
 
 def test_position_with_delete_has_nothing_else():
-    expected_result = """{
-    "delete": true
-}"""
+    expected_result = {"delete": True}
     pos_list = Position(delete=True, cartesian=[1, 2, 3])
     pos_val = Position(delete=True, cartesian=Cartesian3Value(values=[1, 2, 3]))
-    assert str(pos_list) == str(pos_val) == expected_result
+    assert pos_list.to_dict() == pos_val.to_dict() == expected_result
     pos_list = Position(delete=True, cartographicRadians=[1, 2, 3])
     pos_val = Position(
         delete=True, cartographicRadians=CartographicRadiansValue(values=[1, 2, 3])
     )
-    assert str(pos_list) == str(pos_val) == expected_result
+    assert pos_list.to_dict() == pos_val.to_dict() == expected_result
     pos_list = Position(delete=True, cartographicDegrees=[1, 2, 3])
     pos_val = Position(
         delete=True, cartographicDegrees=CartographicDegreesValue(values=[1, 2, 3])
     )
-    assert str(pos_list) == str(pos_val) == expected_result
+    assert pos_list.to_dict() == pos_val.to_dict() == expected_result
     pos_list = Position(delete=True, cartesianVelocity=[1, 2, 3, 4, 5, 6])
     pos_val = Position(
         delete=True,
         cartesianVelocity=Cartesian3VelocityValue(values=[1, 2, 3, 4, 5, 6]),
     )
-    assert str(pos_list) == str(pos_val) == expected_result
+    assert pos_list.to_dict() == pos_val.to_dict() == expected_result
 
 
 def test_position_has_given_epoch():
@@ -805,74 +594,52 @@ def test_position_has_given_epoch():
 
 
 def test_position_renders_epoch():
-    expected_result = """{
-    "epoch": "2019-03-20T12:00:00.000000Z",
-    "cartesian": [
-        0.0,
-        0.0,
-        0.0
-    ]
-}"""
+    expected_result = {
+        "epoch": "2019-03-20T12:00:00.000000Z",
+        "cartesian": [0.0, 0.0, 0.0],
+    }
     pos = Position(
         epoch=dt.datetime(2019, 3, 20, 12, tzinfo=dt.timezone.utc), cartesian=[0, 0, 0]
     )
 
-    assert str(pos) == expected_result
+    assert pos.to_dict() == expected_result
 
 
 def test_position_cartographic_degrees():
-    expected_result = """{
-    "cartographicDegrees": [
-        10.0,
-        20.0,
-        0.0
-    ]
-}"""
+    expected_result = {"cartographicDegrees": [10.0, 20.0, 0.0]}
     pos = Position(cartographicDegrees=[10.0, 20.0, 0.0])
 
-    assert str(pos) == expected_result
+    assert pos.to_dict() == expected_result
 
 
 def test_position_reference():
-    expected_result = """{
-    "reference": "this#satellite"
-}"""
+    expected_result = {"reference": "this#satellite"}
     pos = Position(reference="this#satellite")
-    assert str(pos) == expected_result
+    assert pos.to_dict() == expected_result
     pos = Position(reference=ReferenceValue(value="this#satellite"))
-    assert str(pos) == expected_result
+    assert pos.to_dict() == expected_result
 
 
 def test_viewfrom_reference():
-    expected_result = """{
-    "reference": "this#satellite"
-}"""
+    expected_result = {"reference": "this#satellite"}
     v = ViewFrom(reference="this#satellite")
-    assert str(v) == expected_result
+    assert v.to_dict() == expected_result
     v = ViewFrom(reference=ReferenceValue(value="this#satellite"))
-    assert str(v) == expected_result
+    assert v.to_dict() == expected_result
 
 
 def test_viewfrom_cartesian():
-    expected_result = """{
-    "cartesian": [
-        -1000.0,
-        0.0,
-        300.0
-    ]
-}"""
+    expected_result = {"cartesian": [-1000.0, 0.0, 300.0]}
     v = ViewFrom(cartesian=Cartesian3Value(values=[-1000, 0, 300]))
 
-    assert str(v) == expected_result
+    assert v.to_dict() == expected_result
 
 
 def test_viewfrom_has_delete():
-    expected_result = """{
-    "delete": true
-}"""
+    expected_result = {"delete": True}
     v = ViewFrom(delete=True, cartesian=[14.0, 12.0, 1.0])
     assert v.delete
-    assert str(v) == expected_result
+    assert v.to_dict() == expected_result
 
 
 def test_viewfrom_no_values_raises_error():
@@ -881,30 +648,30 @@ def test_viewfrom_no_values_raises_error():
 
 
 def test_single_interval_value():
-    expected_result = """{
-    "interval": "2019-01-01T00:00:00.000000Z/2019-01-02T00:00:00.000000Z",
-    "boolean": true
-}"""
+    expected_result = {
+        "interval": "2019-01-01T00:00:00.000000Z/2019-01-02T00:00:00.000000Z",
+        "boolean": True,
+    }
 
     start = dt.datetime(2019, 1, 1, tzinfo=dt.timezone.utc)
     end = dt.datetime(2019, 1, 2, tzinfo=dt.timezone.utc)
 
     prop = IntervalValue(start=start, end=end, value=True)
 
-    assert str(prop) == expected_result
+    assert prop.to_dict() == expected_result
 
 
 def test_multiple_interval_value():
-    expected_result = """[
-    {
-        "interval": "2019-01-01T00:00:00.000000Z/2019-01-02T00:00:00.000000Z",
-        "boolean": true
-    },
-    {
-        "interval": "2019-01-02T00:00:00.000000Z/2019-01-03T00:00:00.000000Z",
-        "boolean": false
-    }
-]"""
+    expected_result = [
+        {
+            "interval": "2019-01-01T00:00:00.000000Z/2019-01-02T00:00:00.000000Z",
+            "boolean": True,
+        },
+        {
+            "interval": "2019-01-02T00:00:00.000000Z/2019-01-03T00:00:00.000000Z",
+            "boolean": False,
+        },
+    ]
 
     start0 = dt.datetime(2019, 1, 1, tzinfo=dt.timezone.utc)
     end0 = start1 = dt.datetime(2019, 1, 2, tzinfo=dt.timezone.utc)
@@ -917,20 +684,20 @@ def test_multiple_interval_value():
         ]
     )
 
-    assert str(prop) == expected_result
+    assert prop.to_dict() == expected_result
 
 
 def test_multiple_interval_decimal_value():
-    expected_result = """[
-    {
-        "interval": "2019-01-01T01:02:03.456789Z/2019-01-02T01:02:03.456789Z",
-        "boolean": true
-    },
-    {
-        "interval": "2019-01-02T01:02:03.456789Z/2019-01-03T01:02:03.456789Z",
-        "boolean": false
-    }
-]"""
+    expected_result = [
+        {
+            "interval": "2019-01-01T01:02:03.456789Z/2019-01-02T01:02:03.456789Z",
+            "boolean": True,
+        },
+        {
+            "interval": "2019-01-02T01:02:03.456789Z/2019-01-03T01:02:03.456789Z",
+            "boolean": False,
+        },
+    ]
 
     start0 = dt.datetime(2019, 1, 1, 1, 2, 3, 456789, tzinfo=dt.timezone.utc)
     end0 = start1 = dt.datetime(2019, 1, 2, 1, 2, 3, 456789, tzinfo=dt.timezone.utc)
@@ -943,108 +710,69 @@ def test_multiple_interval_decimal_value():
         ]
     )
 
-    assert str(prop) == expected_result
+    assert prop.to_dict() == expected_result
 
 
 def test_orientation():
-    expected_result = """{
-    "unitQuaternion": [
-        0.0,
-        0.0,
-        0.0,
-        1.0
-    ]
-}"""
+    expected_result = {"unitQuaternion": [0.0, 0.0, 0.0, 1.0]}
 
     result = Orientation(unitQuaternion=UnitQuaternionValue(values=[0, 0, 0, 1]))
 
-    assert str(result) == expected_result
+    assert result.to_dict() == expected_result
 
 
 def test_rotation_unit_quaternion():
-    expected_result = """{
-    "unitQuaternion": [
-        0.0,
-        0.0,
-        0.0,
-        1.0
-    ]
-}"""
+    expected_result = {"unitQuaternion": [0.0, 0.0, 0.0, 1.0]}
 
     result = Rotation(unitQuaternion=UnitQuaternionValue(values=[0, 0, 0, 1]))
 
-    assert str(result) == expected_result
+    assert result.to_dict() == expected_result
 
 
 def test_rotation_unit_quaternion_as_list():
-    expected_result = """{
-    "unitQuaternion": [
-        0.0,
-        0.0,
-        0.0,
-        1.0
-    ]
-}"""
+    expected_result = {"unitQuaternion": [0.0, 0.0, 0.0, 1.0]}
 
     result = Rotation(unitQuaternion=[0, 0, 0, 1])
 
-    assert str(result) == expected_result
+    assert result.to_dict() == expected_result
 
 
 def test_rotation_with_reference():
-    expected_result = """{
-    "reference": "this#that"
-}"""
+    expected_result = {"reference": "this#that"}
 
     result = Rotation(reference=ReferenceValue(value="this#that"))
 
-    assert str(result) == expected_result
+    assert result.to_dict() == expected_result
 
 
 def test_line_offset_cartesian2():
-    expected_result = """{
-    "cartesian2": {
-        "cartesian2": [
-            0.0,
-            1.0
-        ]
-    }
-}"""
+    expected_result = {"cartesian2": {"cartesian2": [0.0, 1.0]}}
 
     result = LineOffset(cartesian2=Cartesian2Value(values=[0.0, 1.0]))
 
-    assert str(result) == expected_result
+    assert result.to_dict() == expected_result
 
 
 def test_line_offset_cartesian2_as_list():
-    expected_result = """{
-    "cartesian2": {
-        "cartesian2": [
-            0.0,
-            1.0
-        ]
-    }
-}"""
+    expected_result = {"cartesian2": {"cartesian2": [0.0, 1.0]}}
 
     result = LineOffset(cartesian2=[0.0, 1.0])
 
-    assert str(result) == expected_result
+    assert result.to_dict() == expected_result
 
 
 def test_line_offset_with_reference():
-    expected_result = """{
-    "reference": "this#that"
-}"""
+    expected_result = {"reference": "this#that"}
 
     result = LineOffset(reference=ReferenceValue(value="this#that"))
 
-    assert str(result) == expected_result
+    assert result.to_dict() == expected_result
 
 
 def test_model():
-    expected_result = """{
-    "gltf": "https://sandcastle.cesium.com/SampleData/models/CesiumAir/Cesium_Air.glb"
-}"""
+    expected_result = {
+        "gltf": "https://sandcastle.cesium.com/SampleData/models/CesiumAir/Cesium_Air.glb"
+    }
 
     result = Model(
         gltf="https://sandcastle.cesium.com/SampleData/models/CesiumAir/Cesium_Air.glb"
@@ -1055,7 +783,7 @@ def test_model():
         )
     )
 
-    assert str(result) == str(result1) == expected_result
+    assert result.to_dict() == result1.to_dict() == expected_result
 
 
 def test_bad_uri_raises_error():
@@ -1077,72 +805,36 @@ def test_bad_data_uri_raises_error(uri):
 
 
 def test_raw_base64_uri():
-    expected_result = '"SGVsbG8="'
+    expected_result = "SGVsbG8="
     result = Uri(uri="SGVsbG8=")
-    assert result.dumps() == expected_result
+    assert result.to_dict() == expected_result
 
 
 def test_ellipsoid():
-    expected_result = """{
-    "radii": {
-        "cartesian": [
-            20.0,
-            30.0,
-            40.0
-        ]
-    },
-    "fill": false,
-    "outline": true
-}"""
+    expected_result = {
+        "radii": {"cartesian": [20.0, 30.0, 40.0]},
+        "fill": False,
+        "outline": True,
+    }
 
     ell = Ellipsoid(
         radii=EllipsoidRadii(cartesian=[20.0, 30.0, 40.0]), fill=False, outline=True
     )
-    assert str(ell) == expected_result
+    assert ell.to_dict() == expected_result
 
 
 def test_ellipsoid_parameters():
-    expected_result = """{
-    "radii": {
-        "cartesian": [
-            500000.0,
-            500000.0,
-            500000.0
-        ]
-    },
-    "innerRadii": {
-        "cartesian": [
-            10000.0,
-            10000.0,
-            10000.0
-        ]
-    },
-    "minimumClock": -15.0,
-    "maximumClock": 15.0,
-    "minimumCone": 75.0,
-    "maximumCone": 105.0,
-    "material": {
-        "solidColor": {
-            "color": {
-                "rgba": [
-                    255,
-                    0,
-                    0,
-                    100
-                ]
-            }
-        }
-    },
-    "outline": true,
-    "outlineColor": {
-        "rgbaf": [
-            0.0,
-            0.0,
-            0.0,
-            1.0
-        ]
+    expected_result = {
+        "radii": {"cartesian": [500000.0, 500000.0, 500000.0]},
+        "innerRadii": {"cartesian": [10000.0, 10000.0, 10000.0]},
+        "minimumClock": -15.0,
+        "maximumClock": 15.0,
+        "minimumCone": 75.0,
+        "maximumCone": 105.0,
+        "material": {"solidColor": {"color": {"rgba": [255, 0, 0, 100]}}},
+        "outline": True,
+        "outlineColor": {"rgbaf": [0.0, 0.0, 0.0, 1.0]},
     }
-}"""
 
     ell = Ellipsoid(
         radii=EllipsoidRadii(cartesian=[500000.0, 500000.0, 500000.0]),
@@ -1157,33 +849,14 @@ def test_ellipsoid_parameters():
         outline=True,
         outlineColor=Color(rgbaf=[0, 0, 0, 1]),
     )
-    assert str(ell) == expected_result
+    assert ell.to_dict() == expected_result
 
 
 def test_polygon_with_hole():
-    expected_result = """{
-    "positions": {
-        "cartographicDegrees": [
-            30.0,
-            40.0,
-            1.0
-        ]
-    },
-    "holes": {
-        "cartographicDegrees": [
-            [
-                20.0,
-                20.0,
-                0.0
-            ],
-            [
-                10.0,
-                10.0,
-                0.0
-            ]
-        ]
+    expected_result = {
+        "positions": {"cartographicDegrees": [30.0, 40.0, 1.0]},
+        "holes": {"cartographicDegrees": [[20.0, 20.0, 0.0], [10.0, 10.0, 0.0]]},
     }
-}"""
 
     p = Polygon(
         positions=PositionList(cartographicDegrees=[30.0, 40.0, 1.0]),
@@ -1191,22 +864,18 @@ def test_polygon_with_hole():
             cartographicDegrees=[[20.0, 20.0, 0.0], [10.0, 10.0, 0.0]]
         ),
     )
-    assert str(p) == expected_result
+    assert p.to_dict() == expected_result
 
 
 def test_polygon_interval():
     """This only tests one interval"""
 
-    expected_result = """{
-    "positions": {
-        "cartographicDegrees": [
-            10.0,
-            20.0,
-            0.0
-        ],
-        "interval": "2019-03-20T12:00:00.000000Z/2019-04-20T12:00:00.000000Z"
+    expected_result = {
+        "positions": {
+            "cartographicDegrees": [10.0, 20.0, 0.0],
+            "interval": "2019-03-20T12:00:00.000000Z/2019-04-20T12:00:00.000000Z",
+        }
     }
-}"""
     t = TimeInterval(
         start=dt.datetime(2019, 3, 20, 12, tzinfo=dt.timezone.utc),
         end=dt.datetime(2019, 4, 20, 12, tzinfo=dt.timezone.utc),
@@ -1214,42 +883,18 @@ def test_polygon_interval():
     poly = Polygon(
         positions=PositionList(cartographicDegrees=[10.0, 20.0, 0.0], interval=t)
     )
-    assert str(poly) == expected_result
+    assert poly.to_dict() == expected_result
 
 
 def test_polygon_outline():
-    expected_result = """{
-    "positions": {
-        "cartographicDegrees": [
-            10.0,
-            20.0,
-            0.0
-        ]
-    },
-    "material": {
-        "solidColor": {
-            "color": {
-                "rgba": [
-                    255,
-                    100,
-                    0,
-                    100
-                ]
-            }
-        }
-    },
-    "outlineColor": {
-        "rgba": [
-            0,
-            0,
-            0,
-            255
-        ]
-    },
-    "outline": true,
-    "extrudedHeight": 0.0,
-    "perPositionHeight": true
-}"""
+    expected_result = {
+        "positions": {"cartographicDegrees": [10.0, 20.0, 0.0]},
+        "material": {"solidColor": {"color": {"rgba": [255, 100, 0, 100]}}},
+        "outlineColor": {"rgba": [0, 0, 0, 255]},
+        "outline": True,
+        "extrudedHeight": 0.0,
+        "perPositionHeight": True,
+    }
     poly = Polygon(
         positions=PositionList(cartographicDegrees=[10.0, 20.0, 0.0]),
         material=Material(
@@ -1266,22 +911,18 @@ def test_polygon_outline():
         extrudedHeight=0,
         perPositionHeight=True,
     )
-    assert str(poly) == expected_result
+    assert poly.to_dict() == expected_result
 
 
 def test_polygon_interval_with_position():
     """This only tests one interval"""
 
-    expected_result = """{
-    "positions": {
-        "cartographicDegrees": [
-            10.0,
-            20.0,
-            0.0
-        ],
-        "interval": "2019-03-20T12:00:00.000000Z/2019-04-20T12:00:00.000000Z"
+    expected_result = {
+        "positions": {
+            "cartographicDegrees": [10.0, 20.0, 0.0],
+            "interval": "2019-03-20T12:00:00.000000Z/2019-04-20T12:00:00.000000Z",
+        }
     }
-}"""
     t = TimeInterval(
         start=dt.datetime(2019, 3, 20, 12, tzinfo=dt.timezone.utc),
         end=dt.datetime(2019, 4, 20, 12, tzinfo=dt.timezone.utc),
@@ -1289,28 +930,21 @@ def test_polygon_interval_with_position():
     poly = Polygon(
         positions=PositionList(cartographicDegrees=[10.0, 20.0, 0.0], interval=t)
     )
-    assert str(poly) == expected_result
+    assert poly.to_dict() == expected_result
 
 
 def test_label_offset():
-    expected_result = """{
-    "pixelOffset": {
-        "cartesian2": [
-            5.0,
-            5.0
-        ]
-    }
-}"""
+    expected_result = {"pixelOffset": {"cartesian2": [5.0, 5.0]}}
 
     label = Label(pixelOffset=Cartesian2Value(values=[5, 5]))
-    assert str(label) == expected_result
+    assert label.to_dict() == expected_result
 
 
 def test_tileset():
-    expected_result = """{
-    "uri": "../SampleData/Cesium3DTiles/Batched/BatchedColors/tileset.json",
-    "show": true
-}"""
+    expected_result = {
+        "uri": "../SampleData/Cesium3DTiles/Batched/BatchedColors/tileset.json",
+        "show": True,
+    }
     tileset = Tileset(
         show=True, uri="../SampleData/Cesium3DTiles/Batched/BatchedColors/tileset.json"
     )
@@ -1318,7 +952,7 @@ def test_tileset():
         show=True,
         uri=Uri(uri="../SampleData/Cesium3DTiles/Batched/BatchedColors/tileset.json"),
     )
-    assert str(tileset) == str(tileset1) == expected_result
+    assert tileset.to_dict() == tileset1.to_dict() == expected_result
 
 
 def test_check_classes_with_references_ViewFrom():
@@ -1663,69 +1297,40 @@ def test_bad_Position():
 
 
 def test_position_list_with_cartesian():
-    expected_result = """{
-    "cartesian": [
-        1.0,
-        2.0,
-        3.0,
-        4.0,
-        5.0,
-        6.0
-    ]
-}"""
+    expected_result = {"cartesian": [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]}
 
     p1 = PositionList(cartesian=Cartesian3ListValue(values=[1, 2, 3, 4, 5, 6]))
-    assert str(p1) == expected_result
+    assert p1.to_dict() == expected_result
 
 
 def test_position_list_with_cartographicRadians():
-    expected_result = """{
-    "cartographicRadians": [
-        1.0,
-        2.0,
-        3.0
-    ]
-}"""
+    expected_result = {"cartographicRadians": [1.0, 2.0, 3.0]}
 
     p1 = PositionList(
         cartographicRadians=CartographicRadiansListValue(values=[1, 2, 3])
     )
-    assert str(p1) == expected_result
+    assert p1.to_dict() == expected_result
 
 
 def test_position_list_with_cartographicDegrees():
-    expected_result = """{
-    "cartographicDegrees": [
-        1.0,
-        2.0,
-        3.0
-    ]
-}"""
+    expected_result = {"cartographicDegrees": [1.0, 2.0, 3.0]}
 
     p1 = PositionList(
         cartographicDegrees=CartographicDegreesListValue(values=[1, 2, 3])
     )
-    assert str(p1) == expected_result
+    assert p1.to_dict() == expected_result
 
 
 def test_position_list_with_references():
-    expected_result = """{
-    "references": [
-        "1#this"
-    ]
-}"""
+    expected_result = {"references": ["1#this"]}
     p1 = PositionList(
         references=["1#this"],
     )
     p2 = PositionList(
         references=ReferenceListValue(values=["1#this"]),
     )
-    assert str(p1) == str(p2) == expected_result
-    expected_result = """{
-    "references": [
-        "1#this"
-    ]
-}"""
+    assert p1.to_dict() == p2.to_dict() == expected_result
+    expected_result = {"references": ["1#this"]}
 
 
 def test_position_list_with_references_extra_arguments():
@@ -1745,75 +1350,42 @@ def test_position_list_with_bad_references():
 
 
 def test_position_list_of_lists_with_cartesian():
-    expected_result = """{
-    "cartesian": [
-        [
-            1.0,
-            2.0,
-            3.0
-        ]
-    ]
-}"""
+    expected_result = {"cartesian": [[1.0, 2.0, 3.0]]}
 
     p1 = PositionListOfLists(cartesian=Cartesian3ListOfListsValue(values=[[1, 2, 3]]))
-    assert str(p1) == expected_result
+    assert p1.to_dict() == expected_result
 
 
 def test_position_list_of_lists_with_cartographicRadians():
-    expected_result = """{
-    "cartographicRadians": [
-        [
-            1.0,
-            2.0,
-            3.0
-        ]
-    ]
-}"""
+    expected_result = {"cartographicRadians": [[1.0, 2.0, 3.0]]}
 
     p1 = PositionListOfLists(
         cartographicRadians=CartographicRadiansListOfListsValue(values=[[1, 2, 3]])
     )
-    assert str(p1) == expected_result
+    assert p1.to_dict() == expected_result
 
     p2 = PositionListOfLists(cartographicRadians=[[1, 2, 3]])
-    assert str(p2) == expected_result
+    assert p2.to_dict() == expected_result
 
 
 def test_position_list_of_lists_with_cartographicDegrees():
-    expected_result = """{
-    "cartographicDegrees": [
-        [
-            1.0,
-            2.0,
-            3.0
-        ]
-    ]
-}"""
+    expected_result = {"cartographicDegrees": [[1.0, 2.0, 3.0]]}
 
     p1 = PositionListOfLists(
         cartographicDegrees=CartographicDegreesListOfListsValue(values=[[1, 2, 3]])
     )
-    assert str(p1) == expected_result
+    assert p1.to_dict() == expected_result
 
 
 def test_position_list_of_lists_with_references():
-    expected_result = """{
-    "references": [
-        [
-            "1#this"
-        ],
-        [
-            "1#this"
-        ]
-    ]
-}"""
+    expected_result = {"references": [["1#this"], ["1#this"]]}
     p1 = PositionListOfLists(
         references=[["1#this"], ["1#this"]],
     )
     p2 = PositionListOfLists(
         references=ReferenceListOfListsValue(values=[["1#this"], ["1#this"]]),
     )
-    assert str(p1) == str(p2) == expected_result
+    assert p1.to_dict() == p2.to_dict() == expected_result
 
 
 def test_position_list_of_lists_with_bad_references():
@@ -1841,71 +1413,33 @@ def test_check_increasing_time():
 
 
 def test_packet_billboard():
-    expected_result = """{
-    "image": "file://image.png",
-    "eyeOffset": {
-        "cartesian": [
-            1.0,
-            2.0,
-            3.0
-        ]
+    expected_result = {
+        "image": "file://image.png",
+        "eyeOffset": {"cartesian": [1.0, 2.0, 3.0]},
     }
-}"""
     packet = Billboard(
         image="file://image.png",
         eyeOffset=EyeOffset(cartesian=Cartesian3Value(values=[1, 2, 3])),
     )
-    assert str(packet) == expected_result
+    assert packet.to_dict() == expected_result
     packet = Billboard(image="file://image.png", eyeOffset=[1, 2, 3])
-    assert str(packet) == expected_result
+    assert packet.to_dict() == expected_result
 
 
 def test_packet_billboard_further():
-    expected_result = """{
-    "image": "file://image.png",
-    "eyeOffset": {
-        "cartesian": [
-            1.0,
-            2.0,
-            3.0
-        ]
-    },
-    "rotation": 0.1,
-    "sizeInMeters": true,
-    "width": 10.0,
-    "height": 10.0,
-    "scaleByDistance": {
-        "nearFarScalar": [
-            150.0,
-            2.0,
-            15000000.0,
-            0.5
-        ]
-    },
-    "translucencyByDistance": {
-        "nearFarScalar": [
-            250.0,
-            2.0,
-            15000000.0,
-            0.5
-        ]
-    },
-    "pixelOffsetScaleByDistance": {
-        "nearFarScalar": [
-            350.0,
-            2.0,
-            15000000.0,
-            0.5
-        ]
-    },
-    "distanceDisplayCondition": {
-        "distanceDisplayCondition": [
-            14.0,
-            81.0
-        ]
-    },
-    "disableDepthTestDistance": 2.0
-}"""
+    expected_result = {
+        "image": "file://image.png",
+        "eyeOffset": {"cartesian": [1.0, 2.0, 3.0]},
+        "rotation": 0.1,
+        "sizeInMeters": True,
+        "width": 10.0,
+        "height": 10.0,
+        "scaleByDistance": {"nearFarScalar": [150.0, 2.0, 15000000.0, 0.5]},
+        "translucencyByDistance": {"nearFarScalar": [250.0, 2.0, 15000000.0, 0.5]},
+        "pixelOffsetScaleByDistance": {"nearFarScalar": [350.0, 2.0, 15000000.0, 0.5]},
+        "distanceDisplayCondition": {"distanceDisplayCondition": [14.0, 81.0]},
+        "disableDepthTestDistance": 2.0,
+    }
     packet = Billboard(
         image="file://image.png",
         eyeOffset=EyeOffset(cartesian=Cartesian3Value(values=[1, 2, 3])),
@@ -1927,18 +1461,16 @@ def test_packet_billboard_further():
             distanceDisplayCondition=DistanceDisplayConditionValue(values=[14, 81])
         ),
     )
-    assert str(packet) == expected_result
+    assert packet.to_dict() == expected_result
 
 
 def test_delete():
-    expected_result = """{
-    "delete": true
-}"""
+    expected_result = {"delete": True}
     p = PositionList(
         cartographicDegrees=CartographicDegreesListValue(values=[20, 30, 10]),
         delete=True,
     )
-    assert str(p) == expected_result
+    assert p.to_dict() == expected_result
 
 
 def test_forbid_extras():
@@ -2194,134 +1726,42 @@ def test_ReferenceValue_is_reference():
     )
 
 
-def test_EllipsoidRadii_delete():
-    expected_result = """{
-    "delete": true
-}"""
-    p = EllipsoidRadii(delete=True, cartesian=[0, 0, 0])
-    assert p.delete
-    assert str(p) == expected_result
-
-
-def test_ArcType_delete():
-    expected_result = """{
-    "delete": true
-}"""
-    p = ArcType(delete=True, reference="this#that")
-    assert p.delete
-    assert str(p) == expected_result
-
-
-def test_ShadowMode_delete():
-    expected_result = """{
-    "delete": true
-}"""
-    p = ShadowMode(delete=True, reference="this#that")
-    assert p.delete
-    assert str(p) == expected_result
-
-
-def test_ClassificationType_delete():
-    expected_result = """{
-    "delete": true
-}"""
-    p = ClassificationType(delete=True, reference="this#that")
-    assert p.delete
-    assert str(p) == expected_result
-
-
-def test_DistanceDisplayCondition_delete():
-    expected_result = """{
-    "delete": true
-}"""
-    p = DistanceDisplayCondition(delete=True, reference="this#that")
-    assert p.delete
-    assert str(p) == expected_result
-
-
-def test_BoxDimensions_delete():
-    expected_result = """{
-    "delete": true
-}"""
-    p = BoxDimensions(delete=True, reference="this#that")
-    assert p.delete
-    assert str(p) == expected_result
-
-
-def test_EyeOffset_delete():
-    expected_result = """{
-    "delete": true
-}"""
-    p = EyeOffset(delete=True, reference="this#that")
-    assert p.delete
-    assert str(p) == expected_result
-
-
-def test_HeightReference_delete():
-    expected_result = """{
-    "delete": true
-}"""
-    p = HeightReference(delete=True, reference="this#that")
-    assert p.delete
-    assert str(p) == expected_result
-
-
-def test_ColorBlendMode_delete():
-    expected_result = """{
-    "delete": true
-}"""
-    p = ColorBlendMode(delete=True, reference="this#that")
-    assert p.delete
-    assert str(p) == expected_result
-
-
-def test_CornerType_delete():
-    expected_result = """{
-    "delete": true
-}"""
-    p = CornerType(delete=True, reference="this#that")
-    assert p.delete
-    assert str(p) == expected_result
-
-
-def test_NearFarScalar_delete():
-    expected_result = """{
-    "delete": true
-}"""
-    p = NearFarScalar(delete=True, reference="this#that")
-    assert p.delete
-    assert str(p) == expected_result
-
-
-def test_Orientation_delete():
-    expected_result = """{
-    "delete": true
-}"""
-    p = Orientation(delete=True, reference="this#that")
-    assert p.delete
-    assert str(p) == expected_result
-
-
-def test_uri_delete():
-    expected_result = """{
-    "delete": true
-}"""
-    p = Uri(delete=True, reference="this#that")
-    assert p.delete
-    assert str(p) == expected_result
+@pytest.mark.parametrize(
+    "prop",
+    [
+        EllipsoidRadii(delete=True, cartesian=[0, 0, 0]),
+        ArcType(delete=True, reference="this#that"),
+        ShadowMode(delete=True, reference="this#that"),
+        ClassificationType(delete=True, reference="this#that"),
+        DistanceDisplayCondition(delete=True, reference="this#that"),
+        BoxDimensions(delete=True, reference="this#that"),
+        EyeOffset(delete=True, reference="this#that"),
+        HeightReference(delete=True, reference="this#that"),
+        ColorBlendMode(delete=True, reference="this#that"),
+        CornerType(delete=True, reference="this#that"),
+        NearFarScalar(delete=True, reference="this#that"),
+        Orientation(delete=True, reference="this#that"),
+        Uri(delete=True, reference="this#that"),
+    ],
+    ids=lambda prop: type(prop).__name__,
+)
+def test_property_delete(prop):
+    expected_result = {"delete": True}
+    assert prop.delete
+    assert prop.to_dict() == expected_result
 
 
 def test_uri_multiple_interval_value():
-    expected_result = """[
-    {
-        "interval": "2019-01-01T00:00:00.000000Z/2019-01-02T00:00:00.000000Z",
-        "string": "this#that"
-    },
-    {
-        "interval": "2019-01-02T00:00:00.000000Z/2019-01-03T00:00:00.000000Z",
-        "string": "that#this"
-    }
-]"""
+    expected_result = [
+        {
+            "interval": "2019-01-01T00:00:00.000000Z/2019-01-02T00:00:00.000000Z",
+            "string": "this#that",
+        },
+        {
+            "interval": "2019-01-02T00:00:00.000000Z/2019-01-03T00:00:00.000000Z",
+            "string": "that#this",
+        },
+    ]
 
     start0 = dt.datetime(2019, 1, 1, tzinfo=dt.timezone.utc)
     end0 = start1 = dt.datetime(2019, 1, 2, tzinfo=dt.timezone.utc)
@@ -2336,30 +1776,30 @@ def test_uri_multiple_interval_value():
 
     p = Uri(reference=time_interval_collection)
 
-    assert str(p) == expected_result
+    assert p.to_dict() == expected_result
 
 
 def test_rotation():
-    expected_result = """{
-    "epoch": "2012-03-15T10:00:00.000000Z",
-    "unitQuaternion": [
-        0.0,
-        0.45652188368372576,
-        -0.049580035995243577,
-        -0.8819344359461565,
-        0.10640131785324795,
-        300.0,
-        0.309688526062018,
-        -0.0592870464529779,
-        -0.945283886004075,
-        0.0837641797515638,
-        600.0,
-        0.15524757622990795,
-        -0.06613430791377527,
-        -0.9841132393764626,
-        0.05518673278488507
-    ]
-}"""
+    expected_result = {
+        "epoch": "2012-03-15T10:00:00.000000Z",
+        "unitQuaternion": [
+            0.0,
+            0.45652188368372576,
+            -0.049580035995243577,
+            -0.8819344359461565,
+            0.10640131785324795,
+            300.0,
+            0.309688526062018,
+            -0.0592870464529779,
+            -0.945283886004075,
+            0.0837641797515638,
+            600.0,
+            0.15524757622990795,
+            -0.06613430791377527,
+            -0.9841132393764626,
+            0.05518673278488507,
+        ],
+    }
     p = Rotation(
         epoch=dt.datetime(2012, 3, 15, 10, 0, 0, tzinfo=dt.timezone.utc),
         unitQuaternion=UnitQuaternionValue(
@@ -2382,21 +1822,14 @@ def test_rotation():
             ]
         ),
     )
-    assert str(p) == expected_result
+    assert p.to_dict() == expected_result
 
 
 def test_billboard_rotation():
-    expected_result = """{
-    "image": "file://image.png",
-    "rotation": {
-        "epoch": "2019-06-11T12:26:58.000000Z",
-        "number": [
-            1,
-            2,
-            3
-        ]
+    expected_result = {
+        "image": "file://image.png",
+        "rotation": {"epoch": "2019-06-11T12:26:58.000000Z", "number": [1, 2, 3]},
     }
-}"""
     packet = Billboard(
         image="file://image.png",
         rotation=NumberValue(
@@ -2404,55 +1837,35 @@ def test_billboard_rotation():
             values=[1, 2, 3],
         ),
     )
-    assert str(packet) == expected_result
+    assert packet.to_dict() == expected_result
 
 
 def test_aligned_axis():
-    expected_result = """{
-    "unitCartesian": [
-        0.0,
-        0.0,
-        1.0
-    ]
-}"""
+    expected_result: dict[str, Any] = {"unitCartesian": [0.0, 0.0, 1.0]}
     p = AlignedAxis(unitCartesian=[0.0, 0.0, 1.0])
-    assert str(p) == expected_result
+    assert p.to_dict() == expected_result
 
-    expected_result = """{
-    "unitSpherical": [
-        0.0,
-        1.0,
-        0.0
-    ]
-}"""
+    expected_result = {"unitSpherical": [0.0, 1.0, 0.0]}
     p = AlignedAxis(unitSpherical=[0.0, 1.0, 0.0])
-    assert str(p) == expected_result
+    assert p.to_dict() == expected_result
 
-    expected_result = """{
-    "reference": "object#property"
-}"""
+    expected_result = {"reference": "object#property"}
     p = AlignedAxis(reference="object#property")
-    assert str(p) == expected_result
+    assert p.to_dict() == expected_result
 
-    expected_result = """{
-    "velocityReference": "object#position"
-}"""
+    expected_result = {"velocityReference": "object#position"}
     p = AlignedAxis(velocityReference="object#position")
-    assert str(p) == expected_result
+    assert p.to_dict() == expected_result
 
 
 def test_billboard_aligned_axis():
-    expected_result = """{
-    "image": "file://image.png",
-    "alignedAxis": {
-        "epoch": "2019-06-11T12:26:58.000000Z",
-        "unitCartesian": [
-            1.0,
-            0.0,
-            0.0
-        ]
+    expected_result = {
+        "image": "file://image.png",
+        "alignedAxis": {
+            "epoch": "2019-06-11T12:26:58.000000Z",
+            "unitCartesian": [1.0, 0.0, 0.0],
+        },
     }
-}"""
     packet = Billboard(
         image="file://image.png",
         alignedAxis=AlignedAxis(
@@ -2460,4 +1873,4 @@ def test_billboard_aligned_axis():
             unitCartesian=[1.0, 0.0, 0.0],
         ),
     )
-    assert str(packet) == expected_result
+    assert packet.to_dict() == expected_result

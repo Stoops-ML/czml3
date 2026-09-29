@@ -1,5 +1,6 @@
 import datetime as dt
 from enum import Enum
+from typing import Any
 
 import pytest
 from pydantic import ValidationError
@@ -42,31 +43,27 @@ def test_distance_display_condition_is_invalid():
 
 
 def test_distance_display_condition():
-    expected_result = """[
-    0.0,
-    150.0,
-    15000000.0,
-    300.0,
-    10000.0,
-    15000000.0,
-    600.0,
-    150.0,
-    15000000.0
-]"""
+    expected_result = [
+        0.0,
+        150.0,
+        15000000.0,
+        300.0,
+        10000.0,
+        15000000.0,
+        600.0,
+        150.0,
+        15000000.0,
+    ]
     dist = DistanceDisplayConditionValue(
         values=[0, 150, 15000000, 300, 10000, 15000000, 600, 150, 15000000]
     )
-    assert str(dist) == expected_result
+    assert dist.to_dict() == expected_result
 
 
 def test_cartographic_radian_list():
-    expected_result = """[
-    0.0,
-    1.0,
-    0.0
-]"""
+    expected_result = [0.0, 1.0, 0.0]
     car = CartographicRadiansListValue(values=[0, 1, 0])
-    assert str(car) == expected_result
+    assert car.to_dict() == expected_result
 
 
 def test_invalid_cartograpic_radian_list():
@@ -75,13 +72,9 @@ def test_invalid_cartograpic_radian_list():
 
 
 def test_cartograpic_degree_list():
-    expected_result = """[
-    15.0,
-    25.0,
-    50.0
-]"""
+    expected_result = [15.0, 25.0, 50.0]
     car = CartographicDegreesListValue(values=[15, 25, 50])
-    assert str(car) == expected_result
+    assert car.to_dict() == expected_result
 
 
 def test_invalid_cartograpic_degree_list():
@@ -102,10 +95,10 @@ def test_bad_cartesian2_raises_error(values):
 
 
 def test_reference_value():
-    expected_result = '"id#property"'
+    expected_result = "id#property"
     reference = ReferenceValue(value="id#property")
 
-    assert str(reference) == expected_result
+    assert reference.to_dict() == expected_result
 
 
 def test_invalid_reference_value():
@@ -139,10 +132,10 @@ def test_invalid_reference_list_of_lists_value():
 
 
 def test_font_value():
-    expected_result = '"20px sans-serif"'
+    expected_result = "20px sans-serif"
     font = FontValue(font="20px sans-serif")
 
-    assert str(font) == expected_result
+    assert font.to_dict() == expected_result
 
 
 def test_font_property_value():
@@ -330,24 +323,15 @@ def test_epoch_value():
 
 
 def test_numbers_value():
-    expected_result = """{
-    "number": [
-        1,
-        2,
-        3,
-        4
-    ]
-}"""
+    expected_result: dict[str, Any] = {"number": [1, 2, 3, 4]}
     numbers = NumberValue(values=[1, 2, 3, 4])
 
-    assert str(numbers) == expected_result
+    assert numbers.to_dict() == expected_result
 
-    expected_result = """{
-    "number": 1.0
-}"""
+    expected_result = {"number": 1.0}
     numbers = NumberValue(values=1.0)
 
-    assert str(numbers) == expected_result
+    assert numbers.to_dict() == expected_result
 
     with pytest.raises(ValidationError):
         NumberValue(values="test")  # type: ignore
@@ -362,16 +346,11 @@ def test_quaternion_value_is_invalid():
 
 
 def test_quaternion_value():
-    expected_result = """[
-    0.0,
-    0.0,
-    0.0,
-    1.0
-]"""
+    expected_result = [0.0, 0.0, 0.0, 1.0]
 
     result = UnitQuaternionValue(values=[0, 0, 0, 1])
 
-    assert str(result) == expected_result
+    assert result.to_dict() == expected_result
 
 
 def test_cartographic_radians_value():
@@ -470,25 +449,15 @@ def test_format_datetime_like():
 
 
 def test_reference_list():
-    expected_result = """[
-    "1#this",
-    "1#that"
-]"""
+    expected_result = ["1#this", "1#that"]
     r = ReferenceListValue(values=["1#this", "1#that"])
-    assert expected_result == str(r)
+    assert expected_result == r.to_dict()
 
 
 def test_reference_list_of_lists():
-    expected_result = """[
-    [
-        "1#this"
-    ],
-    [
-        "1#that"
-    ]
-]"""
+    expected_result = [["1#this"], ["1#that"]]
     r = ReferenceListOfListsValue(values=[["1#this"], ["1#that"]])
-    assert expected_result == str(r)
+    assert expected_result == r.to_dict()
 
 
 def test_rgbaf_with_time():

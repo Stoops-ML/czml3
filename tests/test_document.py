@@ -1,8 +1,10 @@
+import ast
 import json
 
 import pytest
 
 from czml3 import CZML_VERSION, Document, Packet
+from czml3.properties import Color, Label
 
 
 def test_document_has_expected_packets():
@@ -16,6 +18,7 @@ def test_document_has_expected_packets():
 
 
 def test_doc_repr():
+    # Intentionally tests formatting: str() is 4-space-indented JSON.
     packet = Packet(id="document", name="name", version=CZML_VERSION)
     expected_result = """[
     {
@@ -31,6 +34,7 @@ def test_doc_repr():
 
 
 def test_doc_dumps():
+    # Intentionally tests formatting: dumps() is compact JSON with no whitespace.
     packet = Packet(id="document", version=CZML_VERSION, name="name")
     expected_result = (
         """[{"id":"document","name":"name","version":"CZML_VERSION"}]""".replace(
@@ -54,3 +58,50 @@ def test_doc_to_dict():
 def test_empty_document():
     with pytest.raises(ValueError):
         Document(packets=[])
+
+
+def test_packet_label():
+    # Intentionally tests formatting: nested 4-space indent, ints vs floats.
+    expected_result = """{
+    "id": "0",
+    "label": {
+        "font": "20px sans-serif",
+        "fillColor": {
+            "rgbaf": [
+                0.2,
+                0.3,
+                0.4,
+                1.0
+            ]
+        },
+        "outlineColor": {
+            "rgba": [
+                0,
+                233,
+                255,
+                2
+            ]
+        },
+        "outlineWidth": 2.0
+    }
+}"""
+    packet = Packet(
+        id="0",
+        label=Label(
+            font="20px sans-serif",
+            fillColor=Color(rgbaf=[0.2, 0.3, 0.4, 1.0]),
+            outlineColor=Color(rgba=[0, 233, 255, 2]),
+            outlineWidth=2.0,
+        ),
+    )
+
+    assert packet == Packet(**ast.literal_eval(expected_result))
+    assert str(packet) == expected_result
+
+
+def test_packet_dumps():
+    # Intentionally tests formatting: dumps() is compact JSON with no whitespace.
+    expected_result = """{"id":"id_00"}"""
+    packet = Packet(id="id_00")
+
+    assert packet.dumps() == expected_result

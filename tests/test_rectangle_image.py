@@ -58,26 +58,19 @@ def test_bad_rectangle_coordinates():
 def test_packet_rectangles(image):
     wsen = [20.0, 40.0, 21.0, 41.0]
 
-    expected_result = """{{
-    "id": "id_00",
-    "rectangle": {{
-        "coordinates": {{
-            "wsenDegrees": [
-                {},
-                {},
-                {},
-                {}
-            ]
-        }},
-        "fill": true,
-        "material": {{
-            "image": {{
-                "image": "data:image/png;base64,{}",
-                "transparent": true
-            }}
-        }}
-    }}
-}}""".format(*wsen, image)
+    expected_result = {
+        "id": "id_00",
+        "rectangle": {
+            "coordinates": {"wsenDegrees": wsen},
+            "fill": True,
+            "material": {
+                "image": {
+                    "image": "data:image/png;base64," + image,
+                    "transparent": True,
+                }
+            },
+        },
+    }
 
     rectangle_packet = Packet(
         id="id_00",
@@ -94,7 +87,7 @@ def test_packet_rectangles(image):
         ),
     )
 
-    assert str(rectangle_packet) == expected_result
+    assert rectangle_packet.to_dict() == expected_result
 
 
 def test_make_czml_png_rectangle_file(image):
