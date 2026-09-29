@@ -585,7 +585,7 @@ class Billboard(BaseCZMLObject):
 
     @field_validator("eyeOffset")
     @classmethod
-    def validate_reference(cls, r):
+    def validate_eye_offset(cls, r):
         if isinstance(r, list):
             return EyeOffset(cartesian=r)
         return r
