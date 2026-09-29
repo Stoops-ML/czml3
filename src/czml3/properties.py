@@ -267,6 +267,10 @@ class ImageMaterial(BaseCZMLObject):
 class Color(BaseCZMLObject, Interpolatable, Deletable):
     """A color. The color can optionally vary over time.
 
+    >>> from czml3.properties import Color
+    >>> Color(rgba=[0, 255, 0, 128]).to_dict()
+    {'rgba': [0, 255, 0, 128]}
+
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Color>`__ for it's definition.
     """
 
@@ -293,6 +297,10 @@ class Color(BaseCZMLObject, Interpolatable, Deletable):
 
 class Position(BaseCZMLObject, Interpolatable, Deletable):
     """Defines a position. The position can optionally vary over time.
+
+    >>> from czml3.properties import Position
+    >>> Position(cartographicDegrees=[34.8, 32.1, 0]).to_dict()
+    {'cartographicDegrees': [34.8, 32.1, 0.0]}
 
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Position>`__ for it's definition.
     """
@@ -377,6 +385,10 @@ class EyeOffset(BaseCZMLObject, Deletable):
 
 class Billboard(BaseCZMLObject):
     """A billboard, or viewport-aligned image. The billboard is positioned in the scene by the position property. A billboard is sometimes called a marker.
+
+    >>> from czml3.properties import Billboard
+    >>> Billboard(image="https://example.com/marker.png", scale=0.5).to_dict()
+    {'image': 'https://example.com/marker.png', 'scale': 0.5}
 
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Billboard>`__ for it's definition.
     """
@@ -528,6 +540,10 @@ class Cylinder(BaseCZMLObject):
 class Ellipse(BaseCZMLObject):
     """An ellipse, which is a close curve, on or above Earth's surface.
 
+    >>> from czml3.properties import Ellipse
+    >>> Ellipse(semiMajorAxis=300.0, semiMinorAxis=200.0).to_dict()
+    {'semiMajorAxis': 300.0, 'semiMinorAxis': 200.0}
+
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Ellipse>`__ for it's definition.
     """
 
@@ -577,6 +593,10 @@ class Ellipse(BaseCZMLObject):
 
 class Polygon(BaseCZMLObject):
     """A polygon, which is a closed figure on the surface of the Earth.
+
+    >>> from czml3.properties import Polygon, PositionList
+    >>> Polygon(positions=PositionList(cartographicDegrees=[34.7, 32.0, 0, 34.9, 32.0, 0, 34.8, 32.2, 0])).to_dict()
+    {'positions': {'cartographicDegrees': [34.7, 32.0, 0.0, 34.9, 32.0, 0.0, 34.8, 32.2, 0.0]}}
 
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Polygon>`__ for it's definition.
     """
@@ -631,6 +651,10 @@ class Polygon(BaseCZMLObject):
 
 class Polyline(BaseCZMLObject):
     """A polyline, which is a line in the scene composed of multiple segments.
+
+    >>> from czml3.properties import Polyline, PositionList
+    >>> Polyline(positions=PositionList(cartographicDegrees=[34.7, 32.0, 0, 34.9, 32.1, 0]), width=3).to_dict()
+    {'positions': {'cartographicDegrees': [34.7, 32.0, 0.0, 34.9, 32.1, 0.0]}, 'width': 3.0}
 
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Polyline>`__ for it's definition.
     """
@@ -819,6 +843,10 @@ class PositionList(BaseCZMLObject, Deletable):
 class Ellipsoid(BaseCZMLObject):
     """A closed quadric surface that is a three-dimensional analogue of an ellipse.
 
+    >>> from czml3.properties import Ellipsoid, EllipsoidRadii
+    >>> Ellipsoid(radii=EllipsoidRadii(cartesian=[100.0, 100.0, 50.0])).to_dict()
+    {'radii': {'cartesian': [100.0, 100.0, 50.0]}}
+
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Ellipsoid>`__ for it's definition.
     """
 
@@ -865,6 +893,10 @@ class Ellipsoid(BaseCZMLObject):
 class Box(BaseCZMLObject):
     """A box, which is a closed rectangular cuboid.
 
+    >>> from czml3.properties import Box, BoxDimensions
+    >>> Box(dimensions=BoxDimensions(cartesian=[10.0, 20.0, 30.0])).to_dict()
+    {'dimensions': {'cartesian': [10.0, 20.0, 30.0]}}
+
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Box>`__ for it's definition.
     """
 
@@ -910,6 +942,10 @@ class BoxDimensions(BaseCZMLObject, Interpolatable, Deletable):
 
 class Rectangle(BaseCZMLObject):
     """A cartographic rectangle, which conforms to the curvature of the globe and can be placed on the surface or at altitude and can optionally be extruded into a volume.
+
+    >>> from czml3.properties import Rectangle, RectangleCoordinates
+    >>> Rectangle(coordinates=RectangleCoordinates(wsenDegrees=[34.7, 32.0, 34.9, 32.2])).to_dict()
+    {'coordinates': {'wsenDegrees': [34.7, 32.0, 34.9, 32.2]}}
 
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Rectangle>`__ for it's definition.
     """
@@ -1012,6 +1048,10 @@ class Clock(BaseCZMLObject):
 class Path(BaseCZMLObject):
     """A path, which is a polyline defined by the motion of an object over time. The possible vertices of the path are specified by the `position` property. Note that because clients cannot render a truly infinite path, the path must be limited, either by defining availability for this object, or by using the `leadTime` and `trailTime` properties.
 
+    >>> from czml3.properties import Path
+    >>> Path(leadTime=0, trailTime=600, width=2).to_dict()
+    {'leadTime': 0.0, 'trailTime': 600.0, 'width': 2.0}
+
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Path>`__ for it's definition.
     """
 
@@ -1035,6 +1075,10 @@ class Path(BaseCZMLObject):
 
 class Point(BaseCZMLObject):
     """A point, or viewport-aligned circle.
+
+    >>> from czml3.properties import Color, Point
+    >>> Point(pixelSize=10, color=Color(rgba=[255, 0, 0, 255])).to_dict()
+    {'pixelSize': 10.0, 'color': {'rgba': [255, 0, 0, 255]}}
 
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Point>`__ for it's definition.
     """
@@ -1152,6 +1196,10 @@ class Tileset(BaseCZMLObject):
 class Wall(BaseCZMLObject):
     """A two-dimensional wall defined as a line strip and optional maximum and minimum heights. It conforms to the curvature of the globe and can be placed along the surface or at altitude.
 
+    >>> from czml3.properties import PositionList, Wall
+    >>> Wall(positions=PositionList(cartographicDegrees=[34.7, 32.0, 100, 34.9, 32.0, 100])).to_dict()
+    {'positions': {'cartographicDegrees': [34.7, 32.0, 100.0, 34.9, 32.0, 100.0]}}
+
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Wall>`__ for it's definition.
     """
 
@@ -1237,6 +1285,10 @@ class LineOffset(BaseCZMLObject, Interpolatable, Deletable):
 class Label(BaseCZMLObject):
     """A string of text.
 
+    >>> from czml3.properties import Label
+    >>> Label(text="Tel Aviv", font="14pt sans-serif").to_dict()
+    {'text': 'Tel Aviv', 'font': '14pt sans-serif'}
+
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Label>`__ for it's definition.
     """
 
@@ -1306,6 +1358,10 @@ class Orientation(BaseCZMLObject, Interpolatable, Deletable):
 
 class Model(BaseCZMLObject):
     """A 3D model.
+
+    >>> from czml3.properties import Model
+    >>> Model(gltf="https://example.com/aircraft.glb", minimumPixelSize=64).to_dict()
+    {'gltf': 'https://example.com/aircraft.glb', 'minimumPixelSize': 64.0}
 
     See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Model>`__ for it's definition.
     """

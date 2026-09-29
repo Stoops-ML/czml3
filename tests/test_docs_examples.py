@@ -30,3 +30,13 @@ def test_docs_example_runs(
     monkeypatch.chdir(tmp_path)  # examples may write files
     with contextlib.redirect_stdout(io.StringIO()):
         exec(compile(code, "docs example", "exec"), {})
+
+
+def test_docstring_examples():
+    import doctest
+
+    import czml3.properties
+
+    result = doctest.testmod(czml3.properties)
+    assert result.attempted >= 14
+    assert result.failed == 0
