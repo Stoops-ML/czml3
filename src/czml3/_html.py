@@ -8,7 +8,7 @@ from typing import Any
 
 #: CesiumJS release loaded by default. The page uses the ``baseLayer`` and
 #: ``terrain`` viewer options, which need CesiumJS 1.107 or later.
-DEFAULT_CESIUM_VERSION = "1.120"
+DEFAULT_CESIUM_VERSION = "1.145"
 
 _CESIUM_URL = "https://cesium.com/downloads/cesiumjs/releases/{version}/Build/Cesium/"
 

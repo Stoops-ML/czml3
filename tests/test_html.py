@@ -41,3 +41,10 @@ def test_save_html(tmp_path):
     path = tmp_path / "scene.html"
     DOC.save_html(path, cesium_version="1.125")
     assert path.read_text(encoding="utf-8") == DOC.to_html(cesium_version="1.125")
+
+
+def test_default_cesium_version_is_used():
+    from czml3._html import DEFAULT_CESIUM_VERSION
+
+    assert DEFAULT_CESIUM_VERSION == "1.145"
+    assert f"releases/{DEFAULT_CESIUM_VERSION}/Build/Cesium/" in DOC.to_html()
