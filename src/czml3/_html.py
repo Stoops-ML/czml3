@@ -85,9 +85,15 @@ def document_html(
 
 
 def iframe_html(page: str, *, height: str = "400px") -> str:
-    """Embed a standalone page in a sandboxed iframe, e.g. for Jupyter output."""
+    """Embed a standalone page in an iframe, e.g. for Jupyter output.
+
+    The iframe keeps the viewer's CSS and globals apart from the host page, but
+    it is deliberately not sandboxed: in a sandboxed (opaque-origin) frame the
+    browser blocks CesiumJS's web workers, so no worker-built geometry
+    (polylines, polygons, boxes, ...) is drawn.
+    """
     return (
         f'<iframe srcdoc="{html.escape(page, quote=True)}" '
-        f'style="width: 100%; height: {html.escape(height)}; border: none;" '
-        'sandbox="allow-scripts"></iframe>'
+        f'style="width: 100%; height: {html.escape(height)}; border: none;">'
+        "</iframe>"
     )

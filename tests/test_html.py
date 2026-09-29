@@ -30,10 +30,11 @@ def test_ion_token_is_embedded_only_when_given():
     assert 'const ionToken = "abc";' in DOC.to_html(ion_token="abc")
 
 
-def test_repr_html_embeds_page_in_sandboxed_iframe():
+def test_repr_html_embeds_page_in_iframe():
     frame = DOC._repr_html_()
     assert frame.startswith("<iframe srcdoc=")
-    assert 'sandbox="allow-scripts"' in frame
+    # A sandboxed frame would block Cesium's web workers.
+    assert "sandbox" not in frame
     assert html.escape(DOC.to_html(), quote=True) in frame
 
 
