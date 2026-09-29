@@ -32,6 +32,23 @@ TYPE_MAPPING = {
 }
 
 
+def _value_key(value: Any) -> str | None:
+    """Return the CZML key for a primitive interval value, or None if unsupported.
+
+    ``isinstance`` rather than an exact type lookup, so subclasses such as
+    ``numpy.float64`` or a ``StrEnum`` member are accepted. ``bool`` is checked
+    before ``int`` by the ordering of ``TYPE_MAPPING``.
+    """
+    for value_type, key in TYPE_MAPPING.items():
+        if isinstance(value, value_type):
+            return key
+    return None
+
+
+def _is_czml_object_list(value: Any) -> bool:
+    return isinstance(value, list) and all(isinstance(v, BaseCZMLObject) for v in value)
+
+
 def get_color(
     color: None | list[int | float], max_val: int | float
 ) -> list[int | float] | None:
@@ -509,19 +526,33 @@ class IntervalValue(BaseCZMLObject):
     end: str | dt.datetime
     value: Any = Field(default=None)
 
+    @model_validator(mode="after")
+    def _check_value(self) -> Self:
+        value = self.value
+        if (
+            value is None
+            or isinstance(value, BaseCZMLObject)
+            or _is_czml_object_list(value)
+            or _value_key(value) is not None
+        ):
+            return self
+        accepted = ", ".join(t.__name__ for t in TYPE_MAPPING)
+        raise ValueError(
+            f"Unsupported interval value of type {type(value).__name__}; expected a CZML object, a list of CZML objects, or one of: {accepted}"
+        )
+
     @model_serializer
     def custom_serializer(self) -> dict[str, Any]:
         obj_dict = {"interval": TimeInterval(start=self.start, end=self.end).to_dict()}
 
         if isinstance(self.value, BaseCZMLObject):
             obj_dict.update(self.value.to_dict())
-        elif isinstance(self.value, list) and all(
-            isinstance(v, BaseCZMLObject) for v in self.value
-        ):
+        elif _is_czml_object_list(self.value):
             for value in self.value:
                 obj_dict.update(value.to_dict())
-        else:
-            key = TYPE_MAPPING[type(self.value)]
+        elif self.value is not None:
+            key = _value_key(self.value)
+            assert key is not None  # guaranteed by _check_value
             obj_dict[key] = self.value
 
         return obj_dict

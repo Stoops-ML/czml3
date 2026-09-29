@@ -1,4 +1,5 @@
 import datetime as dt
+from enum import Enum
 
 import pytest
 from pydantic import ValidationError
@@ -718,3 +719,39 @@ def test_check_values():
 ]"""
         )
     assert "Time values must be increasing." in str(e.value)
+
+
+def test_interval_value_rejects_unsupported_type_at_construction():
+    with pytest.raises(
+        ValidationError, match="Unsupported interval value of type datetime"
+    ):
+        IntervalValue(
+            start="2019-01-01T00:00:00Z",
+            end="2019-01-02T00:00:00Z",
+            value=dt.datetime(2020, 1, 1),
+        )
+
+
+def test_interval_value_accepts_subclasses_of_mapped_types():
+    class Kind(str, Enum):
+        A = "a"
+
+    class Metres(float):
+        pass
+
+    start, end = "2019-01-01T00:00:00Z", "2019-01-02T00:00:00Z"
+    assert IntervalValue(start=start, end=end, value=Kind.A).to_dict() == {
+        "interval": f"{start}/{end}",
+        "string": "a",
+    }
+    assert IntervalValue(start=start, end=end, value=Metres(2.5)).to_dict() == {
+        "interval": f"{start}/{end}",
+        "number": 2.5,
+    }
+
+
+def test_interval_value_without_value_serializes_interval_only():
+    start, end = "2019-01-01T00:00:00Z", "2019-01-02T00:00:00Z"
+    assert IntervalValue(start=start, end=end).to_dict() == {
+        "interval": f"{start}/{end}"
+    }
