@@ -4,6 +4,7 @@ import datetime as dt
 
 from pydantic import BaseModel, field_validator
 
+from ._datetime import format_datetime_like
 from .enums import ExtrapolationTypes, InterpolationAlgorithms
 
 
@@ -36,12 +37,12 @@ class Interpolatable(BaseModel):
 
     @field_validator("epoch")
     @classmethod
-    def check(cls, e):
-        from .types import format_datetime_like
-
-        return format_datetime_like(e)
+    def format_epoch(cls, epoch: None | str | dt.datetime) -> str | None:
+        return format_datetime_like(epoch)
 
 
-from .types import TimeIntervalCollection  # noqa
+# `types` subclasses Interpolatable, so TimeIntervalCollection can only be
+# imported once this module's classes exist; the annotation is then resolved.
+from .types import TimeIntervalCollection  # noqa: E402
 
 Interpolatable.model_rebuild()

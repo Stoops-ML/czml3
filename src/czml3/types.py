@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 import datetime as dt
 import re
 from typing import Any
 
-from dateutil.parser import isoparse as parse_iso_date
 from pydantic import (
     Field,
     field_validator,
@@ -11,9 +12,9 @@ from pydantic import (
 )
 
 from ._compat import Self
+from ._datetime import format_datetime_like as format_datetime_like
 from .base import BaseCZMLObject
 from .common import Deletable, Interpolatable
-from .constants import ISO8601_FORMAT_Z
 from .enums import ExtrapolationTypes, InterpolationAlgorithms  # noqa
 
 TYPE_MAPPING = {
@@ -119,27 +120,6 @@ def check_reference(r: str | None) -> None:
         raise ValueError(
             "Invalid reference string format. Input must be of the form id#property"
         )
-
-
-def format_datetime_like(dt_object: None | str | dt.datetime) -> str | None:
-    if dt_object is None:
-        return dt_object
-
-    elif isinstance(dt_object, str):
-        try:
-            parse_iso_date(dt_object)
-        except Exception as error:
-            raise ValueError(
-                f"{dt_object!r} is not a valid ISO 8601 datetime, e.g. '2019-06-11T12:26:58Z'"
-            ) from error
-        else:
-            return dt_object
-
-    elif isinstance(dt_object, dt.datetime):
-        return dt_object.strftime(ISO8601_FORMAT_Z)
-
-    else:
-        raise ValueError(f"Invalid datetime format: {dt_object}")
 
 
 class FontValue(BaseCZMLObject):
