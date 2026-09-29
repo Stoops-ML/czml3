@@ -1,3 +1,34 @@
+# v3.3.1
+
+* Fix `NumberValue` serialization when the parent model serializes by alias
+* Remove properties that are not in the CZML specification
+* Remove the `epoch` tests for `PositionList`, which has no `epoch`
+
+# v3.3.0
+
+* Add `LineOffset`
+* Add `AlignedAxis` to `Billboard`
+* Add missing `Label` fields
+* Add extrapolation fields to interpolatable properties
+* `NumberValue` implements `Interpolatable` and `Deletable`; float fields accept `NumberValue`, enabling interpolation
+* `ArcType` accepts enum values directly, and validates string values
+* Extend the `IntervalValue` type mapping, including strings and lists of CZML objects
+* Allow `RgbaValue` to serialize as integers
+* Fix serialization of reference values for `Uri` properties
+* Fully implement `Uri` validation, including raw base64 data URIs
+* `Document()` requires at least one packet
+* Add `BaseCZMLObject.to_dict()`
+* Stricter mypy configuration and typing fixes
+* Fix circular imports and a deprecation warning
+* Update documentation
+
+# v3.2.0
+
+* Add `Rotation` property; `Billboard.rotation` accepts `Rotation` and `NumberValue`
+* Add `epoch` to `NumberValue`
+* `Orientation.unitQuaternion` converts lists to `UnitQuaternionValue` automatically
+* Remove default values from `TimeInterval()`
+
 # v3.1.0
 
 * Support Python 3.14
