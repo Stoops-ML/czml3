@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+import pathlib
 from typing import Any
 from uuid import uuid4
 
@@ -135,3 +137,22 @@ class Document(BaseCZMLObject):
     @model_serializer
     def custom_serializer(self) -> list[Packet]:
         return list(self.packets)
+
+    def save(self, path: str | os.PathLike[str], *, indent: int | None = 4) -> None:
+        """Write the document to a CZML file.
+
+        :param path: The file to write, conventionally with a ``.czml`` suffix.
+        :param indent: Number of spaces to indent by, or ``None`` for compact output.
+        """
+        pathlib.Path(path).write_text(
+            self.model_dump_json(exclude_none=True, indent=indent), encoding="utf-8"
+        )
+
+    @classmethod
+    def load(cls, path: str | os.PathLike[str]) -> Document:
+        """Read a document from a CZML file.
+
+        :param path: The CZML file to read.
+        :return: The validated document.
+        """
+        return cls.model_validate_json(pathlib.Path(path).read_text(encoding="utf-8"))

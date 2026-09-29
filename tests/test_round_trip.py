@@ -2,6 +2,7 @@
 
 import datetime as dt
 import json
+import pathlib
 
 import pytest
 
@@ -109,3 +110,13 @@ def test_interval_value_keeps_czml_properties_as_dict() -> None:
 def test_time_interval_rejects_string_without_separator() -> None:
     with pytest.raises(ValueError, match="not an ISO 8601 interval"):
         TimeInterval.model_validate("2012-03-15T10:00:00Z")
+
+
+@pytest.mark.parametrize("indent", [4, None])
+def test_save_and_load(tmp_path: pathlib.Path, indent: int | None) -> None:
+    path = tmp_path / "scene.czml"
+    INTERVALS.save(path, indent=indent)
+
+    text = path.read_text(encoding="utf-8")
+    assert ("\n" in text) == (indent is not None)
+    assert json.loads(Document.load(path).dumps()) == json.loads(INTERVALS.dumps())
