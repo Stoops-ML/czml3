@@ -132,3 +132,15 @@ def test_epoch_value_reads_serialized_form() -> None:
 
     serialized = {"epoch": "2012-03-15T10:00:00Z"}
     assert EpochValue.model_validate(serialized).to_dict() == serialized
+
+
+def test_billboard_pixel_offset_accepts_cartesian2_value() -> None:
+    billboard = Billboard(
+        image="https://example.com/icon.png", pixelOffset=Cartesian2Value(values=[1, 2])
+    )
+    assert billboard.to_dict()["pixelOffset"] == {"cartesian2": [1.0, 2.0]}
+    assert Billboard.model_validate(billboard.to_dict()) == billboard
+    # a plain list is still written as a plain list
+    assert Billboard(
+        image="https://example.com/icon.png", pixelOffset=[1, 2]
+    ).to_dict()["pixelOffset"] == [1.0, 2.0]

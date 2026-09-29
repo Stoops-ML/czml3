@@ -399,7 +399,7 @@ class Billboard(BaseCZMLObject):
     """The URI of the image displayed on the billboard. For broadest client compatibility, the URI should be accessible via Cross-Origin Resource Sharing (CORS). The URI may also be a data URI. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Uri>`__ for it's definition."""
     scale: None | float | NumberValue | TimeIntervalCollection = None
     """The scale of the billboard. The scale is multiplied with the pixel size of the billboard's image. For example, if the scale is 2.0, the billboard will be rendered with twice the number of pixels, in each direction, of the image."""
-    pixelOffset: None | list[float] | TimeIntervalCollection = None
+    pixelOffset: None | Cartesian2Value | list[float] | TimeIntervalCollection = None
     """The offset, in viewport pixels, of the billboard origin from the position. A pixel offset is the number of pixels up and to the right to place the billboard, relative to the position. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/PixelOffset>`__ for it's definition."""
     eyeOffset: None | EyeOffset | list[float] | TimeIntervalCollection = None
     """The eye offset of the billboard, which is the offset in eye coordinates at which to place the billboard relative to the position property. Eye coordinates are a left-handed coordinate system where the X-axis points toward the viewer's right, the Y-axis points up, and the Z-axis points into the screen. See `here <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/EyeOffset>`__ for it's definition."""
