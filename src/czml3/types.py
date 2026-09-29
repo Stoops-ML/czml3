@@ -15,7 +15,10 @@ from ._compat import Self
 from ._datetime import format_datetime_like as format_datetime_like
 from .base import BaseCZMLObject
 from .common import Deletable, Interpolatable
-from .enums import ExtrapolationTypes, InterpolationAlgorithms  # noqa
+
+# Not used directly: pydantic resolves the string annotations that NumberValue
+# inherits from Interpolatable in this module's namespace, so they must be here.
+from .enums import ExtrapolationTypes, InterpolationAlgorithms  # noqa: F401
 
 TYPE_MAPPING = {
     bool: "boolean",
