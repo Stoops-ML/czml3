@@ -17,7 +17,6 @@ Run the test suite with ``python -m pytest``.
 
 Missing CZML Properties
 -----------------------
-* `LineOffset <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/LineOffset>`_
 * `LineThickness <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/LineThickness>`_
 * `LineCount <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/LineCount>`_
 * `CartographicRectangleRadiansValue <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/CartographicRectangleRadiansValue>`_

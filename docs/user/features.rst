@@ -11,14 +11,14 @@ Inputs to classes are type checked, which ensures that the data is in the correc
 Coercion of Data
 -----------------
 
-Inputted data that is not of the specified type in the class is `coerced to their right type <https://docs.pydantic.dev/latest/why/#json-schema>`_. See Example 2 in  :ref:`examples-label`.
+Inputted data that is not of the specified type in the class is `coerced to their right type <https://docs.pydantic.dev/latest/why/#json-schema>`_. See the coercion example in :ref:`examples-label`.
 
 Forbid Unrecognised Properties
 ------------------------------
 
 Unrecognised inputs to classes are forbidden, which ensures the CZML document contains only recognised and valid fields.
 
-If a valid property of a ``czml3`` class is missing then please `open an issue <https://github.com/Stoops-ML/czml3/issues>`_.
+CZML properties that ``czml3`` does not support yet are listed in :doc:`contributing`. If a valid property of a ``czml3`` class is missing then please `open an issue <https://github.com/Stoops-ML/czml3/issues>`_.
 
 Readable Error Messages
 -----------------------
