@@ -514,6 +514,7 @@ simple = Document(
             description=AGI_DESCRIPTION,
             billboard=Billboard(
                 eyeOffset=EyeOffset(cartesian=[0, 0, 0]),
+                pixelOffset=Cartesian2Value(values=[0, 0]),
                 horizontalOrigin=HorizontalOrigins.CENTER,
                 image=(
                     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/"
@@ -551,6 +552,7 @@ simple = Document(
             description=GEOEYE1_DESCRIPTION,
             billboard=Billboard(
                 eyeOffset=EyeOffset(cartesian=[0, 0, 0]),
+                pixelOffset=Cartesian2Value(values=[0, 0]),
                 horizontalOrigin=HorizontalOrigins.CENTER,
                 image=(
                     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9"
