@@ -1,5 +1,14 @@
 # Unreleased
 
+* Add `Document.save()` / `Document.load()`, and make documents written by czml3 read back with `Document.model_validate_json()` (including `TimeInterval`, `TimeIntervalCollection`, `IntervalValue`, `Cartesian2Value`, `EpochValue` and `NumberValue` in their serialized forms)
+* Add `Document.to_html()` / `save_html()` and inline display of a `Document` in Jupyter, using CesiumJS 1.120 by default; `CZMLWidget` remains deprecated
+* `Document` adds a default preamble packet when none is given
+* Re-export the common property and interval classes from the top-level `czml3` package
+* `repr()` shows only the properties that are set
+* `IntervalValue` validates its value, start and end at construction instead of failing at serialization
+* Mutual-exclusion error messages now name every alternative (e.g. `Position` now lists `cartesianVelocity`)
+* Restore `czml3.__version__`
+* Drop the unused `setuptools-scm` build requirement and declare the licence as a PEP 639 SPDX expression (`BSD-3-Clause`)
 * Timezone-naive datetimes emit a `czml3.NaiveDatetimeWarning` and are treated as UTC. Pass aware datetimes (e.g. `tzinfo=datetime.timezone.utc`) to silence it.
 * **Fix:** timezone-aware datetimes are converted to UTC before formatting; previously a non-UTC time was written with its local clock time and a `Z` suffix.
 * **Breaking:** custom validation checks now raise `pydantic.ValidationError` (via `ValueError`) instead of a raw `TypeError`, so they are caught by `except ValidationError` and get readable error messages. Code catching `TypeError` must catch `ValidationError` instead.
