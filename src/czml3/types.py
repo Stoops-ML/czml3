@@ -5,6 +5,7 @@ import re
 from typing import Any
 
 from pydantic import (
+    AliasChoices,
     Field,
     field_validator,
     model_serializer,
@@ -42,6 +43,16 @@ def _value_key(value: Any) -> str | None:
         if isinstance(value, value_type):
             return key
     return None
+
+
+def _split_interval(interval: str) -> dict[str, str]:
+    """Split a serialized ``start/end`` ISO 8601 interval into its two times."""
+    start, separator, end = interval.partition("/")
+    if not separator:
+        raise ValueError(
+            f"{interval!r} is not an ISO 8601 interval of the form 'start/end'"
+        )
+    return {"start": start, "end": end}
 
 
 def _is_czml_object_list(value: Any) -> bool:
@@ -296,6 +307,14 @@ class Cartesian2Value(BaseCZMLObject):
 
     values: list[float]
 
+    @model_validator(mode="before")
+    @classmethod
+    def parse_serialized_form(cls, data: Any) -> Any:
+        """Accept the serialized ``{"cartesian2": [...]}`` form."""
+        if isinstance(data, dict) and set(data) == {"cartesian2"}:
+            return {"values": data["cartesian2"]}
+        return data
+
     @model_validator(mode="after")
     def _check_values(self) -> Self:
         check_values(2, self.values)
@@ -487,6 +506,12 @@ class TimeInterval(BaseCZMLObject):
     start: str | dt.datetime
     end: str | dt.datetime
 
+    @model_validator(mode="before")
+    @classmethod
+    def parse_interval_string(cls, data: Any) -> Any:
+        """Accept the serialized ``start/end`` form."""
+        return _split_interval(data) if isinstance(data, str) else data
+
     @field_validator("start", "end")
     @classmethod
     def format_time(cls, time: str | dt.datetime) -> str | None:
@@ -504,6 +529,20 @@ class IntervalValue(BaseCZMLObject):
     end: str | dt.datetime
     value: Any = None
 
+    @model_validator(mode="before")
+    @classmethod
+    def parse_serialized_form(cls, data: Any) -> Any:
+        """Accept the serialized ``{"interval": "start/end", <key>: value}`` form."""
+        if not (isinstance(data, dict) and "interval" in data):
+            return data
+        rest = {key: value for key, value in data.items() if key != "interval"}
+        parsed: dict[str, Any] = _split_interval(data["interval"])
+        if len(rest) == 1 and next(iter(rest)) in set(TYPE_MAPPING.values()):
+            parsed["value"] = next(iter(rest.values()))
+        elif rest:
+            parsed["value"] = rest
+        return parsed
+
     @field_validator("start", "end")
     @classmethod
     def format_time(cls, time: str | dt.datetime) -> str | None:
@@ -516,12 +555,13 @@ class IntervalValue(BaseCZMLObject):
             value is None
             or isinstance(value, BaseCZMLObject)
             or _is_czml_object_list(value)
+            or isinstance(value, dict)
             or _value_key(value) is not None
         ):
             return self
         accepted = ", ".join(t.__name__ for t in TYPE_MAPPING)
         raise ValueError(
-            f"Unsupported interval value of type {type(value).__name__}; expected a CZML object, a list of CZML objects, or one of: {accepted}"
+            f"Unsupported interval value of type {type(value).__name__}; expected a CZML object, a list of CZML objects, a dict of CZML properties, or one of: {accepted}"
         )
 
     @model_serializer
@@ -533,6 +573,8 @@ class IntervalValue(BaseCZMLObject):
         elif _is_czml_object_list(self.value):
             for value in self.value:
                 obj_dict.update(value.to_dict())
+        elif isinstance(self.value, dict):
+            obj_dict.update(self.value)
         elif self.value is not None:
             key = _value_key(self.value)
             assert key is not None  # guaranteed by _check_value
@@ -548,6 +590,12 @@ class TimeIntervalCollection(BaseCZMLObject):
     """
 
     values: list[TimeInterval] | list[IntervalValue]
+
+    @model_validator(mode="before")
+    @classmethod
+    def parse_interval_list(cls, data: Any) -> Any:
+        """Accept the serialized form, a bare list of intervals."""
+        return {"values": data} if isinstance(data, list) else data
 
     @model_serializer
     def custom_serializer(self) -> list[Any]:
@@ -632,6 +680,14 @@ class EpochValue(BaseCZMLObject):
 
     value: str | dt.datetime
 
+    @model_validator(mode="before")
+    @classmethod
+    def parse_serialized_form(cls, data: Any) -> Any:
+        """Accept the serialized ``{"epoch": ...}`` form."""
+        if isinstance(data, dict) and set(data) == {"epoch"}:
+            return {"value": data["epoch"]}
+        return data
+
     @model_serializer
     def custom_serializer(self) -> dict[str, str | None]:
         return {"epoch": format_datetime_like(self.value)}
@@ -641,7 +697,9 @@ class NumberValue(BaseCZMLObject, Interpolatable, Deletable):
     """A single number, or a list of number pairs signifying the time and representative value."""
 
     number: int | float | list[int] | list[float] | list[int | float] = Field(
-        alias="values", serialization_alias="number"
+        alias="values",
+        validation_alias=AliasChoices("values", "number"),
+        serialization_alias="number",
     )
     """The numerical value or values."""
 

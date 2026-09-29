@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 from uuid import uuid4
 
-from pydantic import Field, field_validator, model_serializer
+from pydantic import Field, field_validator, model_serializer, model_validator
 
 from .base import BaseCZMLObject
 from .properties import (
@@ -107,6 +107,12 @@ class Document(BaseCZMLObject):
     """A CZML document, consisting on a list of packets."""
 
     packets: list[Packet]
+
+    @model_validator(mode="before")
+    @classmethod
+    def wrap_packet_list(cls, data: Any) -> Any:
+        """Accept a bare list of packets, which is how a document is serialized."""
+        return {"packets": data} if isinstance(data, list) else data
 
     @field_validator("packets")
     @classmethod
