@@ -502,7 +502,7 @@ class IntervalValue(BaseCZMLObject):
 
     start: str | dt.datetime
     end: str | dt.datetime
-    value: Any = Field(default=None)
+    value: Any = None
 
     @model_validator(mode="after")
     def _check_value(self) -> Self:
