@@ -3,7 +3,7 @@ from pydantic import ValidationError
 
 from czml3 import Document, Packet
 from czml3.errors import humanise_validation_error
-from czml3.properties import Billboard, Label, Point, Position
+from czml3.properties import Billboard, Color, Label, Point, Position
 from czml3.types import TimeInterval
 
 
@@ -186,3 +186,11 @@ def test_humanise_validation_error_is_reusable_on_its_own():
         humanised = humanise_validation_error(error, Point)
         assert humanised.error_count() == 1
         assert humanised.title == "Point"
+
+
+def test_custom_validator_errors_are_validation_errors():
+    # Custom checks used to raise TypeError, which pydantic does not wrap, so
+    # they escaped `except ValidationError` and the readable error rendering.
+
+    with pytest.raises(ValidationError, match="Only one of rgba, rgbaf or reference"):
+        Color(rgba=[1, 2, 3, 4], rgbaf=[0.1, 0.2, 0.3, 0.4])

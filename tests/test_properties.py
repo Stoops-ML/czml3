@@ -441,32 +441,32 @@ def test_colors_rgbaf():
 
 
 def test_color_invalid_colors_rgba():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Color(rgba=[256, 204, 0, 55])
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Color(rgba=[-204, 0, 55])
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Color(rgba=[255, 204])
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Color(rgba=[255, 232, 300])
     with pytest.raises(ValidationError):
         Color(rgba=-3)  # type: ignore
 
 
 def test_color_invalid_colors_rgbaf():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Color(rgbaf=[256, 204, 0, 55])
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Color(rgbaf=[-204, 0, 55])
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Color(rgbaf=[255, 204])
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Color(rgbaf=[255, 232, 300])
     with pytest.raises(ValidationError):
         Color(rgbaf=-3)  # type: ignore
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Color(rgbaf=[255, 204, 55, 255, 42])
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Color(rgbaf=[0.127568, 0.566949, 0.550556, 1.0, 3.0])
 
 
@@ -677,7 +677,9 @@ def test_aligned_axis_has_delete():
 
 
 def test_aligned_axis_has_one_property():
-    with pytest.raises(TypeError, match="Only one of unit or reference must be given"):
+    with pytest.raises(
+        ValidationError, match="Only one of unit or reference must be given"
+    ):
         AlignedAxis(
             unitCartesian=[1, 0, 0],
             velocityReference="this#that",
@@ -695,7 +697,7 @@ def test_rotation_has_delete():
 
 def test_rotation_has_one_property():
     with pytest.raises(
-        TypeError, match="Only one of unitQuaternion or reference must be given"
+        ValidationError, match="Only one of unitQuaternion or reference must be given"
     ):
         Rotation(reference="this#that", unitQuaternion=[0, 0, 0, 0])
 
@@ -711,7 +713,7 @@ def test_line_offset_has_delete():
 
 def test_line_offset_has_one_property():
     with pytest.raises(
-        TypeError, match="Only one of cartesian2 or reference must be given"
+        ValidationError, match="Only one of cartesian2 or reference must be given"
     ):
         LineOffset(reference="this#that", cartesian2=[0, 0])
 
@@ -737,7 +739,7 @@ def test_position_list_of_lists_has_delete():
 
 
 def test_position_no_values_raises_error():
-    with pytest.raises(TypeError) as exc:
+    with pytest.raises(ValidationError) as exc:
         Position()
 
     assert (
@@ -747,7 +749,7 @@ def test_position_no_values_raises_error():
 
 
 def test_position_list_of_lists_no_values_raises_error():
-    with pytest.raises(TypeError) as exc:
+    with pytest.raises(ValidationError) as exc:
         PositionListOfLists()
 
     assert (
@@ -757,7 +759,7 @@ def test_position_list_of_lists_no_values_raises_error():
 
 
 def test_position_list_no_values_raises_error():
-    with pytest.raises(TypeError) as exc:
+    with pytest.raises(ValidationError) as exc:
         PositionList()
 
     assert (
@@ -1056,7 +1058,7 @@ def test_model():
 
 
 def test_bad_uri_raises_error():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Uri(uri="a")
 
 
@@ -1069,7 +1071,7 @@ def test_bad_uri_raises_error():
     ],
 )
 def test_bad_data_uri_raises_error(uri):
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Uri(uri=uri)
 
 
@@ -1520,93 +1522,93 @@ def test_different_positions():
 
 
 def test_positionlist_bad_cartesian():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         PositionList(cartesian=[0, 0, 0, 0, 0])
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         PositionList(cartesian=[0, 0])
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         PositionList(cartesian=[0])
     with pytest.raises(ValueError):
         PositionList(cartesian=[])
 
 
 def test_positionlist_bad_cartographicRadians():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         PositionList(cartographicRadians=[0, 0, 0, 0, 0])
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         PositionList(cartographicRadians=[0, 0])
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         PositionList(cartographicRadians=[0])
     with pytest.raises(ValueError):
         PositionList(cartographicRadians=[])
 
 
 def test_positionlist_bad_cartographicDegrees():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         PositionList(cartographicDegrees=[0, 0, 0, 0, 0])
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         PositionList(cartographicDegrees=[0, 0])
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         PositionList(cartographicDegrees=[0])
     with pytest.raises(ValueError):
         PositionList(cartographicDegrees=[])
 
 
 def test_position_bad_cartesian():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Position(cartesian=[0, 0])
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Position(cartesian=[0])
     with pytest.raises(ValueError):
         Position(cartesian=[])
 
 
 def test_position_bad_cartographicRadians():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Position(cartographicRadians=[0, 0])
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Position(cartographicRadians=[0])
     with pytest.raises(ValueError):
         Position(cartographicRadians=[])
 
 
 def test_position_bad_cartographicDegrees():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Position(cartographicDegrees=[0, 0])
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Position(cartographicDegrees=[0])
     with pytest.raises(ValueError):
         Position(cartographicDegrees=[])
 
 
 def test_position_bad_cartesianVelocity():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Position(cartesianVelocity=[0, 0, 0, 0])
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Position(cartesianVelocity=[0, 0])
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Position(cartesianVelocity=[0])
     with pytest.raises(ValueError):
         Position(cartesianVelocity=[])
 
 
 def test_position_bad_multipleTypes():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Position(cartesian=[0], reference=ReferenceValue(value="1#this"))
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Position(cartographicRadians=[0], reference=ReferenceValue(value="1#this"))
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Position(cartographicDegrees=[0], reference=ReferenceValue(value="1#this"))
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Position(cartesianVelocity=[0], reference=ReferenceValue(value="1#this"))
 
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Position(cartesian=[0], reference="1#this")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Position(cartographicRadians=[0], reference="1#this")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Position(cartographicDegrees=[0], reference="1#this")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Position(cartesianVelocity=[0], reference="1#this")
 
 
@@ -1633,7 +1635,7 @@ def test_SequenceTime_mix():
 
 
 def test_bad_PositionListOfLists():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         PositionListOfLists(
             cartographicDegrees=[[20.0, 20.0, 0.0], [10.0, 10.0, 0.0, 0]]
         )
@@ -1644,18 +1646,18 @@ def test_bad_PositionListOfLists():
 
 
 def test_bad_PositionList():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         PositionList(cartographicDegrees=[10.0, 10.0, 0.0, 0])
     with pytest.raises(ValidationError):
         PositionList(cartographicDegrees=[])
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         PositionList(cartographicDegrees=[0, 0, 0, 0, 0])
 
 
 def test_bad_Position():
     with pytest.raises(ValidationError):
         Position(cartographicDegrees=[])
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Position(cartographicDegrees=[0, 0, 0, 0, 0])
 
 
@@ -1726,7 +1728,7 @@ def test_position_list_with_references():
 
 
 def test_position_list_with_references_extra_arguments():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         PositionList(
             references=ReferenceListValue(values=["1#this"]),
             cartesian=[0, 0, 0],
@@ -1734,7 +1736,7 @@ def test_position_list_with_references_extra_arguments():
 
 
 def test_position_list_with_bad_references():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         PositionList(
             cartographicDegrees=CartographicDegreesListValue(values=[20, 30, 10]),
             references=["1#this", "1#this"],
@@ -1814,14 +1816,14 @@ def test_position_list_of_lists_with_references():
 
 
 def test_position_list_of_lists_with_bad_references():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         PositionListOfLists(
             cartographicDegrees=CartographicDegreesListOfListsValue(
                 values=[[20, 30, 10], [20, 30, 10]]
             ),
             references=[["1#this"], ["1#this"], ["2#this"]],
         )
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         PositionListOfLists(
             cartographicDegrees=CartographicDegreesListOfListsValue(
                 values=[[20, 30, 10], [20, 30, 10]]
@@ -1833,7 +1835,7 @@ def test_position_list_of_lists_with_bad_references():
 
 
 def test_check_increasing_time():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Cartesian3Value(values=[0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0])
 
 
@@ -1948,19 +1950,19 @@ def test_forbid_extras():
 
 
 def test_bad_color():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Color(rgba=[0, 0, 0, 0], rgbaf=[0, 0, 0, 0])
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Color(rgba=[0, 0, 0, 0], reference="this#that")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Color(rgba=[0, 0, 0, 0], reference=ReferenceValue(value="this#that"))
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Color(rgbaf=[0, 0, 0, 0], reference="this#that")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Color(rgbaf=[0, 0, 0, 0], reference=ReferenceValue(value="this#that"))
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Color(rgbaf=[0, 0, 0, 0], rgba=[0, 0, 0, 0], reference="this#that")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Color(
             rgbaf=[0, 0, 0, 0],
             rgba=[0, 0, 0, 0],
@@ -1969,32 +1971,32 @@ def test_bad_color():
 
 
 def test_bad_EllipsoidRadii():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         EllipsoidRadii(cartesian=[0, 0, 0], reference="this#that")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         EllipsoidRadii(cartesian=[0, 0, 0], reference=ReferenceValue(value="this#that"))
 
 
 def test_bad_ArcType():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         ArcType(arcType=ArcTypes.GEODESIC, reference="this#that")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         ArcType(arcType=ArcTypes.GEODESIC, reference=ReferenceValue(value="this#that"))
 
 
 def test_bad_ShadowMode():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         ShadowMode(shadowMode=ShadowModes.DISABLED, reference="this#that")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         ShadowMode(
             shadowMode=ShadowModes.DISABLED, reference=ReferenceValue(value="this#that")
         )
 
 
 def test_bad_HeightReference():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         HeightReference(heightReference=HeightReferences.NONE, reference="this#that")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         HeightReference(
             heightReference=HeightReferences.NONE,
             reference=ReferenceValue(value="this#that"),
@@ -2002,9 +2004,9 @@ def test_bad_HeightReference():
 
 
 def test_bad_ColorBlendMode():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         ColorBlendMode(colorBlendMode=ColorBlendModes.HIGHLIGHT, reference="this#that")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         ColorBlendMode(
             colorBlendMode=ColorBlendModes.HIGHLIGHT,
             reference=ReferenceValue(value="this#that"),
@@ -2012,21 +2014,21 @@ def test_bad_ColorBlendMode():
 
 
 def test_bad_CornerType():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         CornerType(cornerType=CornerTypes.BEVELED, reference="this#that")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         CornerType(
             cornerType=CornerTypes.BEVELED, reference=ReferenceValue(value="this#that")
         )
 
 
 def test_bad_DistanceDisplayCondition():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         DistanceDisplayCondition(
             distanceDisplayCondition=DistanceDisplayConditionValue(values=[14, 81]),
             reference="this#that",
         )
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         DistanceDisplayCondition(
             distanceDisplayCondition=DistanceDisplayConditionValue(values=[14, 81]),
             reference=ReferenceValue(value="this#that"),
@@ -2034,34 +2036,34 @@ def test_bad_DistanceDisplayCondition():
 
 
 def test_bad_BoxDimensions():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         BoxDimensions(cartesian=[14, 81, 0], reference="this#that")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         BoxDimensions(
             cartesian=[14, 81, 0], reference=ReferenceValue(value="this#that")
         )
 
 
 def test_bad_EyeOffset():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         EyeOffset(cartesian=[14, 81, 0], reference="this#that")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         EyeOffset(cartesian=[14, 81, 0], reference=ReferenceValue(value="this#that"))
 
 
 def test_bad_Orientation():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Orientation(unitQuaternion=[14, 0, 81, 0], reference="this#that")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Orientation(
             unitQuaternion=[14, 0, 81, 0], reference=ReferenceValue(value="this#that")
         )
 
 
 def test_bad_Uri():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Uri(uri="https://site.com/image.png", reference="this#that")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Uri(
             uri="https://site.com/image.png",
             reference=ReferenceValue(value="this#that"),
@@ -2069,12 +2071,12 @@ def test_bad_Uri():
 
 
 def test_bad_NearFarScalar():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         NearFarScalar(
             nearFarScalar=NearFarScalarValue(values=[350, 2.0, 15000000, 0.5]),
             reference="this#that",
         )
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         NearFarScalar(
             nearFarScalar=NearFarScalarValue(values=[350, 2.0, 15000000, 0.5]),
             reference=ReferenceValue(value="this#that"),
@@ -2082,34 +2084,34 @@ def test_bad_NearFarScalar():
 
 
 def test_bad_RectangleCoordinates():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         RectangleCoordinates(wsen=[81, 0], wsenDegrees=[81, 0], reference="this#that")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         RectangleCoordinates(
             wsen=[81, 0],
             wsenDegrees=[81, 0],
             reference=ReferenceValue(value="this#that"),
         )
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         RectangleCoordinates(wsen=[81, 0], wsenDegrees=[81, 0])
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         RectangleCoordinates(wsenDegrees=[81, 0], reference="this#that")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         RectangleCoordinates(
             wsenDegrees=[81, 0], reference=ReferenceValue(value="this#that")
         )
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         RectangleCoordinates(wsen=[81, 0], reference="this#that")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         RectangleCoordinates(wsen=[81, 0], reference=ReferenceValue(value="this#that"))
 
 
 def test_bad_ClassificationType():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         ClassificationType(
             classificationType=ClassificationTypes.BOTH, reference="this#that"
         )
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         ClassificationType(
             classificationType=ClassificationTypes.BOTH,
             reference=ReferenceValue(value="this#that"),

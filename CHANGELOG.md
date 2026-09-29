@@ -1,3 +1,7 @@
+# Unreleased
+
+* **Breaking:** custom validation checks now raise `pydantic.ValidationError` (via `ValueError`) instead of a raw `TypeError`, so they are caught by `except ValidationError` and get readable error messages. Code catching `TypeError` must catch `ValidationError` instead.
+
 # v3.3.1
 
 * Fix `NumberValue` serialization when the parent model serializes by alias

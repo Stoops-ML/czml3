@@ -29,12 +29,12 @@ from czml3.types import (
 
 
 def test_invalid_near_far_scalar_value():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         NearFarScalarValue(values=[0, 3.2, 1, 4, 2, 1, 0])
 
 
 def test_distance_display_condition_is_invalid():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         DistanceDisplayConditionValue(
             values=[0, 150, 15000000, 300, 10000, 15000000, 600]
         )
@@ -69,7 +69,7 @@ def test_cartographic_radian_list():
 
 
 def test_invalid_cartograpic_radian_list():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         CartographicRadiansListValue(values=[1])
 
 
@@ -84,19 +84,19 @@ def test_cartograpic_degree_list():
 
 
 def test_invalid_cartograpic_degree_list():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         CartographicDegreesListValue(values=[15, 25, 50, 30])
 
 
 @pytest.mark.parametrize("values", [[2, 2], [5, 5, 5, 5, 5]])
 def test_bad_cartesian3_raises_error(values):
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Cartesian3Value(values=values)
 
 
 @pytest.mark.parametrize("values", [[2, 2, 2, 2, 2], [5, 5, 5, 5, 5]])
 def test_bad_cartesian2_raises_error(values):
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Cartesian2Value(values=values)
 
 
@@ -108,7 +108,7 @@ def test_reference_value():
 
 
 def test_invalid_reference_value():
-    with pytest.raises(TypeError) as excinfo:
+    with pytest.raises(ValidationError) as excinfo:
         ReferenceValue(value="id")
 
     assert (
@@ -118,7 +118,7 @@ def test_invalid_reference_value():
 
 
 def test_invalid_reference_list_value():
-    with pytest.raises(TypeError) as excinfo:
+    with pytest.raises(ValidationError) as excinfo:
         ReferenceListValue(values=["id"])
 
     assert (
@@ -128,7 +128,7 @@ def test_invalid_reference_list_value():
 
 
 def test_invalid_reference_list_of_lists_value():
-    with pytest.raises(TypeError) as excinfo:
+    with pytest.raises(ValidationError) as excinfo:
         ReferenceListOfListsValue(values=[["id"]])
 
     assert (
@@ -152,22 +152,22 @@ def test_font_property_value():
 
 
 def test_bad_rgba_4_values_raises_error():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         RgbaValue(values=[256, 0, 0, 255])
 
 
 def test_bad_rgba_5_color_values_raises_error():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         RgbaValue(values=[0, 0.1, 0.3, 0.3, 256])
 
 
 def test_bad_rgbaf_4_values_raises_error():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         RgbafValue(values=[0.3, 0, 0, 1.4])
 
 
 def test_bad_rgbaf_5_color_values_raises_error():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         RgbafValue(values=[0, 0.1, 0.3, 0.3, 255])
 
 
@@ -356,7 +356,7 @@ def test_numbers_value():
 
 
 def test_quaternion_value_is_invalid():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         UnitQuaternionValue(values=[0, 0, 0, 1, 0, 0])
 
 
@@ -393,7 +393,7 @@ def test_cartographic_radians_value():
     1.0
 ]"""
     )
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         CartographicRadiansValue(values=[0, 0, 1, 1, 1, 1, 1])
 
 
@@ -417,7 +417,7 @@ def test_cartographic_degrees_value():
     1.0
 ]"""
     )
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         CartographicDegreesValue(values=[0, 0, 1, 1, 1, 1, 1])
 
 
@@ -446,7 +446,7 @@ def test_rgbaf_value():
 
 
 def test_check_reference():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         check_reference("thisthat")
     check_reference("this#that")
     check_reference(None)
@@ -464,7 +464,7 @@ def test_format_datetime_like():
     )
     with pytest.raises(ValueError):
         format_datetime_like("test")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         format_datetime_like(1)  # type: ignore[arg-type]
 
 
@@ -678,7 +678,7 @@ def test_check_values():
     )
 
     # Test for when time values are not increasing but data is sized properly
-    with pytest.raises(TypeError) as e:
+    with pytest.raises(ValidationError) as e:
         assert (
             str(
                 Cartesian3VelocityValue(
@@ -717,4 +717,4 @@ def test_check_values():
     3.0
 ]"""
         )
-    assert str(e.value) == "Time values must be increasing."
+    assert "Time values must be increasing." in str(e.value)

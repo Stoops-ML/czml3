@@ -104,7 +104,7 @@ class AlignedAxis(BaseCZMLObject, Interpolatable, Deletable):
             )
             != 1
         ):
-            raise TypeError(_ := "Only one of unit or reference must be given.")
+            raise ValueError("Only one of unit or reference must be given.")
         return self
 
     @field_validator("unitCartesian")
@@ -368,7 +368,7 @@ class Color(BaseCZMLObject, Interpolatable, Deletable):
         if self.delete:
             return self
         if sum(val is not None for val in (self.rgba, self.rgbaf, self.reference)) != 1:
-            raise TypeError("Only one of rgba, rgbaf or reference must be given")
+            raise ValueError("Only one of rgba, rgbaf or reference must be given")
         return self
 
     @field_validator("rgba")
@@ -439,7 +439,7 @@ class Position(BaseCZMLObject, Interpolatable, Deletable):
             )
             != 1
         ):
-            raise TypeError(
+            raise ValueError(
                 "One of cartesian, cartographicDegrees, cartographicRadians or reference must be given"
             )
         return self
@@ -611,7 +611,7 @@ class EllipsoidRadii(BaseCZMLObject, Interpolatable, Deletable):
         if self.delete:
             return self
         if sum(val is not None for val in (self.cartesian, self.reference)) != 1:
-            raise TypeError("Only one of cartesian or reference must be given")
+            raise ValueError("Only one of cartesian or reference must be given")
         return self
 
     @field_validator("cartesian")
@@ -923,7 +923,7 @@ class ArcType(BaseCZMLObject, Deletable):
         if self.delete:
             return self
         if sum(val is not None for val in (self.arcType, self.reference)) != 1:
-            raise TypeError("Only one of arcType or reference must be given")
+            raise ValueError("Only one of arcType or reference must be given")
         return self
 
     @field_validator("arcType")
@@ -959,7 +959,7 @@ class ShadowMode(BaseCZMLObject, Deletable):
         if self.delete:
             return self
         if sum(val is not None for val in (self.shadowMode, self.reference)) != 1:
-            raise TypeError("Only one of shadowMode or reference must be given")
+            raise ValueError("Only one of shadowMode or reference must be given")
         return self
 
     @field_validator("reference")
@@ -993,7 +993,9 @@ class ClassificationType(BaseCZMLObject, Deletable):
             sum(val is not None for val in (self.classificationType, self.reference))
             != 1
         ):
-            raise TypeError("Only one of classificationType or reference must be given")
+            raise ValueError(
+                "Only one of classificationType or reference must be given"
+            )
         return self
 
     @field_validator("reference")
@@ -1030,7 +1032,7 @@ class DistanceDisplayCondition(BaseCZMLObject, Interpolatable, Deletable):
             )
             != 1
         ):
-            raise TypeError(
+            raise ValueError(
                 "Only one of distanceDisplayCondition or reference must be given"
             )
         return self
@@ -1091,7 +1093,7 @@ class PositionListOfLists(BaseCZMLObject, Deletable):
             )
             != 1
         ):
-            raise TypeError(
+            raise ValueError(
                 "One of cartesian, cartographicDegrees, cartographicRadians or references must be given"
             )
 
@@ -1171,7 +1173,7 @@ class PositionList(BaseCZMLObject, Deletable):
             )
             != 1
         ):
-            raise TypeError(
+            raise ValueError(
                 "One of cartesian, cartographicDegrees, cartographicRadians or references must be given"
             )
 
@@ -1318,7 +1320,7 @@ class BoxDimensions(BaseCZMLObject, Interpolatable, Deletable):
         if self.delete:
             return self
         if sum(val is not None for val in (self.cartesian, self.reference)) != 1:
-            raise TypeError("Only one of cartesian or reference must be given")
+            raise ValueError("Only one of cartesian or reference must be given")
         return self
 
     @field_validator("cartesian")
@@ -1377,7 +1379,7 @@ class RectangleCoordinates(BaseCZMLObject, Interpolatable, Deletable):
             )
             != 1
         ):
-            raise TypeError("Only one of wsen, wsenDegrees or reference must be given")
+            raise ValueError("Only one of wsen, wsenDegrees or reference must be given")
         return self
 
     @field_validator("reference")
@@ -1408,7 +1410,7 @@ class EyeOffset(BaseCZMLObject, Deletable):
         if self.delete:
             return self
         if sum(val is not None for val in (self.cartesian, self.reference)) != 1:
-            raise TypeError("Only one of cartesian or reference must be given")
+            raise ValueError("Only one of cartesian or reference must be given")
         return self
 
     @field_validator("cartesian")
@@ -1446,7 +1448,7 @@ class HeightReference(BaseCZMLObject, Deletable):
         if self.delete:
             return self
         if sum(val is not None for val in (self.heightReference, self.reference)) != 1:
-            raise TypeError("Only one of heightReference or reference must be given")
+            raise ValueError("Only one of heightReference or reference must be given")
         return self
 
     @field_validator("reference")
@@ -1477,7 +1479,7 @@ class ColorBlendMode(BaseCZMLObject, Deletable):
         if self.delete:
             return self
         if sum(val is not None for val in (self.colorBlendMode, self.reference)) != 1:
-            raise TypeError("Only one of colorBlendMode or reference must be given")
+            raise ValueError("Only one of colorBlendMode or reference must be given")
         return self
 
     @field_validator("reference")
@@ -1506,7 +1508,7 @@ class CornerType(BaseCZMLObject, Deletable):
         if self.delete:
             return self
         if sum(val is not None for val in (self.cornerType, self.reference)) != 1:
-            raise TypeError("Only one of cornerType or reference must be given")
+            raise ValueError("Only one of cornerType or reference must be given")
         return self
 
     @field_validator("reference")
@@ -1689,7 +1691,7 @@ class NearFarScalar(BaseCZMLObject, Interpolatable, Deletable):
         if self.delete:
             return self
         if sum(val is not None for val in (self.nearFarScalar, self.reference)) != 1:
-            raise TypeError("Only one of nearFarScalar or reference must be given")
+            raise ValueError("Only one of nearFarScalar or reference must be given")
         return self
 
     @field_validator("reference")
@@ -1727,7 +1729,7 @@ class Rotation(BaseCZMLObject, Interpolatable, Deletable):
         if self.delete:
             return self
         if sum(val is not None for val in (self.unitQuaternion, self.reference)) != 1:
-            raise TypeError("Only one of unitQuaternion or reference must be given")
+            raise ValueError("Only one of unitQuaternion or reference must be given")
         return self
 
     @field_validator("unitQuaternion")
@@ -1762,7 +1764,7 @@ class LineOffset(BaseCZMLObject, Interpolatable, Deletable):
         if self.delete:
             return self
         if sum(val is not None for val in (self.cartesian2, self.reference)) != 1:
-            raise TypeError("Only one of cartesian2 or reference must be given")
+            raise ValueError("Only one of cartesian2 or reference must be given")
         return self
 
     @field_validator("cartesian2")
@@ -1858,7 +1860,7 @@ class Orientation(BaseCZMLObject, Interpolatable, Deletable):
         if self.delete:
             return self
         if sum(val is not None for val in (self.unitQuaternion, self.reference)) != 1:
-            raise TypeError("Only one of unitQuaternion or reference must be given")
+            raise ValueError("Only one of unitQuaternion or reference must be given")
         return self
 
     @field_validator("unitQuaternion")
@@ -1955,7 +1957,7 @@ class Uri(BaseCZMLObject, Deletable):
         if self.delete:
             return self
         if sum(val is not None for val in (self.uri, self.reference)) != 1:
-            raise TypeError("Only one of uri or reference must be given")
+            raise ValueError("Only one of uri or reference must be given")
         return self
 
     @field_validator("uri")
@@ -1972,18 +1974,18 @@ class Uri(BaseCZMLObject, Deletable):
             try:
                 metadata, payload = url.split(",", maxsplit=1)
             except ValueError as exc:
-                raise TypeError(
+                raise ValueError(
                     "uri must be an absolute URI, relative path, data URI, or base64 encoded string."
                 ) from exc
 
             if ";base64" not in metadata:
-                raise TypeError(
+                raise ValueError(
                     "uri must be an absolute URI, relative path, data URI, or base64 encoded string."
                 )
             try:
                 base64.b64decode(payload, validate=True)
             except binascii.Error as exc:
-                raise TypeError(
+                raise ValueError(
                     "uri must be an absolute URI, relative path, data URI, or base64 encoded string."
                 ) from exc
             return url
@@ -1997,7 +1999,7 @@ class Uri(BaseCZMLObject, Deletable):
             base64.b64decode(url, validate=True)
             return url
         except binascii.Error as exc:
-            raise TypeError(
+            raise ValueError(
                 "uri must be an absolute URI, relative path, data URI, or base64 encoded string."
             ) from exc
 

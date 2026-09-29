@@ -3,6 +3,7 @@ import os
 import tempfile
 
 import pytest
+from pydantic import ValidationError
 
 from czml3 import CZML_VERSION, Document, Packet
 from czml3.properties import (
@@ -26,23 +27,28 @@ def image():
 
 def test_bad_rectangle_coordinates():
     with pytest.raises(
-        TypeError, match="Only one of wsen, wsenDegrees or reference must be given"
+        ValidationError,
+        match="Only one of wsen, wsenDegrees or reference must be given",
     ):
         RectangleCoordinates()
     with pytest.raises(
-        TypeError, match="Only one of wsen, wsenDegrees or reference must be given"
+        ValidationError,
+        match="Only one of wsen, wsenDegrees or reference must be given",
     ):
         RectangleCoordinates(wsen=[0, 0, 0], wsenDegrees=[0, 0, 0])
     with pytest.raises(
-        TypeError, match="Only one of wsen, wsenDegrees or reference must be given"
+        ValidationError,
+        match="Only one of wsen, wsenDegrees or reference must be given",
     ):
         RectangleCoordinates(wsen=[0, 0, 0], reference="this#that")
     with pytest.raises(
-        TypeError, match="Only one of wsen, wsenDegrees or reference must be given"
+        ValidationError,
+        match="Only one of wsen, wsenDegrees or reference must be given",
     ):
         RectangleCoordinates(wsenDegrees=[0, 0, 0], reference="this#that")
     with pytest.raises(
-        TypeError, match="Only one of wsen, wsenDegrees or reference must be given"
+        ValidationError,
+        match="Only one of wsen, wsenDegrees or reference must be given",
     ):
         RectangleCoordinates(
             wsenDegrees=[0, 0, 0], wsen=[0, 0, 0], reference="this#that"

@@ -59,7 +59,7 @@ def get_color(
         and all(0 <= v <= max_val for v in color)
     ):  # [r, g, b]
         return color + [max_val]
-    raise TypeError("Colour type not supported")
+    raise ValueError("Colour type not supported")
 
 
 def check_list_of_list_values(num_points: int, values: list[list[Any]]) -> None:
@@ -70,7 +70,7 @@ def check_list_of_list_values(num_points: int, values: list[list[Any]]) -> None:
         if len(value) <= 0:
             raise ValueError("No values present in a list")
         if len(value) % num_points != 0:
-            raise TypeError(
+            raise ValueError(
                 f"Input values of each list must have either {num_points} or N * {num_points} values, where N is the number of samples."
             )
 
@@ -80,7 +80,7 @@ def check_list_of_values(num_points: int, values: list[Any]) -> None:
     if len(values) <= 0:
         raise ValueError("No values present")
     if len(values) % num_points != 0:
-        raise TypeError(
+        raise ValueError(
             f"Input values must have either {num_points} or N * {num_points} values, where N is the number of samples."
         )
 
@@ -90,21 +90,21 @@ def check_values(num_points: int, values: list[Any]) -> None:
     if len(values) <= 0:
         raise ValueError("No values present")
     if not (len(values) % (num_points) == 0 or len(values) % (num_points + 1) == 0):
-        raise TypeError(
+        raise ValueError(
             f"Input values must have either {num_points} or N * {num_points + 1} values, where N is the number of time-tagged samples."
         )
     times = values[:: num_points + 1]
     if len(values) % (num_points + 1) == 0 and any(
         b <= a for a, b in zip(times, times[1:], strict=False)
     ):
-        raise TypeError("Time values must be increasing.")
+        raise ValueError("Time values must be increasing.")
 
 
 def check_reference(r: str | None) -> None:
     if r is None:
         return
     elif re.search(r"^.+#.+$", r) is None:
-        raise TypeError(
+        raise ValueError(
             "Invalid reference string format. Input must be of the form id#property"
         )
 
@@ -127,7 +127,7 @@ def format_datetime_like(dt_object: None | str | dt.datetime) -> str | None:
         return dt_object.strftime(ISO8601_FORMAT_Z)
 
     else:
-        raise TypeError(f"Invalid datetime format: {dt_object}")
+        raise ValueError(f"Invalid datetime format: {dt_object}")
 
 
 class FontValue(BaseCZMLObject):
