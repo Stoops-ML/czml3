@@ -48,3 +48,10 @@ def test_default_cesium_version_is_used():
 
     assert DEFAULT_CESIUM_VERSION == "1.145"
     assert f"releases/{DEFAULT_CESIUM_VERSION}/Build/Cesium/" in DOC.to_html()
+
+
+def test_page_reports_load_status():
+    page = DOC.to_html()
+    assert "document.body.dataset.czml3Entities" in page
+    assert "viewer.scene.renderError.addEventListener" in page
+    assert ".catch(reportError)" in page

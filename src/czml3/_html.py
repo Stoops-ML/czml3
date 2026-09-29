@@ -24,6 +24,9 @@ _PAGE_TPL = """<!DOCTYPE html>
 <body>
 <div id="cesiumContainer"></div>
 <script>
+// Load status is recorded on <body> as data-czml3-entities / data-czml3-error.
+const reportError = (error) => {{ document.body.dataset.czml3Error = String(error); }};
+window.addEventListener("error", (event) => reportError(event.message));
 const czml = {czml};
 const ionToken = {ion_token};
 const options = {{ shouldAnimate: true }};
@@ -37,10 +40,12 @@ if (ionToken) {{
     );
 }}
 const viewer = new Cesium.Viewer("cesiumContainer", options);
+viewer.scene.renderError.addEventListener((scene, error) => reportError(error));
 Cesium.CzmlDataSource.load(czml).then((dataSource) => {{
     viewer.dataSources.add(dataSource);
     viewer.zoomTo(dataSource);
-}});
+    document.body.dataset.czml3Entities = String(dataSource.entities.values.length);
+}}).catch(reportError);
 </script>
 </body>
 </html>
