@@ -1,5 +1,8 @@
+import typing
+
 import pytest
 from pydantic import ValidationError
+from pydantic_core import ErrorDetails
 
 from czml3 import Document, Packet
 from czml3.errors import humanise_validation_error
@@ -194,3 +197,75 @@ def test_custom_validator_errors_are_validation_errors():
 
     with pytest.raises(ValidationError, match="Only one of rgba, rgbaf or reference"):
         Color(rgba=[1, 2, 3, 4], rgbaf=[0.1, 0.2, 0.3, 0.4])
+
+
+# Unit tests for the annotation-describing helpers. Most of these shapes do not
+# occur in czml3's own models today, but the helpers must not break if they do.
+
+
+def test_unwrap_tag_stops_after_bounded_depth():
+    from czml3.errors import _unwrap_tag
+
+    tag = "nullable[" * 11 + "Point" + "]" * 11
+    assert _unwrap_tag(tag) == "nullable[Point]"
+
+
+def test_field_annotation_falls_back_when_hints_cannot_be_resolved():
+    from pydantic import BaseModel
+
+    from czml3.errors import _field_annotation
+
+    class Unresolvable(BaseModel):
+        value: "UndefinedName"  # type: ignore[name-defined]  # noqa: F821
+
+    assert _field_annotation(Unresolvable, "value") is not None
+
+
+def test_describe_annotation_shapes():
+    import enum
+    from typing import Any, Literal, TypeVar
+
+    from czml3.errors import _describe_annotation, _describe_enum
+
+    Many = enum.Enum("Many", "M0 M1 M2 M3 M4 M5 M6 M7 M8 M9")
+    assert _describe_enum(Many).endswith(", ...")
+    assert _describe_annotation(complex) == ["complex"]
+    assert _describe_annotation("ForwardName") == []
+    assert _describe_annotation(Any) == ["any value"]
+    assert _describe_annotation(TypeVar("T")) == ["~T"]
+    assert _describe_annotation(dict[str, int]) == ["a dictionary"]
+    assert _describe_annotation(Literal["a"]) == [str(Literal["a"])]
+
+
+def test_join_and_got_edge_cases():
+    from czml3.errors import _got, _join
+
+    assert _join([]) == "a different type"
+    assert _got({"type": "missing", "loc": (), "msg": ""}) == "nothing"  # type: ignore[typeddict-item]
+
+
+def test_item_annotation_skips_non_list_union_members():
+    from czml3.errors import _item_annotation
+
+    assert _item_annotation(int | list[str]) is str
+
+
+def test_prune_branches_keeps_items_without_remaining_tokens():
+    from czml3.errors import _prune_branches, _Tokenised
+
+    empty = typing.cast(ErrorDetails, {})
+    items = [_Tokenised(empty, [], set(), None), _Tokenised(empty, [], set(), None)]
+    assert _prune_branches(items) == items
+
+
+def test_render_group_deduplicates_identical_messages():
+    from czml3.errors import _render_group, _Tokenised
+
+    error = {
+        "type": "value_error",
+        "loc": ("a",),
+        "msg": "Value error, boom",
+        "input": 1,
+    }
+    items = [_Tokenised(error, [], set(), None) for _ in range(2)]  # type: ignore[arg-type]
+    assert len(_render_group(("a",), items)) == 1
