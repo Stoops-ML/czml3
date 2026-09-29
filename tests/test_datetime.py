@@ -51,3 +51,17 @@ def test_epoch_accepts_time_interval_collection():
             "string": "2019-01-01T00:00:00Z",
         }
     ]
+
+
+@pytest.mark.parametrize(
+    "value",
+    ["0000-01-01T00:00:00Z", "9999-12-31T24:00:00Z", "2012-03-15T24:00Z"],
+)
+def test_czml_minimum_and_maximum_times_are_accepted(value):
+    assert format_datetime_like(value) == value
+
+
+@pytest.mark.parametrize("value", ["2012-03-15T24:30:00Z", "0000-13-01T00:00:00Z"])
+def test_invalid_times_are_still_rejected(value):
+    with pytest.raises(ValueError, match="not a valid ISO 8601 datetime"):
+        format_datetime_like(value)
