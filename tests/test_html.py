@@ -52,6 +52,7 @@ def test_default_cesium_version_is_used():
 
 def test_page_reports_load_status():
     page = DOC.to_html()
-    assert "document.body.dataset.czml3Entities" in page
+    assert 'reportStatus("czml3Entities"' in page
+    assert "window.parent.postMessage" in page
     assert "viewer.scene.renderError.addEventListener" in page
     assert ".catch(reportError)" in page

@@ -24,8 +24,15 @@ _PAGE_TPL = """<!DOCTYPE html>
 <body>
 <div id="cesiumContainer"></div>
 <script>
-// Load status is recorded on <body> as data-czml3-entities / data-czml3-error.
-const reportError = (error) => {{ document.body.dataset.czml3Error = String(error); }};
+// Load status is recorded on <body> as data-czml3-entities / data-czml3-error,
+// and posted to the embedding page when shown in an iframe (e.g. Jupyter).
+const reportStatus = (key, value) => {{
+    document.body.dataset[key] = value;
+    if (window.parent !== window) {{
+        window.parent.postMessage({{ czml3: {{ [key]: value }} }}, "*");
+    }}
+}};
+const reportError = (error) => reportStatus("czml3Error", String(error));
 window.addEventListener("error", (event) => reportError(event.message));
 const czml = {czml};
 const ionToken = {ion_token};
@@ -44,7 +51,7 @@ viewer.scene.renderError.addEventListener((scene, error) => reportError(error));
 Cesium.CzmlDataSource.load(czml).then((dataSource) => {{
     viewer.dataSources.add(dataSource);
     viewer.zoomTo(dataSource);
-    document.body.dataset.czml3Entities = String(dataSource.entities.values.length);
+    reportStatus("czml3Entities", String(dataSource.entities.values.length));
 }}).catch(reportError);
 </script>
 </body>
