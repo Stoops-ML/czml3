@@ -1,7 +1,8 @@
 # Unreleased
 
+* **Breaking:** remove the deprecated `CZMLWidget` and the `czml3.widget` module. Display a `Document` directly in Jupyter, or use `Document.to_html()` / `save_html()`.
 * Add `Document.save()` / `Document.load()`, and make documents written by czml3 read back with `Document.model_validate_json()` (including `TimeInterval`, `TimeIntervalCollection`, `IntervalValue`, `Cartesian2Value`, `EpochValue` and `NumberValue` in their serialized forms)
-* Add `Document.to_html()` / `save_html()` and inline display of a `Document` in Jupyter, using CesiumJS 1.145 by default; `CZMLWidget` remains deprecated
+* Add `Document.to_html()` / `save_html()` and inline display of a `Document` in Jupyter, using CesiumJS 1.145 by default
 * `Document` adds a default preamble packet when none is given
 * Re-export the common property and interval classes from the top-level `czml3` package
 * `repr()` shows only the properties that are set

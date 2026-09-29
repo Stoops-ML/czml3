@@ -65,11 +65,3 @@ czml3.constants module
    :members:
    :undoc-members:
    :show-inheritance:
-
-czml3.widget module
--------------------
-
-.. automodule:: czml3.widget
-   :members:
-   :undoc-members:
-   :show-inheritance:
