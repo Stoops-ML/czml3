@@ -168,8 +168,8 @@ class Document(BaseCZMLObject):
     ) -> str:
         """Return a standalone HTML page that displays the document with CesiumJS.
 
-        Without an ``ion_token`` the page uses OpenStreetMap imagery and no
-        terrain; with a `Cesium ion <https://cesium.com/ion/>`__ access token it
+        Without an ``ion_token`` the page uses the low-resolution Natural Earth II
+        imagery that ships with CesiumJS and no terrain; with a `Cesium ion <https://cesium.com/ion/>`__ access token it
         uses Cesium's default imagery and world terrain.
 
         :param cesium_version: The CesiumJS release to load (1.107 or later).

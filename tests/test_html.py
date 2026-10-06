@@ -30,6 +30,16 @@ def test_ion_token_is_embedded_only_when_given():
     assert 'const ionToken = "abc";' in DOC.to_html(ion_token="abc")
 
 
+def test_page_without_ion_token_uses_cesium_bundled_imagery():
+    page = DOC.to_html()
+    assert 'Cesium.buildModuleUrl("Assets/Textures/NaturalEarthII")' in page
+    assert "options.baseLayer.errorEvent.addEventListener(reportError)" in page
+    assert "provider.errorEvent.addEventListener" in page
+    assert 'reportStatus("czml3Globe", "loaded")' in page
+    # OpenStreetMap's tile servers refuse requests from notebook frames.
+    assert "tile.openstreetmap.org" not in page
+
+
 def test_repr_html_embeds_page_in_iframe():
     frame = DOC._repr_html_()
     assert frame.startswith("<iframe srcdoc=")

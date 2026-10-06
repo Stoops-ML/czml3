@@ -183,6 +183,6 @@ In Jupyter, a ``Document`` displays as an interactive Cesium viewer. Anywhere el
     )
     doc.save_html("scene.html")
 
-Without a `Cesium ion <https://cesium.com/ion/>`_ access token the page uses OpenStreetMap imagery; pass ``ion_token=...`` to use Cesium's imagery and world terrain, and ``cesium_version=...`` to choose the CesiumJS release.
+Without a `Cesium ion <https://cesium.com/ion/>`_ access token the page uses the low-resolution Natural Earth II imagery that ships with CesiumJS; pass ``ion_token=...`` to use Cesium's imagery and world terrain, and ``cesium_version=...`` to choose the CesiumJS release.
 
 Browsers block Cesium's web workers on pages opened straight from disk (``file://``), so geometry such as polylines and polygons would not be drawn. Serve the file over HTTP instead, for example with ``python -m http.server``, and open ``http://localhost:8000/scene.html``.

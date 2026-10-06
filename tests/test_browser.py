@@ -1,6 +1,6 @@
 """Render the HTML preview in headless Chrome and check the viewer comes up.
 
-The page loads CesiumJS from cesium.com and imagery from OpenStreetMap, so
+The page loads CesiumJS and its bundled imagery from cesium.com, so
 these tests need a Chrome/Chromium/Edge binary and internet access; they are
 skipped otherwise. Set CZML3_BROWSER to the browser executable to choose one.
 
@@ -80,7 +80,7 @@ DOC = Document(
 ENTITIES = 3  # the "document" packet configures the scene and is not an entity
 # The viewer zooms to the document once its geometry is built, which needs
 # Cesium's web workers (the polyline is built in one).
-LOADED = {"entities": str(ENTITIES), "zoomed": "true"}
+LOADED = {"entities": str(ENTITIES), "zoomed": "true", "globe": "loaded"}
 
 # Relays the status the embedded viewer posts (see czml3._html) to the test
 # server, so the test can wait in real time for the geometry to be built.
@@ -134,10 +134,11 @@ class Site:
         return RELAY_TPL.format(frame=frame, status_url=f"{self.url}/status")
 
     def wait_for_status(self, timeout: float) -> dict[str, str]:
-        """Wait until the viewer zoomed or failed, or ``timeout`` seconds passed."""
+        """Wait until the viewer loaded or failed, or ``timeout`` seconds passed."""
         with self._changed:
             self._changed.wait_for(
-                lambda: "zoomed" in self.status or "error" in self.status, timeout
+                lambda: LOADED.keys() <= self.status.keys() or "error" in self.status,
+                timeout,
             )
             return dict(self.status)
 
