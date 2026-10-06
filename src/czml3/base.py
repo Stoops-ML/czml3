@@ -1,18 +1,57 @@
-import sys
-from typing import Any
+from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, model_validator
+from collections.abc import Iterator
+from typing import TYPE_CHECKING, Any, cast
 
-if sys.version_info[1] >= 11:
-    from typing import Self
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
+
+from ._compat import Self, dataclass_transform
+from .errors import humanise_validation_error
+
+if TYPE_CHECKING:
+    # Imported under TYPE_CHECKING only so that type checkers keep treating
+    # subclasses of BaseCZMLObject as pydantic models; at runtime the metaclass
+    # is taken from BaseModel itself to avoid depending on a private import path.
+    from pydantic._internal._model_construction import ModelMetaclass
 else:
-    from typing_extensions import Self  # pragma: no cover
+    ModelMetaclass = type(BaseModel)
 
 NON_DELETE_PROPERTIES = ["id", "delete"]
 
 
-class BaseCZMLObject(BaseModel):
+@dataclass_transform(kw_only_default=True, field_specifiers=(Field,))
+class _HumanErrorsMeta(ModelMetaclass):
+    """Rewrites the error raised by ``Model(...)`` into something readable.
+
+    The rewrite is hooked in here rather than on ``__init__`` deliberately: a
+    model that defines its own ``__init__`` opts out of pydantic's native
+    construction path, which both slows down nested validation and discards the
+    union information that :func:`~czml3.errors.humanise_validation_error` needs.
+    """
+
+    def __call__(cls, *args: Any, **kwargs: Any) -> Any:
+        try:
+            return super().__call__(*args, **kwargs)
+        except ValidationError as error:
+            raise humanise_validation_error(error, cast(type[BaseModel], cls)) from None
+
+
+class BaseCZMLObject(BaseModel, metaclass=_HumanErrorsMeta):
     model_config = ConfigDict(extra="forbid")
+
+    @classmethod
+    def model_validate(cls, *args: Any, **kwargs: Any) -> Self:
+        try:
+            return super().model_validate(*args, **kwargs)
+        except ValidationError as error:
+            raise humanise_validation_error(error, cls) from None
+
+    @classmethod
+    def model_validate_json(cls, *args: Any, **kwargs: Any) -> Self:
+        try:
+            return super().model_validate_json(*args, **kwargs)
+        except ValidationError as error:
+            raise humanise_validation_error(error, cls) from None
 
     @model_validator(mode="after")
     def check_delete(self) -> Self:
@@ -21,6 +60,13 @@ class BaseCZMLObject(BaseModel):
                 if k not in NON_DELETE_PROPERTIES and getattr(self, k) is not None:
                     setattr(self, k, None)
         return self
+
+    def __repr_args__(self) -> Iterator[tuple[str | None, Any]]:
+        # Only show the properties that are set: most CZML objects have dozens
+        # of optional properties, almost all of them None.
+        for name, value in super().__repr_args__():
+            if value is not None:
+                yield name, value
 
     def __str__(self) -> str:
         return self.to_json()

@@ -1,26 +1,26 @@
+from __future__ import annotations
+
 import datetime as dt
 import re
-import sys
 from typing import Any
 
-import numpy as np
-from dateutil.parser import isoparse as parse_iso_date
 from pydantic import (
+    AliasChoices,
     Field,
     field_validator,
     model_serializer,
     model_validator,
 )
 
+from ._compat import Self
+from ._datetime import NaiveDatetimeWarning as NaiveDatetimeWarning
+from ._datetime import format_datetime_like as format_datetime_like
 from .base import BaseCZMLObject
 from .common import Deletable, Interpolatable
-from .constants import ISO8601_FORMAT_Z
-from .enums import ExtrapolationTypes, InterpolationAlgorithms  # noqa
 
-if sys.version_info[1] >= 11:
-    from typing import Self
-else:
-    from typing_extensions import Self  # pragma: no cover
+# Not used directly: pydantic resolves the string annotations that NumberValue
+# inherits from Interpolatable in this module's namespace, so they must be here.
+from .enums import ExtrapolationTypes, InterpolationAlgorithms  # noqa: F401
 
 TYPE_MAPPING = {
     bool: "boolean",
@@ -31,6 +31,33 @@ TYPE_MAPPING = {
     str: "string",
     tuple: "number",
 }
+
+
+def _value_key(value: Any) -> str | None:
+    """Return the CZML key for a primitive interval value, or None if unsupported.
+
+    ``isinstance`` rather than an exact type lookup, so subclasses such as
+    ``numpy.float64`` or a ``StrEnum`` member are accepted. ``bool`` is checked
+    before ``int`` by the ordering of ``TYPE_MAPPING``.
+    """
+    for value_type, key in TYPE_MAPPING.items():
+        if isinstance(value, value_type):
+            return key
+    return None
+
+
+def _split_interval(interval: str) -> dict[str, str]:
+    """Split a serialized ``start/end`` ISO 8601 interval into its two times."""
+    start, separator, end = interval.partition("/")
+    if not separator:
+        raise ValueError(
+            f"{interval!r} is not an ISO 8601 interval of the form 'start/end'"
+        )
+    return {"start": start, "end": end}
+
+
+def _is_czml_object_list(value: Any) -> bool:
+    return isinstance(value, list) and all(isinstance(v, BaseCZMLObject) for v in value)
 
 
 def get_color(
@@ -60,7 +87,7 @@ def get_color(
         and all(0 <= v <= max_val for v in color)
     ):  # [r, g, b]
         return color + [max_val]
-    raise TypeError("Colour type not supported")
+    raise ValueError("Colour type not supported")
 
 
 def check_list_of_list_values(num_points: int, values: list[list[Any]]) -> None:
@@ -71,7 +98,7 @@ def check_list_of_list_values(num_points: int, values: list[list[Any]]) -> None:
         if len(value) <= 0:
             raise ValueError("No values present in a list")
         if len(value) % num_points != 0:
-            raise TypeError(
+            raise ValueError(
                 f"Input values of each list must have either {num_points} or N * {num_points} values, where N is the number of samples."
             )
 
@@ -81,7 +108,7 @@ def check_list_of_values(num_points: int, values: list[Any]) -> None:
     if len(values) <= 0:
         raise ValueError("No values present")
     if len(values) % num_points != 0:
-        raise TypeError(
+        raise ValueError(
             f"Input values must have either {num_points} or N * {num_points} values, where N is the number of samples."
         )
 
@@ -91,41 +118,23 @@ def check_values(num_points: int, values: list[Any]) -> None:
     if len(values) <= 0:
         raise ValueError("No values present")
     if not (len(values) % (num_points) == 0 or len(values) % (num_points + 1) == 0):
-        raise TypeError(
+        raise ValueError(
             f"Input values must have either {num_points} or N * {num_points + 1} values, where N is the number of time-tagged samples."
         )
-    if len(values) % (num_points + 1) == 0 and np.any(
-        np.diff(values[:: num_points + 1]) <= 0
+    times = values[:: num_points + 1]
+    if len(values) % (num_points + 1) == 0 and any(
+        b <= a for a, b in zip(times, times[1:], strict=False)
     ):
-        raise TypeError("Time values must be increasing.")
+        raise ValueError("Time values must be increasing.")
 
 
 def check_reference(r: str | None) -> None:
     if r is None:
         return
     elif re.search(r"^.+#.+$", r) is None:
-        raise TypeError(
+        raise ValueError(
             "Invalid reference string format. Input must be of the form id#property"
         )
-
-
-def format_datetime_like(dt_object: None | str | dt.datetime) -> str | None:
-    if dt_object is None:
-        return dt_object
-
-    elif isinstance(dt_object, str):
-        try:
-            parse_iso_date(dt_object)
-        except Exception:
-            raise
-        else:
-            return dt_object
-
-    elif isinstance(dt_object, dt.datetime):
-        return dt_object.strftime(ISO8601_FORMAT_Z)
-
-    else:
-        raise TypeError(f"Invalid datetime format: {dt_object}")
 
 
 class FontValue(BaseCZMLObject):
@@ -137,7 +146,7 @@ class FontValue(BaseCZMLObject):
     font: str
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> str:
         return self.font
 
 
@@ -151,11 +160,11 @@ class RgbafValue(BaseCZMLObject):
 
     @field_validator("values")
     @classmethod
-    def get_color_from_values(cls, r):
+    def get_color_from_values(cls, r: list[int | float]) -> list[int | float] | None:
         return get_color(r, 1.0)
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[float]:
         return self.values
 
 
@@ -169,11 +178,11 @@ class RgbaValue(BaseCZMLObject):
 
     @field_validator("values")
     @classmethod
-    def get_color_from_values(cls, r):
+    def get_color_from_values(cls, r: list[int | float]) -> list[int | float] | None:
         return get_color(r, 255)
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[int] | list[float] | list[int | float]:
         return self.values
 
 
@@ -187,12 +196,12 @@ class ReferenceValue(BaseCZMLObject):
 
     @field_validator("value")
     @classmethod
-    def _check_string(cls, v):
+    def _check_string(cls, v: str) -> str:
         check_reference(v)
         return v
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> str:
         return self.value
 
 
@@ -206,13 +215,13 @@ class ReferenceListValue(BaseCZMLObject):
 
     @field_validator("values")
     @classmethod
-    def _check_string(cls, vs):
+    def _check_string(cls, vs: list[str]) -> list[str]:
         for v in vs:
             check_reference(v)
         return vs
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[str]:
         return self.values
 
 
@@ -226,14 +235,14 @@ class ReferenceListOfListsValue(BaseCZMLObject):
 
     @field_validator("values")
     @classmethod
-    def _check_string(cls, vss):
+    def _check_string(cls, vss: list[list[str]]) -> list[list[str]]:
         for vs in vss:
             for v in vs:
                 check_reference(v)
         return vss
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[list[str]]:
         return self.values
 
 
@@ -287,7 +296,7 @@ class Cartesian3ListOfListsValue(BaseCZMLObject):
         return self
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[list[float]]:
         return self.values
 
 
@@ -299,13 +308,21 @@ class Cartesian2Value(BaseCZMLObject):
 
     values: list[float]
 
+    @model_validator(mode="before")
+    @classmethod
+    def parse_serialized_form(cls, data: Any) -> Any:
+        """Accept the serialized ``{"cartesian2": [...]}`` form."""
+        if isinstance(data, dict) and set(data) == {"cartesian2"}:
+            return {"values": data["cartesian2"]}
+        return data
+
     @model_validator(mode="after")
     def _check_values(self) -> Self:
         check_values(2, self.values)
         return self
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> dict[str, list[float]]:
         return {"cartesian2": list(self.values)}
 
 
@@ -323,7 +340,7 @@ class CartographicRadiansValue(BaseCZMLObject):
         return self
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[float]:
         return self.values
 
 
@@ -390,7 +407,7 @@ class CartographicRadiansListValue(BaseCZMLObject):
         return self
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[float]:
         return self.values
 
 
@@ -408,7 +425,7 @@ class CartographicRadiansListOfListsValue(BaseCZMLObject):
         return self
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[list[float]]:
         return self.values
 
 
@@ -426,7 +443,7 @@ class CartographicDegreesListValue(BaseCZMLObject):
         return self
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[float]:
         return self.values
 
 
@@ -444,7 +461,7 @@ class CartographicDegreesListOfListsValue(BaseCZMLObject):
         return self
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[list[float]]:
         return self.values
 
 
@@ -462,7 +479,7 @@ class DistanceDisplayConditionValue(BaseCZMLObject):
         return self
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[float]:
         return self.values
 
 
@@ -480,7 +497,7 @@ class NearFarScalarValue(BaseCZMLObject):
         return self
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[float]:
         return self.values
 
 
@@ -490,9 +507,15 @@ class TimeInterval(BaseCZMLObject):
     start: str | dt.datetime
     end: str | dt.datetime
 
+    @model_validator(mode="before")
+    @classmethod
+    def parse_interval_string(cls, data: Any) -> Any:
+        """Accept the serialized ``start/end`` form."""
+        return _split_interval(data) if isinstance(data, str) else data
+
     @field_validator("start", "end")
     @classmethod
-    def format_time(cls, time):
+    def format_time(cls, time: str | dt.datetime) -> str | None:
         return format_datetime_like(time)
 
     @model_serializer
@@ -505,21 +528,57 @@ class IntervalValue(BaseCZMLObject):
 
     start: str | dt.datetime
     end: str | dt.datetime
-    value: Any = Field(default=None)
+    value: Any = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def parse_serialized_form(cls, data: Any) -> Any:
+        """Accept the serialized ``{"interval": "start/end", <key>: value}`` form."""
+        if not (isinstance(data, dict) and "interval" in data):
+            return data
+        rest = {key: value for key, value in data.items() if key != "interval"}
+        parsed: dict[str, Any] = _split_interval(data["interval"])
+        if len(rest) == 1 and next(iter(rest)) in set(TYPE_MAPPING.values()):
+            parsed["value"] = next(iter(rest.values()))
+        elif rest:
+            parsed["value"] = rest
+        return parsed
+
+    @field_validator("start", "end")
+    @classmethod
+    def format_time(cls, time: str | dt.datetime) -> str | None:
+        return format_datetime_like(time)
+
+    @model_validator(mode="after")
+    def _check_value(self) -> Self:
+        value = self.value
+        if (
+            value is None
+            or isinstance(value, BaseCZMLObject)
+            or _is_czml_object_list(value)
+            or isinstance(value, dict)
+            or _value_key(value) is not None
+        ):
+            return self
+        accepted = ", ".join(t.__name__ for t in TYPE_MAPPING)
+        raise ValueError(
+            f"Unsupported interval value of type {type(value).__name__}; expected a CZML object, a list of CZML objects, a dict of CZML properties, or one of: {accepted}"
+        )
 
     @model_serializer
     def custom_serializer(self) -> dict[str, Any]:
-        obj_dict = {"interval": TimeInterval(start=self.start, end=self.end).to_dict()}
+        obj_dict: dict[str, Any] = {"interval": f"{self.start}/{self.end}"}
 
         if isinstance(self.value, BaseCZMLObject):
             obj_dict.update(self.value.to_dict())
-        elif isinstance(self.value, list) and all(
-            isinstance(v, BaseCZMLObject) for v in self.value
-        ):
+        elif _is_czml_object_list(self.value):
             for value in self.value:
                 obj_dict.update(value.to_dict())
-        else:
-            key = TYPE_MAPPING[type(self.value)]
+        elif isinstance(self.value, dict):
+            obj_dict.update(self.value)
+        elif self.value is not None:
+            key = _value_key(self.value)
+            assert key is not None  # guaranteed by _check_value
             obj_dict[key] = self.value
 
         return obj_dict
@@ -532,6 +591,12 @@ class TimeIntervalCollection(BaseCZMLObject):
     """
 
     values: list[TimeInterval] | list[IntervalValue]
+
+    @model_validator(mode="before")
+    @classmethod
+    def parse_interval_list(cls, data: Any) -> Any:
+        """Accept the serialized form, a bare list of intervals."""
+        return {"values": data} if isinstance(data, list) else data
 
     @model_serializer
     def custom_serializer(self) -> list[Any]:
@@ -570,7 +635,7 @@ class UnitQuaternionValue(BaseCZMLObject):
         return self
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> list[float]:
         return self.values
 
 
@@ -584,7 +649,7 @@ class UnitSphericalValue(BaseCZMLObject):
 
     @model_validator(mode="after")
     def _check_values(self) -> Self:
-        check_values(3, self.values)
+        check_values(2, self.values)
         return self
 
     @model_serializer
@@ -602,12 +667,12 @@ class VelocityReferenceValue(BaseCZMLObject):
 
     @field_validator("value")
     @classmethod
-    def _check_string(cls, v):
+    def _check_string(cls, v: str) -> str:
         check_reference(v)
         return v
 
     @model_serializer
-    def custom_serializer(self):
+    def custom_serializer(self) -> str:
         return self.value
 
 
@@ -616,15 +681,70 @@ class EpochValue(BaseCZMLObject):
 
     value: str | dt.datetime
 
+    @model_validator(mode="before")
+    @classmethod
+    def parse_serialized_form(cls, data: Any) -> Any:
+        """Accept the serialized ``{"epoch": ...}`` form."""
+        if isinstance(data, dict) and set(data) == {"epoch"}:
+            return {"value": data["epoch"]}
+        return data
+
+    @field_validator("value")
+    @classmethod
+    def format_time(cls, time: str | dt.datetime) -> str | None:
+        return format_datetime_like(time)
+
     @model_serializer
-    def custom_serializer(self):
-        return {"epoch": format_datetime_like(self.value)}
+    def custom_serializer(self) -> dict[str, str | dt.datetime]:
+        return {"epoch": self.value}
 
 
 class NumberValue(BaseCZMLObject, Interpolatable, Deletable):
     """A single number, or a list of number pairs signifying the time and representative value."""
 
     number: int | float | list[int] | list[float] | list[int | float] = Field(
-        alias="values", serialization_alias="number"
+        alias="values",
+        validation_alias=AliasChoices("values", "number"),
+        serialization_alias="number",
     )
     """The numerical value or values."""
+
+
+__all__ = [
+    "Cartesian2Value",
+    "Cartesian3ListOfListsValue",
+    "Cartesian3ListValue",
+    "Cartesian3Value",
+    "Cartesian3VelocityValue",
+    "CartographicDegreesListOfListsValue",
+    "CartographicDegreesListValue",
+    "CartographicDegreesValue",
+    "CartographicRadiansListOfListsValue",
+    "CartographicRadiansListValue",
+    "CartographicRadiansValue",
+    "DistanceDisplayConditionValue",
+    "EpochValue",
+    "FontValue",
+    "IntervalValue",
+    "NaiveDatetimeWarning",
+    "NearFarScalarValue",
+    "NumberValue",
+    "ReferenceListOfListsValue",
+    "ReferenceListValue",
+    "ReferenceValue",
+    "RgbaValue",
+    "RgbafValue",
+    "StringValue",
+    "TimeInterval",
+    "TimeIntervalCollection",
+    "UnitCartesian3Value",
+    "UnitQuaternionValue",
+    "UnitSphericalValue",
+    "VelocityReferenceValue",
+    "check_list_of_list_values",
+    "check_list_of_values",
+    "check_reference",
+    "check_values",
+    "format_datetime_like",
+    "get_color",
+]

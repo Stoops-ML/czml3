@@ -1,5 +1,5 @@
 import json
-import os
+from pathlib import Path
 
 import pytest
 
@@ -7,23 +7,11 @@ from czml3 import Document
 
 from .simple import simple
 
-TESTS_DIR = os.path.dirname(os.path.realpath(__file__))
+TESTS_DIR = Path(__file__).resolve().parent
 
 
 @pytest.mark.parametrize("document,filename", [(simple, "simple.czml")])
 def test_simple(document: Document, filename: str) -> None:
-    with open(os.path.join(TESTS_DIR, filename)) as fp:
-        expected_result = json.load(fp)
+    expected_result = json.loads((TESTS_DIR / filename).read_text(encoding="utf-8"))
 
-    result = json.loads(document.to_json())
-    for ii, packet in enumerate(result):
-        expected_packet = expected_result[ii]
-        for key in packet:
-            prop = packet[key]
-            expected_prop = expected_packet[key]
-
-            if isinstance(prop, dict):
-                for sub_key in prop:
-                    assert prop[sub_key] == expected_prop[sub_key]
-            else:
-                assert prop == expected_prop
+    assert json.loads(document.to_json()) == expected_result

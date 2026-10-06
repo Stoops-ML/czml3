@@ -3,108 +3,123 @@
 Examples
 ========
 
-Example 1
----------
+Each example below is a complete script; the test suite runs every one of them.
 
-A CZML document is a list of ``packets``, which have several properties. Recreating the blue box from Cesium sandcastle's `CZML Box <https://sandcastle.cesium.com/?src=CZML%20Box.html&label=CZML>`_::
+A static box
+------------
 
-    from czml3 import CZML_VERSION, Document, Packet
-    from czml3.properties import (
+A CZML document is a list of ``packets``, which have several properties. Recreating the blue box from Cesium sandcastle's `CZML Box <https://sandcastle.cesium.com/?src=CZML%20Box.html&label=CZML>`_:
+
+.. code-block:: python
+
+    from czml3 import (
         Box,
         BoxDimensions,
         Color,
+        Document,
         Material,
+        Packet,
         Position,
         SolidColorMaterial,
     )
-    from czml3.types import Cartesian3Value
+
     packet_box = Packet(
         id="my_id",
         position=Position(cartographicDegrees=[-114.0, 40.0, 300000.0]),
         box=Box(
-            dimensions=BoxDimensions(
-                cartesian=Cartesian3Value(values=[400000.0, 300000.0, 500000.0])
-            ),
+            dimensions=BoxDimensions(cartesian=[400000.0, 300000.0, 500000.0]),
             material=Material(
                 solidColor=SolidColorMaterial(color=Color(rgba=[0, 0, 255, 255]))
             ),
         ),
     )
+    doc = Document(packets=[packet_box])
+    print(doc)
+
+``Document`` adds the required preamble packet (``id="document"``) because none was given. Plain lists are converted to the matching CZML value type, so ``cartesian=[...]`` is equivalent to ``cartesian=Cartesian3Value(values=[...])``.
+
+The most common classes, such as ``Document``, ``Packet`` and ``Position``, can be imported from ``czml3`` directly; everything else lives in ``czml3.properties``, ``czml3.types`` and ``czml3.enums``. The :doc:`/reference/index` lists the top-level imports.
+
+Coercion of data
+----------------
+
+czml3 uses `pydantic <https://docs.pydantic.dev/latest/>`_ for all classes, so data is `coerced to the right type <https://docs.pydantic.dev/latest/why/#json-schema>`_. For example, this creates a ``Position`` of doubles from a numpy array of integers:
+
+.. code-block:: python
+
+    import numpy as np
+
+    from czml3 import Position
+
+    print(Position(cartographicDegrees=np.array([-114, 40, 300000], dtype=int)))
+
+An object moving over time
+--------------------------
+
+Time-dynamic values pair an ``epoch`` with interleaved ``[seconds_since_epoch, value, ...]`` samples. Here an aircraft flies between two points over ten minutes, with its trail drawn behind it. Use timezone-aware datetimes: naive ones are treated as UTC and emit a ``czml3.NaiveDatetimeWarning``.
+
+.. code-block:: python
+
+    import datetime as dt
+
+    from czml3 import (
+        Clock,
+        CZML_VERSION,
+        Document,
+        Packet,
+        Path,
+        Point,
+        Position,
+        TimeInterval,
+    )
+    from czml3.enums import ClockRanges
+
+    start = dt.datetime(2024, 1, 1, 12, tzinfo=dt.timezone.utc)
+    end = start + dt.timedelta(minutes=10)
+
     doc = Document(
-        packets=[Packet(id="document", name="box", version=CZML_VERSION), packet_box]
+        packets=[
+            Packet(
+                id="document",
+                name="flight",
+                version=CZML_VERSION,
+                clock=Clock(
+                    interval=TimeInterval(start=start, end=end),
+                    currentTime=start,
+                    multiplier=10,
+                    range=ClockRanges.LOOP_STOP,
+                ),
+            ),
+            Packet(
+                id="aircraft",
+                availability=TimeInterval(start=start, end=end),
+                position=Position(
+                    epoch=start,
+                    cartographicDegrees=[
+                        0, -122.39, 37.62, 0,
+                        600, -121.93, 37.36, 3000,
+                    ],
+                ),
+                point=Point(pixelSize=8),
+                path=Path(leadTime=0, trailTime=600, width=2),
+            ),
+        ]
     )
     print(doc)
 
-This produces the following CZML document::
+The clock in the preamble sets the scene's time span, where playback starts, how fast it runs (``multiplier``) and what happens at the end (``range``).
 
-    [
-        {
-            "id": "document",
-            "name": "box",
-            "version": "1.0"
-        },
-        {
-            "id": "my_id",
-            "position": {
-                "cartographicDegrees": [
-                    -114.0,
-                    40.0,
-                    300000.0
-                ]
-            },
-            "box": {
-                "dimensions": {
-                    "cartesian": [
-                        400000.0,
-                        300000.0,
-                        500000.0
-                    ]
-                },
-                "material": {
-                    "solidColor": {
-                        "color": {
-                            "rgba": [
-                                0.0,
-                                0.0,
-                                255.0,
-                                255.0
-                            ]
-                        }
-                    }
-                }
-            }
-        }
-    ]
+A satellite in an inertial frame
+--------------------------------
 
+Positions can also be given in Cartesian coordinates, in the Earth-fixed (default) or inertial frame, and interpolated between samples. This tracks the International Space Station using Lagrange interpolation:
 
-Example 2
----------
+.. code-block:: python
 
-czml3 uses `pydantic <https://docs.pydantic.dev/latest/>`_ for all classes. As such czml3 is able to `coerce data to their right type <https://docs.pydantic.dev/latest/why/#json-schema>`_. For example, the following creates a Position property of doubles using a numpy array of interger type::
-
-    import numpy as np
-    from czml3.properties import Position
-    print(Position(cartographicDegrees=np.array([-114, 40, 300000], dtype=int)))
-
-This produces the following output::
-
-    {
-        "cartographicDegrees": [
-            -114.0,
-            40.0,
-            300000.0
-        ]
-    }
-
-Example 3
----------
-
-Time-dynamic positions can be described by pairing an ``epoch`` with interleaved ``[time_offset, x, y, z, ...]`` values. This example tracks the International Space Station using Lagrange interpolation on Cartesian coordinates in the inertial reference frame::
-
-    from czml3 import CZML_VERSION, Document, Packet
+    from czml3 import CZML_VERSION, Document, Packet, Path, Point, Position
     from czml3.enums import InterpolationAlgorithms, ReferenceFrames
-    from czml3.properties import Path, Point, Position
     from czml3.types import TimeInterval
+
     packet_iss = Packet(
         id="InternationalSpaceStation",
         availability=TimeInterval(
@@ -129,3 +144,49 @@ Time-dynamic positions can be described by pairing an ``epoch`` with interleaved
         ]
     )
     print(doc)
+
+Load, edit and save
+-------------------
+
+``Document.load`` reads a CZML file into validated objects, and ``save`` writes it back (pass ``indent=None`` for compact output):
+
+.. code-block:: python
+
+    from czml3 import Color, Document, Packet, Point, Position
+
+    Document(
+        packets=[
+            Packet(id="site", position=Position(cartographicDegrees=[34.8, 32.1, 0]))
+        ]
+    ).save("scene.czml")
+
+    doc = Document.load("scene.czml")
+    site = next(packet for packet in doc.packets if packet.id == "site")
+    site.point = Point(pixelSize=10, color=Color(rgba=[255, 0, 0, 255]))
+    doc.save("scene.czml", indent=None)
+
+Previewing a document
+---------------------
+
+In Jupyter, a ``Document`` displays as an interactive Cesium viewer. Anywhere else, write the same viewer to a standalone HTML page and open it in a browser:
+
+.. code-block:: python
+
+    from czml3 import Document, Packet, Point, Position
+
+    doc = Document(
+        packets=[
+            Packet(
+                id="site",
+                position=Position(cartographicDegrees=[34.8, 32.1, 0]),
+                point=Point(pixelSize=10),
+            )
+        ]
+    )
+    doc.save_html("scene.html")
+
+Without a `Cesium ion <https://cesium.com/ion/>`_ access token the page uses the low-resolution Natural Earth II imagery that ships with CesiumJS; pass ``ion_token=...`` to use Cesium's imagery and world terrain, and ``cesium_version=...`` to choose the CesiumJS release.
+
+Browsers block Cesium's web workers on pages opened straight from disk (``file://``), so geometry such as polylines and polygons would not be drawn. Serve the file over HTTP instead, for example with ``python -m http.server``, and open ``http://localhost:8000/scene.html``.
+
+The page records its load status as attributes on its ``<body>``: ``data-czml3-entities`` (the number of entities loaded), ``data-czml3-zoomed`` (set once the document's geometry is built and the camera has zoomed to it), ``data-czml3-globe`` (set once the first globe tiles have loaded) and ``data-czml3-error`` (the latest error, including failed imagery tiles). When the page is embedded in an iframe, as in Jupyter, it also posts each update to the embedding page as a message such as ``{"czml3": {"czml3Entities": "3"}}``.

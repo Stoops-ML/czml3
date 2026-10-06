@@ -1,4 +1,6 @@
 import datetime as dt
+from enum import Enum
+from typing import Any
 
 import pytest
 from pydantic import ValidationError
@@ -15,6 +17,7 @@ from czml3.types import (
     EpochValue,
     FontValue,
     IntervalValue,
+    NaiveDatetimeWarning,
     NearFarScalarValue,
     NumberValue,
     ReferenceListOfListsValue,
@@ -23,92 +26,85 @@ from czml3.types import (
     RgbafValue,
     RgbaValue,
     UnitQuaternionValue,
+    UnitSphericalValue,
     check_reference,
     format_datetime_like,
 )
 
 
 def test_invalid_near_far_scalar_value():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         NearFarScalarValue(values=[0, 3.2, 1, 4, 2, 1, 0])
 
 
 def test_distance_display_condition_is_invalid():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         DistanceDisplayConditionValue(
             values=[0, 150, 15000000, 300, 10000, 15000000, 600]
         )
 
 
 def test_distance_display_condition():
-    expected_result = """[
-    0.0,
-    150.0,
-    15000000.0,
-    300.0,
-    10000.0,
-    15000000.0,
-    600.0,
-    150.0,
-    15000000.0
-]"""
+    expected_result = [
+        0.0,
+        150.0,
+        15000000.0,
+        300.0,
+        10000.0,
+        15000000.0,
+        600.0,
+        150.0,
+        15000000.0,
+    ]
     dist = DistanceDisplayConditionValue(
         values=[0, 150, 15000000, 300, 10000, 15000000, 600, 150, 15000000]
     )
-    assert str(dist) == expected_result
+    assert dist.to_dict() == expected_result
 
 
 def test_cartographic_radian_list():
-    expected_result = """[
-    0.0,
-    1.0,
-    0.0
-]"""
+    expected_result = [0.0, 1.0, 0.0]
     car = CartographicRadiansListValue(values=[0, 1, 0])
-    assert str(car) == expected_result
+    assert car.to_dict() == expected_result
 
 
 def test_invalid_cartograpic_radian_list():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         CartographicRadiansListValue(values=[1])
 
 
 def test_cartograpic_degree_list():
-    expected_result = """[
-    15.0,
-    25.0,
-    50.0
-]"""
+    expected_result = [15.0, 25.0, 50.0]
     car = CartographicDegreesListValue(values=[15, 25, 50])
-    assert str(car) == expected_result
+    assert car.to_dict() == expected_result
 
 
 def test_invalid_cartograpic_degree_list():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         CartographicDegreesListValue(values=[15, 25, 50, 30])
 
 
 @pytest.mark.parametrize("values", [[2, 2], [5, 5, 5, 5, 5]])
 def test_bad_cartesian3_raises_error(values):
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Cartesian3Value(values=values)
 
 
 @pytest.mark.parametrize("values", [[2, 2, 2, 2, 2], [5, 5, 5, 5, 5]])
 def test_bad_cartesian2_raises_error(values):
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         Cartesian2Value(values=values)
 
 
 def test_reference_value():
-    expected_result = '"id#property"'
+    expected_result = "id#property"
     reference = ReferenceValue(value="id#property")
 
-    assert str(reference) == expected_result
+    assert reference.to_dict() == expected_result
 
 
 def test_invalid_reference_value():
-    with pytest.raises(TypeError) as excinfo:
+    with pytest.raises(ValidationError) as excinfo:
         ReferenceValue(value="id")
 
     assert (
@@ -118,7 +114,7 @@ def test_invalid_reference_value():
 
 
 def test_invalid_reference_list_value():
-    with pytest.raises(TypeError) as excinfo:
+    with pytest.raises(ValidationError) as excinfo:
         ReferenceListValue(values=["id"])
 
     assert (
@@ -128,7 +124,7 @@ def test_invalid_reference_list_value():
 
 
 def test_invalid_reference_list_of_lists_value():
-    with pytest.raises(TypeError) as excinfo:
+    with pytest.raises(ValidationError) as excinfo:
         ReferenceListOfListsValue(values=[["id"]])
 
     assert (
@@ -138,10 +134,10 @@ def test_invalid_reference_list_of_lists_value():
 
 
 def test_font_value():
-    expected_result = '"20px sans-serif"'
+    expected_result = "20px sans-serif"
     font = FontValue(font="20px sans-serif")
 
-    assert str(font) == expected_result
+    assert font.to_dict() == expected_result
 
 
 def test_font_property_value():
@@ -152,22 +148,22 @@ def test_font_property_value():
 
 
 def test_bad_rgba_4_values_raises_error():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         RgbaValue(values=[256, 0, 0, 255])
 
 
 def test_bad_rgba_5_color_values_raises_error():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         RgbaValue(values=[0, 0.1, 0.3, 0.3, 256])
 
 
 def test_bad_rgbaf_4_values_raises_error():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         RgbafValue(values=[0.3, 0, 0, 1.4])
 
 
 def test_bad_rgbaf_5_color_values_raises_error():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         RgbafValue(values=[0, 0.1, 0.3, 0.3, 255])
 
 
@@ -318,7 +314,7 @@ def test_epoch_value():
     )
 
     assert (
-        str(EpochValue(value=dt.datetime(2019, 1, 1, 12)))
+        str(EpochValue(value=dt.datetime(2019, 1, 1, 12, tzinfo=dt.timezone.utc)))
         == """{
     "epoch": "2019-01-01T12:00:00.000000Z"
 }"""
@@ -329,24 +325,15 @@ def test_epoch_value():
 
 
 def test_numbers_value():
-    expected_result = """{
-    "number": [
-        1,
-        2,
-        3,
-        4
-    ]
-}"""
+    expected_result: dict[str, Any] = {"number": [1, 2, 3, 4]}
     numbers = NumberValue(values=[1, 2, 3, 4])
 
-    assert str(numbers) == expected_result
+    assert numbers.to_dict() == expected_result
 
-    expected_result = """{
-    "number": 1.0
-}"""
+    expected_result = {"number": 1.0}
     numbers = NumberValue(values=1.0)
 
-    assert str(numbers) == expected_result
+    assert numbers.to_dict() == expected_result
 
     with pytest.raises(ValidationError):
         NumberValue(values="test")  # type: ignore
@@ -356,21 +343,16 @@ def test_numbers_value():
 
 
 def test_quaternion_value_is_invalid():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         UnitQuaternionValue(values=[0, 0, 0, 1, 0, 0])
 
 
 def test_quaternion_value():
-    expected_result = """[
-    0.0,
-    0.0,
-    0.0,
-    1.0
-]"""
+    expected_result = [0.0, 0.0, 0.0, 1.0]
 
     result = UnitQuaternionValue(values=[0, 0, 0, 1])
 
-    assert str(result) == expected_result
+    assert result.to_dict() == expected_result
 
 
 def test_cartographic_radians_value():
@@ -393,7 +375,7 @@ def test_cartographic_radians_value():
     1.0
 ]"""
     )
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         CartographicRadiansValue(values=[0, 0, 1, 1, 1, 1, 1])
 
 
@@ -417,7 +399,7 @@ def test_cartographic_degrees_value():
     1.0
 ]"""
     )
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         CartographicDegreesValue(values=[0, 0, 1, 1, 1, 1, 1])
 
 
@@ -446,7 +428,7 @@ def test_rgbaf_value():
 
 
 def test_check_reference():
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         check_reference("thisthat")
     check_reference("this#that")
     check_reference(None)
@@ -458,36 +440,27 @@ def test_format_datetime_like():
         format_datetime_like("2019-01-01T12:00:00.000000Z")
         == "2019-01-01T12:00:00.000000Z"
     )
-    assert (
-        format_datetime_like(dt.datetime(2019, 1, 1, 12))
-        == "2019-01-01T12:00:00.000000Z"
-    )
+    with pytest.warns(NaiveDatetimeWarning, match="treated as UTC"):
+        assert (
+            format_datetime_like(dt.datetime(2019, 1, 1, 12))
+            == "2019-01-01T12:00:00.000000Z"
+        )
     with pytest.raises(ValueError):
         format_datetime_like("test")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         format_datetime_like(1)  # type: ignore[arg-type]
 
 
 def test_reference_list():
-    expected_result = """[
-    "1#this",
-    "1#that"
-]"""
+    expected_result = ["1#this", "1#that"]
     r = ReferenceListValue(values=["1#this", "1#that"])
-    assert expected_result == str(r)
+    assert expected_result == r.to_dict()
 
 
 def test_reference_list_of_lists():
-    expected_result = """[
-    [
-        "1#this"
-    ],
-    [
-        "1#that"
-    ]
-]"""
+    expected_result = [["1#this"], ["1#that"]]
     r = ReferenceListOfListsValue(values=[["1#this"], ["1#that"]])
-    assert expected_result == str(r)
+    assert expected_result == r.to_dict()
 
 
 def test_rgbaf_with_time():
@@ -678,7 +651,7 @@ def test_check_values():
     )
 
     # Test for when time values are not increasing but data is sized properly
-    with pytest.raises(TypeError) as e:
+    with pytest.raises(ValidationError) as e:
         assert (
             str(
                 Cartesian3VelocityValue(
@@ -717,4 +690,54 @@ def test_check_values():
     3.0
 ]"""
         )
-    assert str(e.value) == "Time values must be increasing."
+    assert "Time values must be increasing." in str(e.value)
+
+
+def test_interval_value_rejects_unsupported_type_at_construction():
+    with pytest.raises(
+        ValidationError, match="Unsupported interval value of type datetime"
+    ):
+        IntervalValue(
+            start="2019-01-01T00:00:00Z",
+            end="2019-01-02T00:00:00Z",
+            value=dt.datetime(2020, 1, 1),
+        )
+
+
+def test_interval_value_accepts_subclasses_of_mapped_types():
+    class Kind(str, Enum):
+        A = "a"
+
+    class Metres(float):
+        pass
+
+    start, end = "2019-01-01T00:00:00Z", "2019-01-02T00:00:00Z"
+    assert IntervalValue(start=start, end=end, value=Kind.A).to_dict() == {
+        "interval": f"{start}/{end}",
+        "string": "a",
+    }
+    assert IntervalValue(start=start, end=end, value=Metres(2.5)).to_dict() == {
+        "interval": f"{start}/{end}",
+        "number": 2.5,
+    }
+
+
+def test_interval_value_without_value_serializes_interval_only():
+    start, end = "2019-01-01T00:00:00Z", "2019-01-02T00:00:00Z"
+    assert IntervalValue(start=start, end=end).to_dict() == {
+        "interval": f"{start}/{end}"
+    }
+
+
+def test_unit_spherical_value_is_clock_and_cone():
+    assert UnitSphericalValue(values=[0.5, 1.0]).to_dict() == [0.5, 1.0]
+    assert UnitSphericalValue(values=[0, 0.5, 1.0, 60, 0.6, 1.1]).to_dict() == [
+        0,
+        0.5,
+        1.0,
+        60,
+        0.6,
+        1.1,
+    ]
+    with pytest.raises(ValidationError):
+        UnitSphericalValue(values=[0.5, 1.0, 1.5, 2.0, 2.5])

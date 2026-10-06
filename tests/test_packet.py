@@ -1,4 +1,3 @@
-import ast
 import datetime as dt
 from uuid import UUID
 
@@ -74,93 +73,31 @@ def test_packet_custom_id():
 
 
 def test_packet_repr_id_only():
-    expected_result = """{
-    "id": "id_00"
-}"""
+    expected_result = {"id": "id_00"}
     packet = Packet(id="id_00")
 
-    assert str(packet) == expected_result
-
-
-def test_packet_label():
-    expected_result = """{
-    "id": "0",
-    "label": {
-        "font": "20px sans-serif",
-        "fillColor": {
-            "rgbaf": [
-                0.2,
-                0.3,
-                0.4,
-                1.0
-            ]
-        },
-        "outlineColor": {
-            "rgba": [
-                0,
-                233,
-                255,
-                2
-            ]
-        },
-        "outlineWidth": 2.0
-    }
-}"""
-    packet = Packet(
-        id="0",
-        label=Label(
-            font="20px sans-serif",
-            fillColor=Color(rgbaf=[0.2, 0.3, 0.4, 1.0]),
-            outlineColor=Color(rgba=[0, 233, 255, 2]),
-            outlineWidth=2.0,
-        ),
-    )
-
-    assert packet == Packet(**ast.literal_eval(expected_result))
-    assert str(packet) == expected_result
+    assert packet.to_dict() == expected_result
 
 
 def test_packet_repr_id_name():
-    expected_result = """{
-    "id": "id_00",
-    "name": "Test Packet"
-}"""
+    expected_result = {"id": "id_00", "name": "Test Packet"}
     packet = Packet(id="id_00", name="Test Packet")
 
-    assert str(packet) == expected_result
+    assert packet.to_dict() == expected_result
 
 
 def test_packet_with_delete_has_nothing_else():
-    expected_result = """{
-    "id": "id_00",
-    "delete": true
-}"""
+    expected_result = {"id": "id_00", "delete": True}
     packet = Packet(id="id_00", delete=True, name="No Name In Packet")
 
-    assert str(packet) == expected_result
-
-
-def test_packet_dumps():
-    expected_result = """{"id":"id_00"}"""
-    packet = Packet(id="id_00")
-
-    assert packet.dumps() == expected_result
+    assert packet.to_dict() == expected_result
 
 
 def test_packet_constant_cartesian_position():
-    expected_result = """{
-    "id": "MyObject",
-    "position": {
-        "cartesian": [
-            0.0,
-            0.0,
-            0.0
-        ]
-    }
-}"""
+    expected_result = {"id": "MyObject", "position": {"cartesian": [0.0, 0.0, 0.0]}}
     packet = Packet(id="MyObject", position=Position(cartesian=[0.0, 0.0, 0.0]))
 
-    assert str(packet) == expected_result
+    assert packet.to_dict() == expected_result
 
 
 @pytest.mark.xfail
@@ -201,23 +138,23 @@ def test_packet_dynamic_cartesian_position_perfect():
 
 
 def test_packet_dynamic_cartesian_position():
-    expected_result = """{
-    "id": "InternationalSpaceStation",
-    "position": {
-        "interpolationAlgorithm": "LAGRANGE",
-        "referenceFrame": "INERTIAL",
-        "cartesian": [
-            0.0,
-            -6668447.2211117,
-            1201886.45913705,
-            146789.427467256,
-            60.0,
-            -6711432.84684144,
-            919677.673492462,
-            -214047.552431458
-        ]
+    expected_result = {
+        "id": "InternationalSpaceStation",
+        "position": {
+            "interpolationAlgorithm": "LAGRANGE",
+            "referenceFrame": "INERTIAL",
+            "cartesian": [
+                0.0,
+                -6668447.2211117,
+                1201886.45913705,
+                146789.427467256,
+                60.0,
+                -6711432.84684144,
+                919677.673492462,
+                -214047.552431458,
+            ],
+        },
     }
-}"""
     packet = Packet(
         id="InternationalSpaceStation",
         position=Position(
@@ -236,39 +173,33 @@ def test_packet_dynamic_cartesian_position():
         ),
     )
 
-    assert str(packet) == expected_result
+    assert packet.to_dict() == expected_result
 
 
 def test_packet_description():
-    expected_result = """{
-    "id": "id_00",
-    "name": "Name",
-    "description": "<strong>Description</strong>"
-}"""
+    expected_result = {
+        "id": "id_00",
+        "name": "Name",
+        "description": "<strong>Description</strong>",
+    }
     string = "<strong>Description</strong>"
     packet_str = Packet(id="id_00", name="Name", description=string)
     packet_val = Packet(id="id_00", name="Name", description=StringValue(string=string))
-    assert str(packet_str) == str(packet_val) == expected_result
+    assert packet_str.to_dict() == packet_val.to_dict() == expected_result
 
 
 def test_packet_custom_properties():
-    expected_result = """{
-    "id": "id_00",
-    "properties": {
-        "a": false,
-        "b": 1,
-        "c": "C",
-        "ellipsoid": {
-            "radii": {
-                "cartesian": [
-                    6378137.0,
-                    6378137.0,
-                    6356752.31414
-                ]
-            }
-        }
+    expected_result = {
+        "id": "id_00",
+        "properties": {
+            "a": False,
+            "b": 1,
+            "c": "C",
+            "ellipsoid": {
+                "radii": {"cartesian": [6378137.0, 6378137.0, 6356752.31414]}
+            },
+        },
     }
-}"""
     prop_dict = {
         "a": False,
         "b": 1,
@@ -282,68 +213,33 @@ def test_packet_custom_properties():
 
     packet = Packet(id="id_00", properties=prop_dict)
 
-    assert str(packet) == expected_result
+    assert packet.to_dict() == expected_result
 
 
 def test_packet_billboard():
-    expected_result = """{
-    "id": "id_00",
-    "billboard": {
-        "image": "file://image.png"
-    }
-}"""
+    expected_result = {"id": "id_00", "billboard": {"image": "file://image.png"}}
     packet = Packet(id="id_00", billboard=Billboard(image="file://image.png"))
 
-    assert str(packet) == expected_result
+    assert packet.to_dict() == expected_result
 
 
 def test_packet_point():
-    expected_result = """{
-    "id": "id_00",
-    "point": {
-        "color": {
-            "rgba": [
-                255,
-                0,
-                0,
-                255
-            ]
-        }
-    }
-}"""
+    expected_result = {"id": "id_00", "point": {"color": {"rgba": [255, 0, 0, 255]}}}
     packet = Packet(id="id_00", point=Point(color=Color(rgba=[255, 0, 0, 255])))
 
-    assert str(packet) == expected_result
+    assert packet.to_dict() == expected_result
 
 
 def test_packet_polyline():
-    expected_result = """{
-    "id": "id_00",
-    "polyline": {
-        "positions": {
-            "cartographicDegrees": [
-                -75.0,
-                43.0,
-                500000.0,
-                -125.0,
-                43.0,
-                500000.0
-            ]
+    expected_result = {
+        "id": "id_00",
+        "polyline": {
+            "positions": {
+                "cartographicDegrees": [-75.0, 43.0, 500000.0, -125.0, 43.0, 500000.0]
+            },
+            "material": {"solidColor": {"color": {"rgba": [255, 0, 0, 255]}}},
         },
-        "material": {
-            "solidColor": {
-                "color": {
-                    "rgba": [
-                        255,
-                        0,
-                        0,
-                        255
-                    ]
-                }
-            }
-        }
     }
-}"""
     packet = Packet(
         id="id_00",
         polyline=Polyline(
@@ -356,46 +252,25 @@ def test_packet_polyline():
         ),
     )
 
-    assert str(packet) == expected_result
+    assert packet.to_dict() == expected_result
 
 
 def test_packet_polyline_outline():
-    expected_result = """{
-    "id": "id_00",
-    "polyline": {
-        "positions": {
-            "cartographicDegrees": [
-                -75.0,
-                43.0,
-                500000.0,
-                -125.0,
-                43.0,
-                500000.0
-            ]
+    expected_result = {
+        "id": "id_00",
+        "polyline": {
+            "positions": {
+                "cartographicDegrees": [-75.0, 43.0, 500000.0, -125.0, 43.0, 500000.0]
+            },
+            "material": {
+                "polylineOutline": {
+                    "color": {"rgba": [255, 0, 0, 255]},
+                    "outlineColor": {"rgba": [255, 0, 0, 255]},
+                    "outlineWidth": 2.0,
+                }
+            },
         },
-        "material": {
-            "polylineOutline": {
-                "color": {
-                    "rgba": [
-                        255,
-                        0,
-                        0,
-                        255
-                    ]
-                },
-                "outlineColor": {
-                    "rgba": [
-                        255,
-                        0,
-                        0,
-                        255
-                    ]
-                },
-                "outlineWidth": 2.0
-            }
-        }
     }
-}"""
     packet = Packet(
         id="id_00",
         polyline=Polyline(
@@ -412,40 +287,26 @@ def test_packet_polyline_outline():
         ),
     )
 
-    assert str(packet) == expected_result
+    assert packet.to_dict() == expected_result
 
 
 # TODO:
 def test_packet_polyline_glow():
-    expected_result = """{
-    "id": "id_00",
-    "polyline": {
-        "positions": {
-            "cartographicDegrees": [
-                -75.0,
-                43.0,
-                500000.0,
-                -125.0,
-                43.0,
-                500000.0
-            ]
+    expected_result = {
+        "id": "id_00",
+        "polyline": {
+            "positions": {
+                "cartographicDegrees": [-75.0, 43.0, 500000.0, -125.0, 43.0, 500000.0]
+            },
+            "material": {
+                "polylineGlow": {
+                    "color": {"rgba": [255, 0, 0, 255]},
+                    "glowPower": 0.2,
+                    "taperPower": 0.5,
+                }
+            },
         },
-        "material": {
-            "polylineGlow": {
-                "color": {
-                    "rgba": [
-                        255,
-                        0,
-                        0,
-                        255
-                    ]
-                },
-                "glowPower": 0.2,
-                "taperPower": 0.5
-            }
-        }
     }
-}"""
     packet = Packet(
         id="id_00",
         polyline=Polyline(
@@ -462,37 +323,19 @@ def test_packet_polyline_glow():
         ),
     )
 
-    assert str(packet) == expected_result
+    assert packet.to_dict() == expected_result
 
 
 def test_packet_polyline_arrow():
-    expected_result = """{
-    "id": "id_00",
-    "polyline": {
-        "positions": {
-            "cartographicDegrees": [
-                -75.0,
-                43.0,
-                500000.0,
-                -125.0,
-                43.0,
-                500000.0
-            ]
+    expected_result = {
+        "id": "id_00",
+        "polyline": {
+            "positions": {
+                "cartographicDegrees": [-75.0, 43.0, 500000.0, -125.0, 43.0, 500000.0]
+            },
+            "material": {"polylineArrow": {"color": {"rgba": [255, 0, 0, 255]}}},
         },
-        "material": {
-            "polylineArrow": {
-                "color": {
-                    "rgba": [
-                        255,
-                        0,
-                        0,
-                        255
-                    ]
-                }
-            }
-        }
     }
-}"""
     packet = Packet(
         id="id_00",
         polyline=Polyline(
@@ -505,37 +348,19 @@ def test_packet_polyline_arrow():
         ),
     )
 
-    assert str(packet) == expected_result
+    assert packet.to_dict() == expected_result
 
 
 def test_packet_polyline_dashed():
-    expected_result = """{
-    "id": "id_00",
-    "polyline": {
-        "positions": {
-            "cartographicDegrees": [
-                -75.0,
-                43.0,
-                500000.0,
-                -125.0,
-                43.0,
-                500000.0
-            ]
+    expected_result = {
+        "id": "id_00",
+        "polyline": {
+            "positions": {
+                "cartographicDegrees": [-75.0, 43.0, 500000.0, -125.0, 43.0, 500000.0]
+            },
+            "material": {"polylineDash": {"color": {"rgba": [255, 0, 0, 255]}}},
         },
-        "material": {
-            "polylineDash": {
-                "color": {
-                    "rgba": [
-                        255,
-                        0,
-                        0,
-                        255
-                    ]
-                }
-            }
-        }
     }
-}"""
     packet = Packet(
         id="id_00",
         polyline=Polyline(
@@ -548,47 +373,36 @@ def test_packet_polyline_dashed():
         ),
     )
 
-    assert str(packet) == expected_result
+    assert packet.to_dict() == expected_result
 
 
 def test_packet_polygon():
-    expected_result = """{
-    "id": "id_00",
-    "polygon": {
-        "positions": {
-            "cartographicDegrees": [
-                -115.0,
-                37.0,
-                0.0,
-                -115.0,
-                32.0,
-                0.0,
-                -107.0,
-                33.0,
-                0.0,
-                -102.0,
-                31.0,
-                0.0,
-                -102.0,
-                35.0,
-                0.0
-            ]
+    expected_result = {
+        "id": "id_00",
+        "polygon": {
+            "positions": {
+                "cartographicDegrees": [
+                    -115.0,
+                    37.0,
+                    0.0,
+                    -115.0,
+                    32.0,
+                    0.0,
+                    -107.0,
+                    33.0,
+                    0.0,
+                    -102.0,
+                    31.0,
+                    0.0,
+                    -102.0,
+                    35.0,
+                    0.0,
+                ]
+            },
+            "granularity": 1.0,
+            "material": {"solidColor": {"color": {"rgba": [255, 0, 0, 255]}}},
         },
-        "granularity": 1.0,
-        "material": {
-            "solidColor": {
-                "color": {
-                    "rgba": [
-                        255,
-                        0,
-                        0,
-                        255
-                    ]
-                }
-            }
-        }
     }
-}"""
     packet = Packet(
         id="id_00",
         polygon=Polygon(
@@ -618,7 +432,7 @@ def test_packet_polygon():
         ),
     )
 
-    assert str(packet) == expected_result
+    assert packet.to_dict() == expected_result
 
 
 def test_different_IDs():
@@ -1052,4 +866,17 @@ def test_preamble_properties_supplied():
                     properties={"non_allowed_property": "value"},
                 )
             ]
+        )
+
+
+@pytest.mark.parametrize(
+    "kwargs, name",
+    [({"parent": "other"}, "parent"), ({"properties": {"a": 1}}, "properties")],
+)
+def test_preamble_rejects_any_non_preamble_property(kwargs, name):
+    with pytest.raises(
+        ValueError, match=f"The first packet must not include the '{name}' property"
+    ):
+        Document(
+            packets=[Packet(id="document", name="name", version=CZML_VERSION, **kwargs)]
         )

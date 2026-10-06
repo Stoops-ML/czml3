@@ -30,41 +30,44 @@ conda install czml3 --channel conda-forge
 ```
 
 ## Examples
+
+### Creating a document
 A CZML document is a list of *packets*, which have several properties. Recreating the blue box from Cesium sandcastle's [CZML Box](https://sandcastle.cesium.com/?src=CZML%20Box.html&label=CZML):
 
 ```python
-from czml3 import CZML_VERSION, Document, Packet
-from czml3.properties import (
+from czml3 import (
     Box,
     BoxDimensions,
     Color,
+    Document,
     Material,
+    Packet,
     Position,
     SolidColorMaterial,
 )
-from czml3.types import Cartesian3Value
+
 packet_box = Packet(
     id="my_id",
     position=Position(cartographicDegrees=[-114.0, 40.0, 300000.0]),
     box=Box(
-        dimensions=BoxDimensions(
-            cartesian=Cartesian3Value(values=[400000.0, 300000.0, 500000.0])
-        ),
+        dimensions=BoxDimensions(cartesian=[400000.0, 300000.0, 500000.0]),
         material=Material(
             solidColor=SolidColorMaterial(color=Color(rgba=[0, 0, 255, 255]))
         ),
     ),
 )
-doc = Document(
-    packets=[Packet(id="document", name="box", version=CZML_VERSION), packet_box]
-)
+doc = Document(packets=[packet_box])
 print(doc)
 ```
+
+<details>
+<summary>Output</summary>
+
 ```bash
 [
     {
         "id": "document",
-        "name": "box",
+        "name": "document",
         "version": "1.0"
     },
     {
@@ -88,10 +91,10 @@ print(doc)
                 "solidColor": {
                     "color": {
                         "rgba": [
-                            0.0,
-                            0.0,
-                            255.0,
-                            255.0
+                            0,
+                            0,
+                            255,
+                            255
                         ]
                     }
                 }
@@ -101,10 +104,35 @@ print(doc)
 ]
 ```
 
-czml3 uses [pydantic](https://docs.pydantic.dev/latest/) for all classes. As such czml3 is able to [coerce data to their right type](https://docs.pydantic.dev/latest/why/#json-schema). For example, the following creates a Position property of doubles using a numpy array of interger type:
+</details>
+
+### The document packet
+`Document` adds the required preamble packet (`id="document"`) when you don't supply one. To name the document or set its clock, pass your own preamble packet first:
+
+```python
+from czml3 import CZML_VERSION, Document, Packet
+
+doc = Document(
+    packets=[
+        Packet(id="document", name="My scene", version=CZML_VERSION),
+        packet_box,
+    ]
+)
+```
+
+### Imports
+The most common classes can be imported from `czml3` directly; everything else lives in `czml3.properties`, `czml3.types` and `czml3.enums`.
+
+### Data coercion
+czml3 uses [pydantic](https://docs.pydantic.dev/latest/) for all classes, so it is able to [coerce data to their right type](https://docs.pydantic.dev/latest/why/#json-schema).
+
+Plain lists are converted to the matching CZML value type, so `BoxDimensions(cartesian=[...])` is equivalent to `BoxDimensions(cartesian=Cartesian3Value(values=[...]))`.
+
+Arrays are coerced too. For example, the following creates a Position property of doubles using a numpy array of integer type:
 ```python
 import numpy as np
 from czml3.properties import Position
+
 print(Position(cartographicDegrees=np.array([-114, 40, 300000], dtype=int)))
 ```
 ```bash
@@ -115,6 +143,27 @@ print(Position(cartographicDegrees=np.array([-114, 40, 300000], dtype=int)))
         300000.0
     ]
 }
+```
+
+### Saving and loading
+```python
+doc.save("scene.czml")
+doc = Document.load("scene.czml")
+```
+
+### Viewing a document
+In Jupyter, displaying a `Document` renders it in an interactive Cesium viewer.
+
+Outside notebooks, write the same viewer as a standalone page:
+```python
+doc.save_html("scene.html")
+```
+- `ion_token=` uses Cesium ion imagery and terrain.
+- `cesium_version=` chooses the CesiumJS release.
+
+Browsers block Cesium's web workers on pages opened straight from disk (`file://`), so serve the file over HTTP and open `http://localhost:8000/scene.html`:
+```bash
+python -m http.server
 ```
 
 ## Contributing

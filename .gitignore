@@ -106,3 +106,6 @@ venv.bak/
 # linters
 .mypy_cache/
 .ruff_cache/
+
+# Local commit message file
+.commit-msg.txt

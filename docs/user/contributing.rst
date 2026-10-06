@@ -3,9 +3,20 @@ Contributing
 
 This page details the features/properties that are missing from ``czml3``. The lists are incomplete.
 
+Development Setup
+-----------------
+Install the package with its development dependencies, then enable the
+`pre-commit <https://pre-commit.com/>`_ hooks, which run ``ruff check``,
+``ruff format`` and ``mypy`` before each commit, the same checks as CI::
+
+    pip install -e . --group dev
+    pip install pre-commit
+    pre-commit install
+
+Run the test suite with ``python -m pytest``. The ``browser`` tests render the HTML preview in headless Chrome and need Chrome (or Chromium/Edge) and internet access; they are skipped when either is missing, and ``python -m pytest -m "not browser"`` deselects them.
+
 Missing CZML Properties
 -----------------------
-* `LineOffset <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/LineOffset>`_
 * `LineThickness <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/LineThickness>`_
 * `LineCount <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/LineCount>`_
 * `CartographicRectangleRadiansValue <https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/CartographicRectangleRadiansValue>`_

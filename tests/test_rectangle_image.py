@@ -3,6 +3,7 @@ import os
 import tempfile
 
 import pytest
+from pydantic import ValidationError
 
 from czml3 import CZML_VERSION, Document, Packet
 from czml3.properties import (
@@ -26,23 +27,28 @@ def image():
 
 def test_bad_rectangle_coordinates():
     with pytest.raises(
-        TypeError, match="Only one of wsen, wsenDegrees or reference must be given"
+        ValidationError,
+        match="Only one of wsen, wsenDegrees or reference must be given",
     ):
         RectangleCoordinates()
     with pytest.raises(
-        TypeError, match="Only one of wsen, wsenDegrees or reference must be given"
+        ValidationError,
+        match="Only one of wsen, wsenDegrees or reference must be given",
     ):
         RectangleCoordinates(wsen=[0, 0, 0], wsenDegrees=[0, 0, 0])
     with pytest.raises(
-        TypeError, match="Only one of wsen, wsenDegrees or reference must be given"
+        ValidationError,
+        match="Only one of wsen, wsenDegrees or reference must be given",
     ):
         RectangleCoordinates(wsen=[0, 0, 0], reference="this#that")
     with pytest.raises(
-        TypeError, match="Only one of wsen, wsenDegrees or reference must be given"
+        ValidationError,
+        match="Only one of wsen, wsenDegrees or reference must be given",
     ):
         RectangleCoordinates(wsenDegrees=[0, 0, 0], reference="this#that")
     with pytest.raises(
-        TypeError, match="Only one of wsen, wsenDegrees or reference must be given"
+        ValidationError,
+        match="Only one of wsen, wsenDegrees or reference must be given",
     ):
         RectangleCoordinates(
             wsenDegrees=[0, 0, 0], wsen=[0, 0, 0], reference="this#that"
@@ -52,26 +58,19 @@ def test_bad_rectangle_coordinates():
 def test_packet_rectangles(image):
     wsen = [20.0, 40.0, 21.0, 41.0]
 
-    expected_result = """{{
-    "id": "id_00",
-    "rectangle": {{
-        "coordinates": {{
-            "wsenDegrees": [
-                {},
-                {},
-                {},
-                {}
-            ]
-        }},
-        "fill": true,
-        "material": {{
-            "image": {{
-                "image": "data:image/png;base64,{}",
-                "transparent": true
-            }}
-        }}
-    }}
-}}""".format(*wsen, image)
+    expected_result = {
+        "id": "id_00",
+        "rectangle": {
+            "coordinates": {"wsenDegrees": wsen},
+            "fill": True,
+            "material": {
+                "image": {
+                    "image": "data:image/png;base64," + image,
+                    "transparent": True,
+                }
+            },
+        },
+    }
 
     rectangle_packet = Packet(
         id="id_00",
@@ -88,7 +87,7 @@ def test_packet_rectangles(image):
         ),
     )
 
-    assert str(rectangle_packet) == expected_result
+    assert rectangle_packet.to_dict() == expected_result
 
 
 def test_make_czml_png_rectangle_file(image):
