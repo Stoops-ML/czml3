@@ -30,6 +30,8 @@ conda install czml3 --channel conda-forge
 ```
 
 ## Examples
+
+### Creating a document
 A CZML document is a list of *packets*, which have several properties. Recreating the blue box from Cesium sandcastle's [CZML Box](https://sandcastle.cesium.com/?src=CZML%20Box.html&label=CZML):
 
 ```python
@@ -57,6 +59,10 @@ packet_box = Packet(
 doc = Document(packets=[packet_box])
 print(doc)
 ```
+
+<details>
+<summary>Output</summary>
+
 ```bash
 [
     {
@@ -98,13 +104,31 @@ print(doc)
 ]
 ```
 
-`Document` adds the required preamble packet (`id="document"`) when you don't supply one; pass your own `Packet(id="document", name=..., version=CZML_VERSION, clock=...)` first to name the document or set its clock. Plain lists are converted to the matching CZML value type, so `BoxDimensions(cartesian=[...])` is equivalent to `BoxDimensions(cartesian=Cartesian3Value(values=[...]))`. The most common classes can be imported from `czml3` directly; everything else lives in `czml3.properties`, `czml3.types` and `czml3.enums`.
+</details>
 
-Save a document to a file and read it back with `doc.save("scene.czml")` and `Document.load("scene.czml")`.
+### The document packet
+`Document` adds the required preamble packet (`id="document"`) when you don't supply one. To name the document or set its clock, pass your own preamble packet first:
 
-In Jupyter, displaying a `Document` renders it in an interactive Cesium viewer. Outside notebooks, `doc.save_html("scene.html")` writes the same viewer as a standalone page; pass `ion_token=` to use Cesium ion imagery and terrain, and `cesium_version=` to choose the CesiumJS release. Browsers block Cesium's web workers on pages opened straight from disk (`file://`), so serve the file over HTTP, e.g. `python -m http.server`, and open `http://localhost:8000/scene.html`.
+```python
+from czml3 import CZML_VERSION, Document, Packet
 
-czml3 uses [pydantic](https://docs.pydantic.dev/latest/) for all classes. As such czml3 is able to [coerce data to their right type](https://docs.pydantic.dev/latest/why/#json-schema). For example, the following creates a Position property of doubles using a numpy array of interger type:
+doc = Document(
+    packets=[
+        Packet(id="document", name="My scene", version=CZML_VERSION),
+        packet_box,
+    ]
+)
+```
+
+### Imports
+The most common classes can be imported from `czml3` directly; everything else lives in `czml3.properties`, `czml3.types` and `czml3.enums`.
+
+### Data coercion
+czml3 uses [pydantic](https://docs.pydantic.dev/latest/) for all classes, so it is able to [coerce data to their right type](https://docs.pydantic.dev/latest/why/#json-schema).
+
+Plain lists are converted to the matching CZML value type, so `BoxDimensions(cartesian=[...])` is equivalent to `BoxDimensions(cartesian=Cartesian3Value(values=[...]))`.
+
+Arrays are coerced too. For example, the following creates a Position property of doubles using a numpy array of integer type:
 ```python
 import numpy as np
 from czml3.properties import Position
@@ -119,6 +143,27 @@ print(Position(cartographicDegrees=np.array([-114, 40, 300000], dtype=int)))
         300000.0
     ]
 }
+```
+
+### Saving and loading
+```python
+doc.save("scene.czml")
+doc = Document.load("scene.czml")
+```
+
+### Viewing a document
+In Jupyter, displaying a `Document` renders it in an interactive Cesium viewer.
+
+Outside notebooks, write the same viewer as a standalone page:
+```python
+doc.save_html("scene.html")
+```
+- `ion_token=` uses Cesium ion imagery and terrain.
+- `cesium_version=` chooses the CesiumJS release.
+
+Browsers block Cesium's web workers on pages opened straight from disk (`file://`), so serve the file over HTTP and open `http://localhost:8000/scene.html`:
+```bash
+python -m http.server
 ```
 
 ## Contributing
