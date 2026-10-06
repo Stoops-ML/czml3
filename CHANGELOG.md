@@ -1,18 +1,55 @@
-# Unreleased
+## v4.0.0 (2026-10-06)
 
-* **Breaking:** remove the deprecated `CZMLWidget` and the `czml3.widget` module. Display a `Document` directly in Jupyter, or use `Document.to_html()` / `save_html()`.
-* Add `Document.save()` / `Document.load()`, and make documents written by czml3 read back with `Document.model_validate_json()` (including `TimeInterval`, `TimeIntervalCollection`, `IntervalValue`, `Cartesian2Value`, `EpochValue` and `NumberValue` in their serialized forms)
-* Add `Document.to_html()` / `save_html()` and inline display of a `Document` in Jupyter, using CesiumJS 1.145 by default
-* `Document` adds a default preamble packet when none is given
-* Re-export the common property and interval classes from the top-level `czml3` package
-* `repr()` shows only the properties that are set
-* `IntervalValue` validates its value, start and end at construction instead of failing at serialization
-* Mutual-exclusion error messages now name every alternative (e.g. `Position` now lists `cartesianVelocity`)
-* Restore `czml3.__version__`
-* Drop the unused `setuptools-scm` build requirement and declare the licence as a PEP 639 SPDX expression (`BSD-3-Clause`)
-* Timezone-naive datetimes emit a `czml3.NaiveDatetimeWarning` and are treated as UTC. Pass aware datetimes (e.g. `tzinfo=datetime.timezone.utc`) to silence it.
-* **Fix:** timezone-aware datetimes are converted to UTC before formatting; previously a non-UTC time was written with its local clock time and a `Z` suffix.
-* **Breaking:** custom validation checks now raise `pydantic.ValidationError` (via `ValueError`) instead of a raw `TypeError`, so they are caught by `except ValidationError` and get readable error messages. Code catching `TypeError` must catch `ValidationError` instead.
+### BREAKING CHANGE
+
+- czml3.widget and CZMLWidget no longer exist. Display
+the Document directly in Jupyter, or use Document.to_html() /
+Document.save_html().
+- invalid input to custom checks now raises
+pydantic.ValidationError instead of TypeError.
+
+### Feat
+
+- remove the deprecated CZMLWidget
+- **html**: post the preview's load status to an embedding page
+- **html**: record the preview's load status on the page
+- **core**: preview documents in Jupyter and as standalone HTML
+- **base**: show only set properties in repr()
+- warn when a naive datetime is interpreted as UTC
+- **core**: add a default preamble when a document has none
+- **core**: add Document.save and Document.load
+
+### Fix
+
+- **html**: stop sandboxing the Jupyter preview iframe
+- **types**: validate UnitSphericalValue as [Clock, Cone] pairs
+- **properties**: accept Cartesian2Value for Billboard.pixelOffset
+- accept CZML's minimum and maximum times
+- **common**: accept a TimeIntervalCollection as an epoch
+- convert timezone-aware datetimes to UTC before formatting
+- read back documents that czml3 has written
+- **types**: validate IntervalValue.value at construction
+- raise ValueError from validators so pydantic wraps them
+- **widget**: generate a real UUID for CZMLWidget.container_id
+- **widget**: warn about CZMLWidget deprecation on use, not import
+- restore czml3.__version__ from package metadata
+- **build**: package version restored to 3.3.1
+
+### Refactor
+
+- **properties**: replace repeated validators with factories
+- declare __all__ in enums, types and properties
+- **types**: document why types imports two unused enums
+- move format_datetime_like to a leaf module
+- centralise version-dependent imports in _compat
+- **properties**: rename Billboard's eyeOffset validator
+- **core**: use a zero-argument default_factory for Packet.id
+- **core**: derive preamble-forbidden fields from Packet
+- **types**: check time ordering without numpy
+
+### Perf
+
+- **types**: stop building a TimeInterval on every IntervalValue dump
 
 # v3.3.1
 
