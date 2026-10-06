@@ -34,7 +34,8 @@ dependencies = [
     "python-dateutil>=2.7,<3",
     "typing-extensions>=4.12.0",
     "StrEnum>=0.4.0",
-    "numpy",
+    "typing-extensions>=4.12.0 ; python_full_version < '3.11'",
+    "strenum>=0.4.0 ; python_full_version < '3.11'",
 ]
 
 [project.urls]
@@ -45,9 +46,9 @@ Documentation = "https://czml3.readthedocs.io/en"
 dev = [
     "build",
     "mypy>=1.16.1",
+    "numpy>=2.2.6",
     "pytest",
     "pytest-cov",
-    "pytest-mypy",
     "ruff",
     "types-python-dateutil",
 ]

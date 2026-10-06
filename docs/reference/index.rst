@@ -40,6 +40,7 @@ czml3.types module
    :members:
    :undoc-members:
    :show-inheritance:
+   :exclude-members: NaiveDatetimeWarning
 
 czml3.core module
 -----------------

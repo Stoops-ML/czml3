@@ -41,6 +41,14 @@ class BaseCZMLObject(BaseModel, metaclass=_HumanErrorsMeta):
 
     @classmethod
     def model_validate(cls, *args: Any, **kwargs: Any) -> Self:
+        """Validate an object against this model.
+
+        args and kwargs are passed to `BaseModel.model_validate()`.
+
+        :return: The validated model instance
+        :raises pydantic.ValidationError: If the object is invalid, with a
+            human-readable message
+        """
         try:
             return super().model_validate(*args, **kwargs)
         except ValidationError as error:
@@ -48,6 +56,14 @@ class BaseCZMLObject(BaseModel, metaclass=_HumanErrorsMeta):
 
     @classmethod
     def model_validate_json(cls, *args: Any, **kwargs: Any) -> Self:
+        """Validate a JSON string against this model.
+
+        args and kwargs are passed to `BaseModel.model_validate_json()`.
+
+        :return: The validated model instance
+        :raises pydantic.ValidationError: If the JSON is invalid, with a
+            human-readable message
+        """
         try:
             return super().model_validate_json(*args, **kwargs)
         except ValidationError as error:
