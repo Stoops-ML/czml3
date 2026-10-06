@@ -24,8 +24,9 @@ _PAGE_TPL = """<!DOCTYPE html>
 <body>
 <div id="cesiumContainer"></div>
 <script>
-// Load status is recorded on <body> as data-czml3-entities / data-czml3-error,
-// and posted to the embedding page when shown in an iframe (e.g. Jupyter).
+// Load status is recorded on <body> as data-czml3-entities, data-czml3-zoomed
+// (set once the document's geometry is built) and data-czml3-error, and posted
+// to the embedding page when shown in an iframe (e.g. Jupyter).
 const reportStatus = (key, value) => {{
     document.body.dataset[key] = value;
     if (window.parent !== window) {{
@@ -34,6 +35,24 @@ const reportStatus = (key, value) => {{
 }};
 const reportError = (error) => reportStatus("czml3Error", String(error));
 window.addEventListener("error", (event) => reportError(event.message));
+// In an <iframe srcdoc> (e.g. Jupyter) the page URL is about:srcdoc, so CesiumJS
+// mistakes its worker modules for cross-origin URLs and starts each worker with
+// a bare `import "createGeometry";`, which cannot load: no globe or worker-built
+// geometry is drawn, and no error is raised. Import the worker's full URL instead.
+if (location.protocol === "about:") {{
+    const NativeBlob = window.Blob;
+    window.Blob = class extends NativeBlob {{
+        constructor(parts, options) {{
+            const bareImport = parts && parts.length === 1 && typeof parts[0] === "string"
+                && /^import "([\\w-]+)";$/.exec(parts[0]);
+            if (bareImport) {{
+                const url = Cesium.buildModuleUrl("Workers/" + bareImport[1] + ".js");
+                parts = ["import " + JSON.stringify(url) + ";"];
+            }}
+            super(parts, options);
+        }}
+    }};
+}}
 const czml = {czml};
 const ionToken = {ion_token};
 const options = {{ shouldAnimate: true }};
@@ -50,9 +69,9 @@ const viewer = new Cesium.Viewer("cesiumContainer", options);
 viewer.scene.renderError.addEventListener((scene, error) => reportError(error));
 Cesium.CzmlDataSource.load(czml).then((dataSource) => {{
     viewer.dataSources.add(dataSource);
-    viewer.zoomTo(dataSource);
     reportStatus("czml3Entities", String(dataSource.entities.values.length));
-}}).catch(reportError);
+    return viewer.zoomTo(dataSource);
+}}).then((zoomed) => reportStatus("czml3Zoomed", String(zoomed))).catch(reportError);
 </script>
 </body>
 </html>
