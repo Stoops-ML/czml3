@@ -3,6 +3,7 @@
 * **Breaking:** remove the deprecated `CZMLWidget` and the `czml3.widget` module. Display a `Document` directly in Jupyter, or use `Document.to_html()` / `save_html()`.
 * Add `Document.save()` / `Document.load()`, and make documents written by czml3 read back with `Document.model_validate_json()` (including `TimeInterval`, `TimeIntervalCollection`, `IntervalValue`, `Cartesian2Value`, `EpochValue` and `NumberValue` in their serialized forms)
 * Add `Document.to_html()` / `save_html()` and inline display of a `Document` in Jupyter, using CesiumJS 1.145 by default
+* **Fix:** the Jupyter preview (an `<iframe srcdoc>`) now draws the globe and worker-built geometry such as boxes, polylines and polygons. At the frame's `about:srcdoc` URL, CesiumJS started its web workers with bare module imports that cannot load, so nothing was drawn and no error was raised. The page now also reports `data-czml3-zoomed` once the document's geometry is built.
 * `Document` adds a default preamble packet when none is given
 * Re-export the common property and interval classes from the top-level `czml3` package
 * `repr()` shows only the properties that are set

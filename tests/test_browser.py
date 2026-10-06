@@ -7,18 +7,21 @@ skipped otherwise. Set CZML3_BROWSER to the browser executable to choose one.
 Pages are served over a local HTTP server, as Jupyter and web servers serve
 them. Opened from ``file://``, browsers block Cesium's web workers, which is
 recorded as an expected failure below.
+
+A page passes once the viewer reports it zoomed to the document: that needs
+the geometry Cesium builds in web workers, which fail silently when broken.
 """
 
-import functools
 import http.server
+import json
 import os
-import re
 import shutil
 import socket
 import subprocess
 import threading
 from collections.abc import Iterator
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -75,42 +78,87 @@ DOC = Document(
     ]
 )
 ENTITIES = 3  # the "document" packet configures the scene and is not an entity
+# The viewer zooms to the document once its geometry is built, which needs
+# Cesium's web workers (the polyline is built in one).
+LOADED = {"entities": str(ENTITIES), "zoomed": "true"}
 
-# Reads the status the embedded viewer posts, so it can be checked from outside.
-NOTEBOOK_TPL = """<!DOCTYPE html>
+# Relays the status the embedded viewer posts (see czml3._html) to the test
+# server, so the test can wait in real time for the geometry to be built.
+RELAY_TPL = """<!DOCTYPE html>
 <html><head><meta charset="utf-8"></head>
 <body style="margin: 0">
 {frame}
 <script>
+const status = {{}};
 window.addEventListener("message", (event) => {{
-    Object.assign(document.body.dataset, event.data.czml3 || {{}});
+    Object.assign(status, event.data.czml3 || {{}});
+    fetch("{status_url}", {{ method: "POST", mode: "no-cors", body: JSON.stringify(status) }});
 }});
 </script>
 </body></html>
 """
+FRAME = '<iframe src="scene.html" style="width: 100%; height: 400px; border: none;"></iframe>'
+
+
+class Site:
+    """``tmp_path`` served on localhost, with an endpoint for the relayed status."""
+
+    def __init__(self, root: Path) -> None:
+        self.status: dict[str, str] = {}
+        self._changed = threading.Condition()
+        site = self
+
+        class Handler(http.server.SimpleHTTPRequestHandler):
+            def __init__(self, *args: Any, **kwargs: Any) -> None:
+                super().__init__(*args, directory=str(root), **kwargs)
+
+            def do_POST(self) -> None:
+                body = self.rfile.read(int(self.headers["Content-Length"]))
+                with site._changed:
+                    site.status = {
+                        key.removeprefix("czml3").lower(): value
+                        for key, value in json.loads(body).items()
+                    }
+                    site._changed.notify_all()
+                self.send_response(204)
+                self.end_headers()
+
+            def log_message(self, format: str, *args: Any) -> None:
+                pass
+
+        self._server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        self.url = f"http://127.0.0.1:{self._server.server_address[1]}"
+        threading.Thread(target=self._server.serve_forever, daemon=True).start()
+
+    def relay_page(self, frame: str) -> str:
+        return RELAY_TPL.format(frame=frame, status_url=f"{self.url}/status")
+
+    def wait_for_status(self, timeout: float) -> dict[str, str]:
+        """Wait until the viewer zoomed or failed, or ``timeout`` seconds passed."""
+        with self._changed:
+            self._changed.wait_for(
+                lambda: "zoomed" in self.status or "error" in self.status, timeout
+            )
+            return dict(self.status)
+
+    def close(self) -> None:
+        self._server.shutdown()
+        self._server.server_close()
 
 
 @pytest.fixture
-def site(tmp_path: Path) -> Iterator[str]:
-    """Serve ``tmp_path`` on localhost; yields the base URL."""
-    handler = functools.partial(
-        http.server.SimpleHTTPRequestHandler, directory=str(tmp_path)
-    )
-    handler.log_message = lambda *args: None  # type: ignore[attr-defined]
-    server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), handler)
-    thread = threading.Thread(target=server.serve_forever, daemon=True)
-    thread.start()
+def site(tmp_path: Path) -> Iterator[Site]:
+    site = Site(tmp_path)
     try:
-        yield f"http://127.0.0.1:{server.server_address[1]}"
+        yield site
     finally:
-        server.shutdown()
-        server.server_close()
+        site.close()
 
 
-def _render(url: str, profile: Path) -> str:
-    """Load ``url`` in headless Chrome and return the DOM after scripts ran."""
+def _render(url: str, site: Site, profile: Path, timeout: float = 90) -> dict[str, str]:
+    """Open ``url`` in headless Chrome and return the status relayed from it."""
     assert BROWSER is not None
-    result = subprocess.run(
+    browser = subprocess.Popen(
         [
             BROWSER,
             "--headless=new",
@@ -120,56 +168,42 @@ def _render(url: str, profile: Path) -> str:
             "--use-angle=swiftshader",
             "--enable-unsafe-swiftshader",
             f"--user-data-dir={profile}",
-            "--virtual-time-budget=30000",
-            "--dump-dom",
             url,
         ],
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        timeout=180,
-        check=False,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     )
-    assert result.returncode == 0, result.stderr[-2000:]
-    return result.stdout
+    try:
+        return site.wait_for_status(timeout)
+    finally:
+        browser.terminate()
+        browser.wait(timeout=30)
 
 
-def _body_status(dom: str) -> dict[str, str]:
-    """The data-czml3-* status the page recorded on <body>."""
-    body = re.search(r"<body[^>]*>", dom)
-    assert body is not None, dom[:2000]
-    return dict(re.findall(r'data-czml3-(\w+)="([^"]*)"', body.group(0)))
-
-
-def test_standalone_page_renders_the_document(tmp_path: Path, site: str) -> None:
+def test_standalone_page_renders_the_document(tmp_path: Path, site: Site) -> None:
     DOC.save_html(tmp_path / "scene.html")
+    (tmp_path / "index.html").write_text(site.relay_page(FRAME), encoding="utf-8")
 
-    dom = _render(f"{site}/scene.html", tmp_path / "profile")
-
-    assert _body_status(dom) == {"entities": str(ENTITIES)}
-    assert 'class="cesium-widget' in dom
-    assert re.search(r"<canvas[^>]+width=\"[1-9]", dom), "no sized WebGL canvas"
-    assert "cesium-widget-errorPanel" not in dom
+    assert _render(f"{site.url}/index.html", site, tmp_path / "profile") == LOADED
 
 
-def test_jupyter_iframe_renders_the_document(tmp_path: Path, site: str) -> None:
+def test_jupyter_iframe_renders_the_document(tmp_path: Path, site: Site) -> None:
     (tmp_path / "notebook.html").write_text(
-        NOTEBOOK_TPL.format(frame=DOC._repr_html_()), encoding="utf-8"
+        site.relay_page(DOC._repr_html_()), encoding="utf-8"
     )
 
-    dom = _render(f"{site}/notebook.html", tmp_path / "profile")
-
-    assert _body_status(dom) == {"entities": str(ENTITIES)}
+    assert _render(f"{site.url}/notebook.html", site, tmp_path / "profile") == LOADED
 
 
 @pytest.mark.xfail(
     strict=True,
     reason="browsers block Cesium's web workers on file:// pages; serve the page over HTTP",
 )
-def test_standalone_page_opened_from_file(tmp_path: Path) -> None:
-    page = tmp_path / "scene.html"
-    DOC.save_html(page)
+def test_standalone_page_opened_from_file(tmp_path: Path, site: Site) -> None:
+    DOC.save_html(tmp_path / "scene.html")
+    page = tmp_path / "index.html"
+    page.write_text(site.relay_page(FRAME), encoding="utf-8")
 
-    dom = _render(page.resolve().as_uri(), tmp_path / "profile")
+    status = _render(page.resolve().as_uri(), site, tmp_path / "profile", timeout=30)
 
-    assert _body_status(dom) == {"entities": str(ENTITIES)}
+    assert status == LOADED

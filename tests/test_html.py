@@ -38,6 +38,13 @@ def test_repr_html_embeds_page_in_iframe():
     assert html.escape(DOC.to_html(), quote=True) in frame
 
 
+def test_page_fixes_cesium_worker_imports_only_in_srcdoc_frames():
+    # Rendering is covered by test_browser.py; this checks the shim is guarded.
+    page = DOC.to_html()
+    assert 'if (location.protocol === "about:") {' in page
+    assert 'Cesium.buildModuleUrl("Workers/" + bareImport[1] + ".js")' in page
+
+
 def test_save_html(tmp_path):
     path = tmp_path / "scene.html"
     DOC.save_html(path, cesium_version="1.125")
@@ -54,6 +61,7 @@ def test_default_cesium_version_is_used():
 def test_page_reports_load_status():
     page = DOC.to_html()
     assert 'reportStatus("czml3Entities"' in page
+    assert 'reportStatus("czml3Zoomed"' in page
     assert "window.parent.postMessage" in page
     assert "viewer.scene.renderError.addEventListener" in page
     assert ".catch(reportError)" in page
