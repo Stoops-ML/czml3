@@ -54,6 +54,15 @@ Minimal CZML File Creation
 
 ``czml3`` will remove all fields that are not set (i.e. ``None``), which ensures that the CZML file is as small as possible.
 
+Concise Representation
+----------------------
+
+The ``repr()`` of a ``czml3`` object shows only the properties that are set::
+
+    >>> from czml3 import Point
+    >>> Point(pixelSize=10)
+    Point(pixelSize=10.0)
+
 Fast JSON Serialisation
 --------------------------
 

@@ -38,6 +38,8 @@ A CZML document is a list of ``packets``, which have several properties. Recreat
 
 ``Document`` adds the required preamble packet (``id="document"``) because none was given. Plain lists are converted to the matching CZML value type, so ``cartesian=[...]`` is equivalent to ``cartesian=Cartesian3Value(values=[...])``.
 
+The most common classes, such as ``Document``, ``Packet`` and ``Position``, can be imported from ``czml3`` directly; everything else lives in ``czml3.properties``, ``czml3.types`` and ``czml3.enums``. The :doc:`/reference/index` lists the top-level imports.
+
 Coercion of data
 ----------------
 
@@ -186,3 +188,5 @@ In Jupyter, a ``Document`` displays as an interactive Cesium viewer. Anywhere el
 Without a `Cesium ion <https://cesium.com/ion/>`_ access token the page uses the low-resolution Natural Earth II imagery that ships with CesiumJS; pass ``ion_token=...`` to use Cesium's imagery and world terrain, and ``cesium_version=...`` to choose the CesiumJS release.
 
 Browsers block Cesium's web workers on pages opened straight from disk (``file://``), so geometry such as polylines and polygons would not be drawn. Serve the file over HTTP instead, for example with ``python -m http.server``, and open ``http://localhost:8000/scene.html``.
+
+The page records its load status as attributes on its ``<body>``: ``data-czml3-entities`` (the number of entities loaded), ``data-czml3-zoomed`` (set once the document's geometry is built and the camera has zoomed to it), ``data-czml3-globe`` (set once the first globe tiles have loaded) and ``data-czml3-error`` (the latest error, including failed imagery tiles). When the page is embedded in an iframe, as in Jupyter, it also posts each update to the embedding page as a message such as ``{"czml3": {"czml3Entities": "3"}}``.
