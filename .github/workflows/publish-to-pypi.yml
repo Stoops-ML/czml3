@@ -20,24 +20,26 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: "3.14"
-        cache: pip
-    - name: Install pypa/build
-      run: python -m pip install build twine
+    - name: Set up uv
+      uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
+      with:
+        python-version: "3.14"
+        enable-cache: true
     - name: Check the release tag matches the project version
       env:
         RELEASE_TAG: ${{ github.event.release.tag_name }}
       run: |
         tag="${RELEASE_TAG#v}"
-        version=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+        version=$(uv version --short)
         if [ "$tag" != "$version" ]; then
           echo "::error::release tag $RELEASE_TAG does not match project.version ($version)"
           exit 1
         fi
         echo "release tag $RELEASE_TAG matches project.version"
     - name: Build a binary wheel and a source tarball
-      run: python -m build
+      run: uv build --no-sources
     - name: Check the distribution metadata
-      run: python -m twine check dist/*
+      run: uvx twine check dist/*
     - name: Store the distribution packages
       uses: actions/upload-artifact@v4
       with:
