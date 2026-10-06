@@ -21,6 +21,7 @@ pydantic.ValidationError instead of TypeError.
 
 ### Fix
 
+- **html**: use Cesium's bundled Natural Earth II imagery without an ion token
 - **html**: load Cesium's web workers in the Jupyter preview iframe
 - **html**: stop sandboxing the Jupyter preview iframe
 - **types**: validate UnitSphericalValue as [Clock, Cone] pairs
