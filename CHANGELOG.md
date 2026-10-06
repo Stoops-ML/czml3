@@ -21,6 +21,7 @@ pydantic.ValidationError instead of TypeError.
 
 ### Fix
 
+- **html**: load Cesium's web workers in the Jupyter preview iframe
 - **html**: stop sandboxing the Jupyter preview iframe
 - **types**: validate UnitSphericalValue as [Clock, Cone] pairs
 - **properties**: accept Cartesian2Value for Billboard.pixelOffset
@@ -51,168 +52,61 @@ pydantic.ValidationError instead of TypeError.
 
 - **types**: stop building a TimeInterval on every IntervalValue dump
 
-# v3.3.1
+## v3.3.1 (2026-05-03)
 
-* Fix `NumberValue` serialization when the parent model serializes by alias
-* Remove properties that are not in the CZML specification
-* Remove the `epoch` tests for `PositionList`, which has no `epoch`
+## v3.3.0 (2026-04-12)
 
-# v3.3.0
+## v3.2.0 (2026-02-24)
 
-* Add `LineOffset`
-* Add `AlignedAxis` to `Billboard`
-* Add missing `Label` fields
-* Add extrapolation fields to interpolatable properties
-* `NumberValue` implements `Interpolatable` and `Deletable`; float fields accept `NumberValue`, enabling interpolation
-* `ArcType` accepts enum values directly, and validates string values
-* Extend the `IntervalValue` type mapping, including strings and lists of CZML objects
-* Allow `RgbaValue` to serialize as integers
-* Fix serialization of reference values for `Uri` properties
-* Fully implement `Uri` validation, including raw base64 data URIs
-* `Document()` requires at least one packet
-* Add `BaseCZMLObject.to_dict()`
-* Stricter mypy configuration and typing fixes
-* Fix circular imports and a deprecation warning
-* Update documentation
+## v3.1.0 (2025-11-28)
 
-# v3.2.0
+## v3.0.0 (2025-10-19)
 
-* Add `Rotation` property; `Billboard.rotation` accepts `Rotation` and `NumberValue`
-* Add `epoch` to `NumberValue`
-* `Orientation.unitQuaternion` converts lists to `UnitQuaternionValue` automatically
-* Remove default values from `TimeInterval()`
+### Fix
 
-# v3.1.0
+- restrict Polyline.material and depthFailMaterial to PolylineMaterial only
+- flatten PolylineGlowMaterial and remove PolylineGlow
+- flatten PolylineOutlineMaterial and remove PolylineOutline
+- flatten PolylineDashMaterial and remove PolylineDash
+- flatten PolylineArrowMaterial and remove PolylineMaterial
 
-* Support Python 3.14
+## v2.3.6 (2025-07-23)
 
-# v3.0.0
+### Fix
 
-* Flattened `PolylineArrowMaterial`, `PolylineDashMaterial`, `PolylineOutlineMaterial`, and `PolylineGlowMaterial`
-* Removed redundant nesting of `material` properties
-* Restricted `Polyline.material` and `Polyline.depthFailMaterial` to accept only `PolylineMaterial`, `str`, or `TimeIntervalCollection`
-* Updated tests accordingly
+- add interval property to clock
 
-# v2.3.6
+## v2.3.5 (2025-07-08)
 
-* Add `interval` property to `Clock`
+### Feat
 
-# v2.3.5
+- update list of lists and fix tests
 
-* Fix `references` input for `PositionList` and `PositionListOfLists`
+### Fix
 
-# v2.3.3
+- PositionList reference parsing
 
-* Fix `check_values()` for `num_points` less than or greater than 3
+## v2.3.4 (2025-02-11)
 
-# v2.3.2
+## v2.3.3 (2025-02-04)
 
-* Remove w3lib dependency
+## v2.3.2 (2025-02-03)
 
-# v2.3.0
+## v2.3.1 (2025-01-23)
 
-* Forbid extra attributes to all models
+## v2.3.0 (2025-01-14)
 
-# v2.2.3
+## v2.2.3 (2025-01-09)
 
-* Correct inheritance of `PositionList`, `BoxDimensions()`, and `Rectangle()`
-* Remove `HasAlignment()`
+## v2.2.2 (2024-12-23)
 
-# v2.2.2
+## v2.2.1 (2024-12-20)
 
-* Update license
-* Update docs
-* Add depreciation warning to `CZMLWidget()`
+## v2.2.0 (2024-12-19)
 
-# v2.2.1
+## v2.1.0 (2024-12-16)
 
-* Expand preamble checking in Document()
-* Box() requires dimensions
-* Rectangle() requires coordinates
-* Reinstate LICENSE file (required for conda)
+### Feat
 
-# v2.2.0
-
-* Add readthedocs support
-* Add docstrings
-* Improve validations
-* Fix typing
-
-# v2.1.0
-
-* Add the following czml properties:
-  * `CartographicDegreesListOfListsValue`
-  * `CartographicRadiansListOfListsValue`
-  * `ReferenceListValue`
-  * `ReferenceListOfListsValue`
-  * `Cartesian3ListOfListsValue`
-  * `types.Cartesian3VelocityValue`
-* Change the following czml properties:
-  * `Sequence` -> `TimeIntervalCollection`
-* Fixes:
-  * `Packet.position` can be `Position`, `PositionList` or `PositionListOfLists`
-  * `Material.polylineOutline` can be `PolylineMaterial` or `PolylineOutline`
-* Expand validation
-* `Cartesian3Value` (with time values) checks that time is increasing
-
-# v2.0.0
-
-* All classes use pydantic
-
-# v0.5.4
-
-* Add several new properties: `ViewFrom`, `Box`, `Corridor`,
-  `Cylinder`, `Ellipse`, `Ellipsoid`, `TileSet`, `Wall`
-* Add new materials: `PolylineOutlineMaterial`, `PolylineGlowMaterial`,
-  `PolylineArrowMaterial`, `PolylineDashMaterial`
-* Add `Position.cartesianVelocity`, `Billboard.eyeOffset`, and
-  `Label.pixelOffset`
-* Add utilities to create and validate colors: `Color.is_valid`,
-  `utils.get_color_list`
-* Other minor additions and bug fixes
-
-Thanks to all contributors!
-
-- Clément Jonglez
-- Eleftheria Chatziargyriou
-- Idan Miara
-- Joris Olympio
-- Juan Luis Cano Rodríguez
-- Michael Haberler
-
-# v0.5.3
-
-* Add `Rectangle` and `RectangleCoordinates`
-
-# v0.5.2
-
-* Fix packaging
-
-# v0.5.1
-
-* Fix widget for non-local Jupyter notebook deployments
-
-# v0.5.0
-
-* Upgrade for Cesium 1.64
-* Allow for custom Ion access tokens
-* Fix HTML output
-
-# v0.4.0
-
-* Rewrite internals using `attrs`!
-* Properly support packet comparison
-* Use unique container ids for the CZML widget
-* New properties `Model` and `Orientation`
-* New type `UnitQuaternionValue`
-* Some new enumerations
-
-# v0.3.0
-
-* Changelog!
-* General improvements in README
-* New `CZMLWidget` to display a Cesium window in Jupyter
-* New `czml3.examples` with some more complex CZML examples
-* New properties `Box`, `BoxDimensions`, `EyeOffset`
-* New `czml3.utils.get_color`
-* Stricter validation for `Position`
+- fix test
+- number and epoch types, IntervalValue list parsing
